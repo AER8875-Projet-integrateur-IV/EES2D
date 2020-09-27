@@ -1,0 +1,11 @@
+
+PROJECT INSTALLATION
+
+
+From project root (\), write the following commands
+	
+$ cd build
+$ cmake ..
+$ cmake --build
+
+executable is found in bin
