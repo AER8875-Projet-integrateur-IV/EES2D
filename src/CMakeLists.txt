@@ -1,0 +1,1 @@
+add_executable(Euler2DApp Euler2D.cpp)
