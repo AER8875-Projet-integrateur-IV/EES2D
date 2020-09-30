@@ -1,6 +1,6 @@
 /* ---------------------------------------------------------------------
  *
- * Copyright (C) 2020 - by the  authors
+ * Copyright (C) 2020 - by the EES2D authors
  * 
  * This file is part of EES2D.
  *
@@ -23,23 +23,57 @@
  */
 
 
-#pragma once
+#ifndef haha
+#define haha
 #include <string>
+#include <memory>
+
 
 namespace ees2d {
+    
+    namespace Mesh {
 
-    class Mesh
-    {
-        public:
-            Mesh(const std::string& path);
-            ~Mesh();
+        class AbstractMesh
+        {
+            public:
+                AbstractMesh(const std::string path);
+                virtual ~AbstractMesh();
                 
+                virtual void parseFileInfo()= 0;
+                virtual void parseCOORDS()  = 0;
+                virtual void parseCONNEC()  = 0;
+                virtual void parseNPSUE()   = 0;
+                void Parse();
 
-        private:
-            std::string path_;
-            unsigned int m_NPOINT ;
-            //Struggling with naming convention for class member variables: m_ClassMemberVariable or ClassMemberVariable_
+                // Getters
+                unsigned int GetNgrids();
+                unsigned int GetNelems();
+                std::unique_ptr<double[]> GetCOORDS();
+                std::unique_ptr<unsigned int[]> GetCONNEC();
+                std::unique_ptr<unsigned int[]> GetNPSUE() ;    
 
-    };
+            protected:
+                std::string m_path;
+                unsigned int m_Ndim;
+                unsigned int m_Ngrids;
+                unsigned int m_Nelems;
+                std::unique_ptr<double[]> m_COORDS;  // Careful : Works only on C++17 compatible compiler
+                std::unique_ptr<unsigned int[]> m_CONNEC;
+                std::unique_ptr<unsigned int[]> m_NPSUE;
+        };
 
+
+        class Su2Mesh : public AbstractMesh 
+        {   
+            public: 
+                Su2Mesh(const std::string path);
+                ~Su2Mesh();
+                virtual void parseFileInfo();
+                virtual void parseCOORDS()  ;
+                virtual void parseCONNEC()  ;
+                virtual void parseNPSUE()   ;
+
+        };
+    } // namespace Mesh
 } // namespace ees2d
+#endif
