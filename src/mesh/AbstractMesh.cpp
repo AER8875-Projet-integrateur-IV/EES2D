@@ -1,7 +1,7 @@
 /* ---------------------------------------------------------------------
  *
  * Copyright (C) 2020 - by the EES2D  authors
- * 
+ *
  * This file is part of EES2D.
  *
  *   EES2D is free software: you can redistribute it and/or modify
@@ -26,8 +26,6 @@
 
 using namespace ees2d::Mesh;
 
-AbstractMesh::AbstractMesh(const std::string path)
-        : m_path(path) {}
+AbstractMesh::AbstractMesh(const std::string &path) : m_path(path) {}
 
-AbstractMesh::~AbstractMesh() {
-}
+AbstractMesh::~AbstractMesh() {}
