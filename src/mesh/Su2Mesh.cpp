@@ -31,14 +31,14 @@ using std::cout, std::endl;
 
 Su2Mesh::Su2Mesh(const std::string &path) : AbstractMesh::AbstractMesh(path) {
 
-    std::ifstream m_fileIO{m_path};
-    if (m_fileIO.is_open()) {
-        cout << "Mesh file found\n"
-             << "SU2 Mesh Initialized !" << endl;
-        m_proceed = true;
-    } else {
-        cout << "Unable to open file !" << endl;
-    }
+	std::ifstream m_fileIO{m_path};
+	if (m_fileIO.is_open()) {
+		cout << "Mesh file found\n"
+		     << "SU2 Mesh Initialized !" << endl;
+		m_proceed = true;
+	} else {
+		cout << "Unable to open file !" << endl;
+	}
 }
 
 Su2Mesh::~Su2Mesh() { cout << "SU2 Mesh Destroyed !" << endl; }
@@ -50,28 +50,28 @@ void Su2Mesh::parseCONNEC(std::ifstream &m_fileIO) {}
 void Su2Mesh::parseNPSUE(std::ifstream &m_fileIO) {}
 
 void Su2Mesh::parseFileInfo(std::ifstream &m_fileIO) {
-    std::string line;
+	std::string line;
 
 
-    while (std::getline(m_fileIO, line)) {
+	while (std::getline(m_fileIO, line)) {
 
-        if (line.find("NDIME") != std::string::npos) {
-            std::stringstream ss(line);//Temporar
-            ss.seekg(6) >> m_Ndim;     //Begin at Pos num 6 to extract int : NDIME= 2
-            cout << m_Ndim << endl;
-            break;
-        }
-    }
+		if (line.find("NDIME") != std::string::npos) {
+			std::stringstream ss(line);//Temporar
+			ss.seekg(6) >> m_Ndim;     //Begin at Pos num 6 to extract int : NDIME= 2
+			cout << m_Ndim << endl;
+			break;
+		}
+	}
 }
 
 void Su2Mesh::Parse() {
 
-    if (m_proceed) {
-        std::cout << m_path << std::endl;
-        std::ifstream m_fileIO(m_path);
-        parseFileInfo(m_fileIO);
-        parseCOORDS(m_fileIO);
-        parseCONNEC(m_fileIO);
-        parseNPSUE(m_fileIO);
-    }
+	if (m_proceed) {
+		std::cout << m_path << std::endl;
+		std::ifstream m_fileIO(m_path);
+		parseFileInfo(m_fileIO);
+		parseCOORDS(m_fileIO);
+		parseCONNEC(m_fileIO);
+		parseNPSUE(m_fileIO);
+	}
 }
