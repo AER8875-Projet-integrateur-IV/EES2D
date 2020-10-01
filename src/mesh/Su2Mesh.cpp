@@ -1,7 +1,7 @@
 /* ---------------------------------------------------------------------
  *
  * Copyright (C) 2020 - by the EES2D  authors
- * 
+ *
  * This file is part of EES2D.
  *
  *   EES2D is free software: you can redistribute it and/or modify
@@ -23,38 +23,55 @@
  */
 
 #include "Mesh.h"
-#include <fstream>
 #include <iostream>
+#include <sstream>
 
 using namespace ees2d::Mesh;
+using std::cout, std::endl;
 
-Su2Mesh::Su2Mesh(const std::string path)
-        : AbstractMesh::AbstractMesh(path) { std::cout << "SU2 Mesh initialized !" << std::endl; }
+Su2Mesh::Su2Mesh(const std::string &path) : AbstractMesh::AbstractMesh(path) {
 
-Su2Mesh::~Su2Mesh() {
-    std::cout << "SU2 Mesh Destroyed !" << std::endl;
+    std::ifstream m_fileIO{m_path};
+    if (m_fileIO.is_open()) {
+        cout << "Mesh file found\n"
+             << "SU2 Mesh Initialized !" << endl;
+        m_proceed = true;
+    } else {
+        cout << "Unable to open file !" << endl;
+    }
 }
 
-void Su2Mesh::parseCOORDS() {
-}
+Su2Mesh::~Su2Mesh() { cout << "SU2 Mesh Destroyed !" << endl; }
 
-void Su2Mesh::parseCONNEC() {
-}
+void Su2Mesh::parseCOORDS(std::ifstream &m_fileIO) {}
 
-void Su2Mesh::parseNPSUE() {
-}
+void Su2Mesh::parseCONNEC(std::ifstream &m_fileIO) {}
 
-void Su2Mesh::parseFileInfo() {
+void Su2Mesh::parseNPSUE(std::ifstream &m_fileIO) {}
+
+void Su2Mesh::parseFileInfo(std::ifstream &m_fileIO) {
     std::string line;
 
-    std::ifstream fileIO(m_path);
-    if (fileIO.is_open()) {
-        while (std::getline(fileIO, line)) {
-            std::cout << line << "\n"
-                      << std::endl;
-        }
 
-        fileIO.close();
-    } else
-        std::cout << "Unable to open file !" << std::endl;
+    while (std::getline(m_fileIO, line)) {
+
+        if (line.find("NDIME") != std::string::npos) {
+            std::stringstream ss(line);//Temporar
+            ss.seekg(6) >> m_Ndim;     //Begin at Pos num 6 to extract int : NDIME= 2
+            cout << m_Ndim << endl;
+            break;
+        }
+    }
+}
+
+void Su2Mesh::Parse() {
+
+    if (m_proceed) {
+        std::cout << m_path << std::endl;
+        std::ifstream m_fileIO(m_path);
+        parseFileInfo(m_fileIO);
+        parseCOORDS(m_fileIO);
+        parseCONNEC(m_fileIO);
+        parseNPSUE(m_fileIO);
+    }
 }
