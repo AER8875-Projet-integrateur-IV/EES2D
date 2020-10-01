@@ -27,9 +27,8 @@
 #include <iostream>
 using namespace ees2d::Mesh;
 
-
 Su2Mesh::Su2Mesh(const std::string path)
-    : AbstractMesh::AbstractMesh(path)  { std::cout << "SU2 Mesh initialized !" << std::endl;}
+    : AbstractMesh::AbstractMesh(path) { std::cout << "SU2 Mesh initialized !" << std::endl; }
 
 Su2Mesh::~Su2Mesh()
 {
@@ -37,31 +36,33 @@ Su2Mesh::~Su2Mesh()
 }
 
 void Su2Mesh::parseCOORDS()
-{}
+{
+}
 
 void Su2Mesh::parseCONNEC()
-{}
+{
+}
 
 void Su2Mesh::parseNPSUE()
-{}
+{
+}
 
 void Su2Mesh::parseFileInfo()
 {
     std::string line;
 
-    std::ifstream fileIO (m_path);
+    std::ifstream fileIO(m_path);
     if (fileIO.is_open())
     {
-        while (std::getline(fileIO,line))
+        while (std::getline(fileIO, line))
         {
-            std::cout << line <<  "\n" << std::endl;
+            std::cout << line << "\n"
+                      << std::endl;
         }
 
         fileIO.close();
     }
 
-    else std::cout << "Unable to open file !" << std::endl;
+    else
+        std::cout << "Unable to open file !" << std::endl;
 }
-
-
-

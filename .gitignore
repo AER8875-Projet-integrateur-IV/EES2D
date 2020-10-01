@@ -3,6 +3,7 @@
 # Prerequisites
 *.d
 .vscode
+.idea
 # Compiled Object files
 *.slo
 *.lo

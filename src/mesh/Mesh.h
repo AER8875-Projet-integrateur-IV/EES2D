@@ -22,57 +22,55 @@
  * Authors: Amin Ouled-Mohamed & Ali Omais, Polytechnique Montreal, 2020-
  */
 
-
 #ifndef haha
 #define haha
 #include <string>
 #include <memory>
 
+namespace ees2d
+{
 
-namespace ees2d {
-    
-    namespace Mesh {
+    namespace Mesh
+    {
 
         class AbstractMesh
         {
-            public:
-                AbstractMesh(const std::string path);
-                virtual ~AbstractMesh();
-                
-                virtual void parseFileInfo()= 0;
-                virtual void parseCOORDS()  = 0;
-                virtual void parseCONNEC()  = 0;
-                virtual void parseNPSUE()   = 0;
-                void Parse();
+        public:
+            AbstractMesh(const std::string path);
+            virtual ~AbstractMesh();
 
-                // Getters
-                unsigned int GetNgrids();
-                unsigned int GetNelems();
-                std::unique_ptr<double[]> GetCOORDS();
-                std::unique_ptr<unsigned int[]> GetCONNEC();
-                std::unique_ptr<unsigned int[]> GetNPSUE() ;    
+            virtual void parseFileInfo() = 0;
+            virtual void parseCOORDS() = 0;
+            virtual void parseCONNEC() = 0;
+            virtual void parseNPSUE() = 0;
+            void Parse();
 
-            protected:
-                std::string m_path;
-                unsigned int m_Ndim;
-                unsigned int m_Ngrids;
-                unsigned int m_Nelems;
-                std::unique_ptr<double[]> m_COORDS;  // Careful : Works only on C++17 compatible compiler
-                std::unique_ptr<unsigned int[]> m_CONNEC;
-                std::unique_ptr<unsigned int[]> m_NPSUE;
+            // Getters
+            unsigned int GetNgrids();
+            unsigned int GetNelems();
+            std::unique_ptr<double[]> GetCOORDS();
+            std::unique_ptr<unsigned int[]> GetCONNEC();
+            std::unique_ptr<unsigned int[]> GetNPSUE();
+
+        protected:
+            std::string m_path;
+            unsigned int m_Ndim;
+            unsigned int m_Ngrids;
+            unsigned int m_Nelems;
+            std::unique_ptr<double[]> m_COORDS{nullptr}; // Careful : Works only on C++17 compatible compiler
+            std::unique_ptr<unsigned int[]> m_CONNEC{nullptr};
+            std::unique_ptr<unsigned int[]> m_NPSUE{nullptr};
         };
 
-
-        class Su2Mesh : public AbstractMesh 
-        {   
-            public: 
-                Su2Mesh(const std::string path);
-                ~Su2Mesh();
-                virtual void parseFileInfo();
-                virtual void parseCOORDS()  ;
-                virtual void parseCONNEC()  ;
-                virtual void parseNPSUE()   ;
-
+        class Su2Mesh : public AbstractMesh
+        {
+        public:
+            Su2Mesh(const std::string path);
+            ~Su2Mesh();
+            virtual void parseFileInfo();
+            virtual void parseCOORDS();
+            virtual void parseCONNEC();
+            virtual void parseNPSUE();
         };
     } // namespace Mesh
 } // namespace ees2d
