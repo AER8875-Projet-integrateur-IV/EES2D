@@ -27,8 +27,7 @@
 using namespace ees2d::Mesh;
 
 AbstractMesh::AbstractMesh(const std::string path)
-    : m_path(path) {}
+        : m_path(path) {}
 
-AbstractMesh::~AbstractMesh()
-{
+AbstractMesh::~AbstractMesh() {
 }

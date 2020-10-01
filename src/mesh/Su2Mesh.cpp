@@ -25,44 +25,36 @@
 #include "Mesh.h"
 #include <fstream>
 #include <iostream>
+
 using namespace ees2d::Mesh;
 
 Su2Mesh::Su2Mesh(const std::string path)
-    : AbstractMesh::AbstractMesh(path) { std::cout << "SU2 Mesh initialized !" << std::endl; }
+        : AbstractMesh::AbstractMesh(path) { std::cout << "SU2 Mesh initialized !" << std::endl; }
 
-Su2Mesh::~Su2Mesh()
-{
+Su2Mesh::~Su2Mesh() {
     std::cout << "SU2 Mesh Destroyed !" << std::endl;
 }
 
-void Su2Mesh::parseCOORDS()
-{
+void Su2Mesh::parseCOORDS() {
 }
 
-void Su2Mesh::parseCONNEC()
-{
+void Su2Mesh::parseCONNEC() {
 }
 
-void Su2Mesh::parseNPSUE()
-{
+void Su2Mesh::parseNPSUE() {
 }
 
-void Su2Mesh::parseFileInfo()
-{
+void Su2Mesh::parseFileInfo() {
     std::string line;
 
     std::ifstream fileIO(m_path);
-    if (fileIO.is_open())
-    {
-        while (std::getline(fileIO, line))
-        {
+    if (fileIO.is_open()) {
+        while (std::getline(fileIO, line)) {
             std::cout << line << "\n"
                       << std::endl;
         }
 
         fileIO.close();
-    }
-
-    else
+    } else
         std::cout << "Unable to open file !" << std::endl;
 }

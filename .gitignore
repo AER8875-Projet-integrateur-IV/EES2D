@@ -4,6 +4,12 @@
 *.d
 .vscode
 .idea
+
+cmake-build-debug
+cmake-build-minsizerel
+cmake-build-release
+cmake-build-relwithdebinfo
+cmake-build-debug-wsl
 # Compiled Object files
 *.slo
 *.lo
