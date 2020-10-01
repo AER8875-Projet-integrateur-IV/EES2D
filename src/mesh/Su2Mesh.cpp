@@ -43,22 +43,42 @@ Su2Mesh::Su2Mesh(const std::string &path) : AbstractMesh::AbstractMesh(path) {
 
 Su2Mesh::~Su2Mesh() { cout << "SU2 Mesh Destroyed !" << endl; }
 
-void Su2Mesh::parseCOORDS(std::ifstream &m_fileIO) {}
+void Su2Mesh::parseCOORDS(std::ifstream &m_fileIO) {
+	std::string line;
+	m_fileIO.seekg(m_fileIO.beg);
+	while (std::getline(m_fileIO, line)) {
+		if (line.find("NPOIN") != std::string::npos) {
+			std::stringstream ss(line);//Temporary stringstream to parse int from string
+			ss.seekg(6) >> m_Ngrids;   //Begin at Pos num 6 to extract int : NPOIN= 2
+			cout << "Number of points : " <<m_Ngrids << endl;
+			break;
+		}
+	}
+}
 
-void Su2Mesh::parseCONNEC(std::ifstream &m_fileIO) {}
+void Su2Mesh::parseCONNEC(std::ifstream &m_fileIO) {
+    std::string line;
+    m_fileIO.seekg(m_fileIO.beg);
+    while (std::getline(m_fileIO, line)) {
+        if (line.find("NELEM") != std::string::npos) {
+            std::stringstream ss(line);//Temporary stringstream to parse int from string
+            ss.seekg(6) >> m_Nelems;   //Begin at Pos num 6 to extract int : NPOIN= 2
+            cout << "Number of elements : " << m_Nelems << endl;
+            break;
+        }
+    }
+}
 
 void Su2Mesh::parseNPSUE(std::ifstream &m_fileIO) {}
 
-void Su2Mesh::parseFileInfo(std::ifstream &m_fileIO) {
+void Su2Mesh::parseDim(std::ifstream &m_fileIO) {
 	std::string line;
-
-
 	while (std::getline(m_fileIO, line)) {
 
 		if (line.find("NDIME") != std::string::npos) {
-			std::stringstream ss(line);//Temporar
+			std::stringstream ss(line);//Temporary stringstream to parse int from string
 			ss.seekg(6) >> m_Ndim;     //Begin at Pos num 6 to extract int : NDIME= 2
-			cout << m_Ndim << endl;
+			cout << "Number of dimensions : " << m_Ndim << endl;
 			break;
 		}
 	}
@@ -69,7 +89,7 @@ void Su2Mesh::Parse() {
 	if (m_proceed) {
 		std::cout << m_path << std::endl;
 		std::ifstream m_fileIO(m_path);
-		parseFileInfo(m_fileIO);
+		parseDim(m_fileIO);
 		parseCOORDS(m_fileIO);
 		parseCONNEC(m_fileIO);
 		parseNPSUE(m_fileIO);
