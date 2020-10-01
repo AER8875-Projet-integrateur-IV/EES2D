@@ -27,15 +27,15 @@
 #include <fstream>
 #include <memory>
 #include <string>
-
+#include <unordered_map>
 namespace ees2d::Mesh {
 
 	class AbstractMesh {
 	public:
-		explicit AbstractMesh(const std::string &path);
-		virtual ~AbstractMesh();
+		explicit AbstractMesh(const std::string &path) : m_path(path){};
+		virtual ~AbstractMesh(){};
 
-		virtual void parseFileInfo(std::ifstream &) = 0;
+		virtual void parseDim(std::ifstream &) = 0;
 		virtual void parseCOORDS(std::ifstream &) = 0;
 		virtual void parseCONNEC(std::ifstream &) = 0;
 		virtual void parseNPSUE(std::ifstream &) = 0;
@@ -56,10 +56,17 @@ namespace ees2d::Mesh {
 	public:
 		explicit Su2Mesh(const std::string &path);
 		~Su2Mesh() override;
-		void parseFileInfo(std::ifstream &) override;
+		void parseDim(std::ifstream &m_fileIO) override;
 		void parseCOORDS(std::ifstream &) override;
 		void parseCONNEC(std::ifstream &) override;
 		void parseNPSUE(std::ifstream &) override;
 		void Parse() override;
+
+		// Unordered_map to define VTK_cells with following structure -> {vtk_cell_id : number_of_points}
+		std::unordered_map<int, int> Vtk_Cell = {
+		        {3, 2},
+		        {5, 3},
+		        {9, 4},
+		};
 	};
 }// namespace ees2d::Mesh
