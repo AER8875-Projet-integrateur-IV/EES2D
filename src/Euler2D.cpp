@@ -24,15 +24,16 @@
 
 #include "mesh/Mesh.h"
 #include <iostream>
+#include "utils/Timer.h"
 
 using namespace ees2d::Mesh;
+using namespace ees2d::Utils;
 
 
 int main() {
 	std::cout << "Euler2D Software" << std::endl;
-	std::string path;
-	std::cout << "Enter path to mesh file :" << std::endl;
-	std::cin >> path;
+	std::string path = "../../tests/mesh/naca0012_euler_65x65x1_O_1B.su2";
 	std::unique_ptr<Su2Mesh> mymesh(std::make_unique<Su2Mesh>(path));
+	Timer timeit(std::string("Su2Mesh class"));
 	mymesh->Parse();
 }
