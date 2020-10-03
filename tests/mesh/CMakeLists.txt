@@ -1,10 +1,8 @@
-set(TESTNAME test_)                                 # Name for this test executable
-set(SOURCE test_Division.cpp                                # List of source files to be included in the executable
+set(TESTNAME test_Dummy)                                 # Name for this test executable
+set(SOURCE test_dummy.cpp                                # List of source files to be included in the executable
             # other cpp file
             # and an other one! 
             )
-set(DEPENDANCIES Division                                   # List of all the tests dependancies (every non standard #include )
-            # Other library
-            # Ouioui vous pouvez en mettre autant que necessaire
+set(DEPENDANCIES Mesh                                   # List of all the tests dependancies (every non standard #include )
             )
 package_add_test(${TESTNAME} ${SOURCE} ${DEPENDANCIES})     # Call to the macro in ./tests/CMakeLists.txt
