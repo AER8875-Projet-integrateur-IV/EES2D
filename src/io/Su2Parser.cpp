@@ -27,10 +27,11 @@
 #include <iostream>
 #include <sstream>
 
-#include "../utils/Timer.h"
+#include <utils/Timer.h>
 #include "Parser.h"
 
 using namespace ees2d::IO;
+using namespace ees2d::Utils;
 using std::cout, std::endl, std::cerr;
 
 Su2Parser::Su2Parser(const std::string &path) : Parser::Parser(path) {
@@ -82,7 +83,7 @@ void Su2Parser::parseNDim(std::ifstream &m_fileIO) {
 
 void Su2Parser::parseCOORDS(std::ifstream &m_fileIO) {
 	std::string line;
-	Utils::Timer timeit("parseCoords");
+  //Timer timeit("parseCoords");
 	m_fileIO.seekg(m_fileIO.beg);
 	while (std::getline(m_fileIO, line)) {
 		if (line.find("NPOIN") != std::string::npos) {
