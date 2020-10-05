@@ -1,5 +1,5 @@
 # Generated from CLion C/C++ Code Style settings
-BasedOnStyle: LLVM
+BasedOnStyle: Google
 AccessModifierOffset: -4
 AlignAfterOpenBracket: Align
 AlignConsecutiveAssignments: false
@@ -62,5 +62,5 @@ SpacesInCStyleCastParentheses: false
 SpacesInContainerLiterals: false
 SpacesInParentheses: false
 SpacesInSquareBrackets: false
-TabWidth: 4
+TabWidth: 2
 UseTab: ForIndentation
