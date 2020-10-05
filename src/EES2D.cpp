@@ -22,8 +22,8 @@
  * Authors: Amin Ouled-Mohamed & Ali Omais, Polytechnique Montreal, 2020-
  */
 
-#include "mesh/Mesh.h"
 #include <iostream>
+#include "io/Mesh.h"
 //include "utils/Timer.h"
 
 using namespace ees2d::IO;
@@ -32,8 +32,8 @@ using namespace ees2d::IO;
 
 int main() {
   std::cout << "Euler2D Software" << std::endl;
-  std::string path = "../../tests/mesh/naca0012_euler_65x65x1_O_1B.su2";
-  std::unique_ptr<Su2Mesh> mymesh(std::make_unique<Su2Mesh>(path));
+  std::string path = "../../tests/mesh/naca0012_euler_65x6x1_O_1B.su2";
+  std::unique_ptr<Su2Parser> mymesh(std::make_unique<Su2Parser>(path));
   //Timer timeit(std::string("Su2Mesh class"));
   mymesh->Parse();
 }
