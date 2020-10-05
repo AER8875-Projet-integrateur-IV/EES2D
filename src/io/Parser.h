@@ -28,18 +28,22 @@
 #include <memory>
 #include <string>
 #include <unordered_map>
+#include <vector>
 namespace ees2d::IO {
 
 	class Parser {
+		// Abstract class serving as an interface to other parser classes
+
 public:
 		explicit Parser(const std::string &path) : m_path(path){};
 		virtual ~Parser(){};
 
-		virtual void parseDim(std::ifstream &) = 0;
+		virtual void parseNDim(std::ifstream &) = 0;
 		virtual void parseCOORDS(std::ifstream &) = 0;
 		virtual void parseCONNEC(std::ifstream &) = 0;
 		virtual void parseNPSUE(std::ifstream &) = 0;
 		virtual void Parse() = 0;
+		std::vector<double>& get_coords(){return m_COORDS;}
 
 protected:
 		bool m_proceed = false;
@@ -47,16 +51,18 @@ protected:
 		int m_Ndim{0};
 		int m_Ngrids{0};
 		int m_Nelems{0};
-		std::unique_ptr<double[]> m_COORDS{nullptr};// Careful : Works only on C++17 compatible compiler
-		std::unique_ptr<int[]> m_CONNEC{nullptr};
-		std::unique_ptr<int[]> m_NPSUE{nullptr};
+
+		std::vector<double> m_COORDS; //m_COORDS = [X1,Y1,X2,Y2,X3,Y3...]
+		std::vector<int> m_CONNEC;
+		std::vector<int> m_NPSUE;
 	};
+
 
 	class Su2Parser : public Parser {
 public:
 		explicit Su2Parser(const std::string &path);
 		~Su2Parser() override;
-		void parseDim(std::ifstream &m_fileIO) override;
+		void parseNDim(std::ifstream &) override;
 		void parseCOORDS(std::ifstream &) override;
 		void parseCONNEC(std::ifstream &) override;
 		void parseNPSUE(std::ifstream &) override;
