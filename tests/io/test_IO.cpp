@@ -1,5 +1,6 @@
 #include <gmock/gmock.h>// Toujours inclu
 #include <gtest/gtest.h>// Toujours inclu
+#include <io/Parser.h>
 
 
 double Division(double a, double b) {
@@ -9,13 +10,9 @@ double Division(double a, double b) {
 	return a / b;
 }
 
-TEST(Test_Dummy, Dummy_1) {
+TEST(Test_IO, parseCOORDS) {
   int a = 2;
   int b = 4;
   double c = Division(a, b);
   EXPECT_EQ(c, 0.5);
-}
-
-TEST(Test_Dummy, Dummy_2) {
-  EXPECT_EQ(Division(1, 0), 0);
 }

@@ -31,4 +31,4 @@ add_subdirectory("${PROJECT_SOURCE_DIR}/extern/googletest" "extern/googletest")
 ###################################################
 
 # List of directories
-add_subdirectory(mesh)
+add_subdirectory(io)
