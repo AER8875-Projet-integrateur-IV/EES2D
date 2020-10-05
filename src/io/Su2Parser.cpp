@@ -27,7 +27,8 @@
 #include <iostream>
 #include <sstream>
 
-#include "Mesh.h"
+#include "../utils/Timer.h"
+#include "Parser.h"
 
 using namespace ees2d::IO;
 using std::cout, std::endl, std::cerr;
@@ -45,54 +46,76 @@ Su2Parser::Su2Parser(const std::string &path) : Parser::Parser(path) {
 	}
 }
 
-Su2Parser::~Su2Parser() { cout << "SU2 Parser Destroyed !" << endl; }
 
-void Su2Parser::parseCOORDS(std::ifstream &m_fileIO) {
-	std::string line;
-	m_fileIO.seekg(m_fileIO.beg);
-	while (std::getline(m_fileIO, line)) {
-		if (line.find("NPOIN") != std::string::npos) {
-			std::stringstream ss(line);//Temporary stringstream to parse int from string
-			ss.seekg(6) >> m_Ngrids;   //Begin at Pos num 6 to extract int : NPOIN = 2
-			cout << "Number of points : " << m_Ngrids << endl;
-			break;
-		}
-	}
-}
+Su2Parser::~Su2Parser() { cout << "SU2 Parser Destroyed !" << endl; }
 
 void Su2Parser::parseCONNEC(std::ifstream &m_fileIO) {
 	std::string line;
 	m_fileIO.seekg(m_fileIO.beg);
+
 	while (std::getline(m_fileIO, line)) {
+
 		if (line.find("NELEM") != std::string::npos) {
+
 			std::stringstream ss(line);//Temporary stringstream to parse int from string
 			ss.seekg(6) >> m_Nelems;   //Begin at Pos num 6 to extract int : NELEM = 2
-			cout << "Number of elements : " << m_Nelems << endl;
-			break;
+			cout << "Number of elements : " << m_Nelems << "\n";
 		}
 	}
 }
 
-void Su2Parser::parseNPSUE(std::ifstream &m_fileIO) {}
 
-void Su2Parser::parseDim(std::ifstream &m_fileIO) {
+void Su2Parser::parseNDim(std::ifstream &m_fileIO) {
 	std::string line;
 	while (std::getline(m_fileIO, line)) {
 
 		if (line.find("NDIME") != std::string::npos) {
+
 			std::stringstream ss(line);//Temporary stringstream to parse int from string
 			ss.seekg(6) >> m_Ndim;     //Begin at Pos num 6 to extract int : NDIME= 2
-			cout << "Number of dimensions : " << m_Ndim << endl;
+			cout << "Number of dimensions : " << m_Ndim << "\n";
 			break;
 		}
 	}
 }
+
+
+void Su2Parser::parseCOORDS(std::ifstream &m_fileIO) {
+	std::string line;
+	Utils::Timer timeit("parseCoords");
+	m_fileIO.seekg(m_fileIO.beg);
+	while (std::getline(m_fileIO, line)) {
+		if (line.find("NPOIN") != std::string::npos) {
+
+			std::stringstream ss1(line);//Temporary stringstream to parse int from string
+			ss1.seekg(6) >> m_Ngrids;   //Begin at Pos num 6 to extract int : NPOIN = 2
+			cout << "Number of points : " << m_Ngrids << "\n";
+			m_COORDS.reserve(m_Ngrids * 2);
+			ss1.flush();
+			double x, y;
+			for (size_t i = 0; i < m_Ngrids; ++i) {
+
+				std::getline(m_fileIO, line);
+				std::stringstream ss1(line);
+				ss1 >> x >> y;
+				m_COORDS.push_back(x);
+				m_COORDS.push_back(y);
+				ss1.flush();
+			}
+			break;
+		}
+	}
+}
+
+
+void Su2Parser::parseNPSUE(std::ifstream &m_fileIO) {}
+
 
 void Su2Parser::Parse() {
 
 	if (m_proceed) {
 		std::ifstream m_fileIO(m_path);
-		parseDim(m_fileIO);
+		parseNDim(m_fileIO);
 		parseCOORDS(m_fileIO);
 		parseCONNEC(m_fileIO);
 		parseNPSUE(m_fileIO);
