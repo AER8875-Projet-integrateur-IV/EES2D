@@ -1,6 +1,6 @@
 /* ---------------------------------------------------------------------
  *
- * Copyright (C) 2020 - by the EES2D authors
+ * Copyright (C) 2020 - by the EES2D  authors
  *
  * This file is part of EES2D.
  *
@@ -23,42 +23,9 @@
  */
 
 #pragma once
-
-#include <fstream>
-#include <memory>
-#include <string>
-#include <unordered_map>
-#include <vector>
 namespace ees2d::IO {
 
-	class Parser {
-		// Abstract class serving as an interface to other parser classes
-
-public:
-		explicit Parser(const std::string &path) : m_path(path){};
-		virtual ~Parser(){};
-
-		virtual void parseNDim(std::ifstream &) = 0;
-		virtual void parseCOORDS(std::ifstream &) = 0;
-		virtual void parseCONNEC(std::ifstream &) = 0;
-		virtual void parseNPSUE(std::ifstream &) = 0;
-		virtual void Parse() = 0;
-		std::vector<double>& get_coords(){return m_COORDS;}
-
-protected:
-		bool m_proceed = false;
-		std::string m_path;
-		int m_Ndim{0};
-		int m_Ngrids{0};
-		int m_Nelems{0};
-
-		std::vector<double> m_COORDS; //m_COORDS = [X1,Y1,X2,Y2,X3,Y3...]
-		std::vector<int> m_CONNEC;
-		std::vector<int> m_NPSUE;
-	};
-
-
-	class Su2Parser : public Parser {
+	class Su2Parser : public AbstractParser {
 public:
 		explicit Su2Parser(const std::string &path);
 		~Su2Parser() override;
@@ -75,4 +42,5 @@ public:
 		        {9, 4},
 		};
 	};
-}// namespace ees2d::IO
+
+} // namespace ees2d::IO
