@@ -29,7 +29,7 @@
 namespace ees2d::IO {
 
 	class Su2Parser : public AbstractParser {
-public:
+	public:
 		explicit Su2Parser(const std::string &path);
 		~Su2Parser() override;
 
@@ -41,11 +41,11 @@ public:
 		void Parse() override;
 
 		// Unordered_map to define VTK_cells with following structure -> {vtk_cell_id : number_of_points}
-		std::unordered_map<int, int> Vtk_Cell = {
+		std::unordered_map<int, int> m_Vtk_Cell = {
 		        {3, 2},
 		        {5, 3},
 		        {9, 4},
 		};
 	};
 
-} // namespace ees2d::IO
+}// namespace ees2d::IO

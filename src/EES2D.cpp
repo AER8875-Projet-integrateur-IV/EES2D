@@ -22,19 +22,20 @@
  * Authors: Amin Ouled-Mohamed & Ali Omais, Polytechnique Montreal, 2020-
  */
 
-#include <iostream>
 #include "io/AbstractParser.h"
-#include <vector>
 #include "io/Su2Parser.h"
+#include <iostream>
+#include <vector>
 
 using ees2d::IO::Su2Parser;
 //using namespace ees2d::Utils;
 
 
 int main() {
-  std::cout << "Euler2D Software" << std::endl;
-  std::string path = "/home/amin/Downloads/naca0012_euler_513x513x1_O_1B.su2";
-  std::unique_ptr<Su2Parser> mymesh(std::make_unique<Su2Parser>(path));
-  mymesh->Parse();
-	std::vector<double> coordinates = mymesh->get_coords();
+	std::cout << "Euler2D Software" << std::endl;
+	std::string path = "../../tests/io/testmesh.su2";
+	std::unique_ptr<Su2Parser> mymesh(std::make_unique<Su2Parser>(path));
+	mymesh->Parse();
+	auto coordinates = mymesh->get_coords();
+	std::cout << coordinates.size() << std::endl;
 }

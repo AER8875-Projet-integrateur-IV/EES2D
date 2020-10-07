@@ -52,9 +52,9 @@ Su2Parser::Su2Parser(const std::string &path) : AbstractParser::AbstractParser(p
 
 Su2Parser::~Su2Parser() { cout << "SU2 AbstractParser Destroyed !" << endl; }
 
+
 void Su2Parser::parseCONNEC(std::ifstream &m_fileIO) {
-
-
+	Timer timeit("PARSECONNEC");
 	std::string line;
 
 	// Setting m_fileIO back to the beginning the file
@@ -63,9 +63,38 @@ void Su2Parser::parseCONNEC(std::ifstream &m_fileIO) {
 	while (std::getline(m_fileIO, line)) {
 
 		if (line.find("NELEM") != std::string::npos) {
-			std::stringstream ss(line);//Temporary stringstream to parse int from string
-			ss.seekg(6) >> m_Nelems;   //Begin at Pos num 6 to extract int : NELEM = 2
+
+			//Temporary stringstream to parse int from string
+			std::stringstream ss(line);
+
+			//Begin at Pos num 6 to extract int : NELEM = ....
+			ss.seekg(6) >> m_Nelems;
 			cout << "Number of elements : " << m_Nelems << "\n";
+
+			//Size is known for vectors, except m_CONnec
+			m_ElemIndex.reserve(m_Nelems + 1);
+			m_ElemIndex.push_back(0);
+			m_NPSUE.reserve(m_Nelems + 1);
+			m_CONNEC.reserve(m_Nelems * 2);
+
+			int type, grid_id;
+			int index_counter = 0;
+
+			for (size_t i = 0; i < m_Nelems; ++i) {
+				std::getline(m_fileIO, line);
+				std::stringstream ss1(line);
+				ss1 >> type;
+
+				m_NPSUE.push_back(m_Vtk_Cell[type]);
+				index_counter += m_Vtk_Cell[type];
+				m_ElemIndex.push_back(index_counter);
+
+				for (size_t j = 0; j < m_Vtk_Cell[type]; ++j) {
+					ss1 >> grid_id;
+					m_CONNEC.push_back(grid_id);
+				}
+			}
+			break;
 		}
 	}
 }
@@ -78,11 +107,13 @@ void Su2Parser::parseNDim(std::ifstream &m_fileIO) {
 	while (std::getline(m_fileIO, line)) {
 
 		if (line.find("NDIME") != std::string::npos) {
-			std::stringstream ss(line);//Temporary stringstream to parse int from string
-			ss.seekg(6) >> m_Ndim;     //Begin at Pos num 6 to extract int : NDIME= 2
+			//Temporary stringstream to parse int from string
+			std::stringstream ss(line);
+
+			//Begin at Pos num 6 to extract int : NDIME= ...
+			ss.seekg(6) >> m_Ndim;
 			break;
 		}
-
 	}
 
 	if (m_Ndim != 2) {
@@ -96,23 +127,25 @@ void Su2Parser::parseNDim(std::ifstream &m_fileIO) {
 
 void Su2Parser::parseCOORDS(std::ifstream &m_fileIO) {
 	std::string line;
-    Timer timeit("PARSECOORDS");
+
 	m_fileIO.seekg(std::ifstream::beg);
 	while (std::getline(m_fileIO, line)) {
 
 		if (line.find("NPOIN") != std::string::npos) {
-			std::stringstream ss1(line);//Temporary stringstream to parse int from string
-			ss1.seekg(6) >> m_Ngrids;   //Begin at Pos num 6 to extract int : NPOIN = 2
+			//Temporary stringstream to parse int from string
+			std::stringstream ss1(line);
+
+			//Begin at Pos num 6 to extract int : NPOIN = 2
+			ss1.seekg(6) >> m_Ngrids;
 			cout << "Number of points : " << m_Ngrids << "\n";
-			m_COORDS.reserve(m_Ngrids * 2);
+			m_COORDS.reserve(m_Ngrids + 1);
 			double x, y;
 
 			for (size_t i = 0; i < m_Ngrids; ++i) {
 				std::getline(m_fileIO, line);
 				std::stringstream ss1(line);
 				ss1 >> x >> y;
-				m_COORDS.push_back(x);
-				m_COORDS.push_back(y);
+				m_COORDS.push_back({x, y});
 			}
 
 			break;
@@ -121,7 +154,8 @@ void Su2Parser::parseCOORDS(std::ifstream &m_fileIO) {
 }
 
 
-void Su2Parser::parseNPSUE(std::ifstream &m_fileIO) {}
+void Su2Parser::parseNPSUE(std::ifstream &m_fileIO) {
+}
 
 
 void Su2Parser::Parse() {
