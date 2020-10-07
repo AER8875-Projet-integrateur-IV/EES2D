@@ -5,4 +5,4 @@ add_subdirectory(io)
 add_subdirectory(utils)
 
 
-target_link_libraries(EES2D_App PUBLIC IO Utils)
+target_link_libraries(EES2D_App PUBLIC IO)
