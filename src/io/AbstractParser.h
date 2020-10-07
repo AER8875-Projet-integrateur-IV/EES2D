@@ -27,6 +27,7 @@
 #include <fstream>
 #include <memory>
 #include <string>
+#include <tuple>
 #include <unordered_map>
 #include <vector>
 namespace ees2d::IO {
@@ -34,7 +35,7 @@ namespace ees2d::IO {
 	class AbstractParser {
 		// Abstract class serving as an interface to other parser classes
 
-public:
+	public:
 		explicit AbstractParser(const std::string &path) : m_path(path){};
 		virtual ~AbstractParser(){};
 
@@ -44,18 +45,35 @@ public:
 		virtual void parseCONNEC(std::ifstream &) = 0;
 		virtual void parseNPSUE(std::ifstream &) = 0;
 		virtual void Parse() = 0;
-		std::vector<double>& get_coords(){return m_COORDS;}
 
-protected:
-	// class attributes
+		// Getters
+		inline std::vector<std::tuple<double, double>> &get_coords() { return m_COORDS; }
+		inline std::vector<int> &get_ElemIndex() { return m_ElemIndex; }
+		inline std::vector<int> &get_NPSUE() { return m_NPSUE; }
+		inline std::vector<int> &get_CONNEC() { return m_CONNEC; }
+
+
+	protected:
+		// class attributes
 		bool m_proceed = false;
 		std::string m_path;
 		int m_Ndim{0};
 		int m_Ngrids{0};
 		int m_Nelems{0};
 
-		std::vector<double> m_COORDS; //m_COORDS = [X1,Y1,X2,Y2,X3,Y3...]
-		std::vector<int> m_CONNEC;
+		//m_COORDS --> Grid Coordinates = [{X1,Y1},{X2,Y2} ...]
+		std::vector<std::tuple<double, double>> m_COORDS;
+
+		//m_ElemIds -- > Element id in same order as SU2 file [Element1_ID,Element2_ID...]
+		std::vector<int> m_ElemIds;
+
+		//m_ElemIndex --> Element start index in m_CONNEC vector [ELM1_START INDEX, ELM2_START INDEX...]
+		std::vector<int> m_ElemIndex;
+
+		//m_NPSUE -- > Number of Points surrounding each element [NBPTS_ELEM1 NBPTS_ELEM2 ...]
 		std::vector<int> m_NPSUE;
+
+		//m_CONNEC --> Grid Ids connected to elements [G1,G2,G3,G1,G2,G3....]
+		std::vector<int> m_CONNEC;
 	};
 }// namespace ees2d::IO
