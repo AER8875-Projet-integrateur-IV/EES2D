@@ -17,3 +17,4 @@ script:
     - clang++ -v && cmake --version
     - cmake ..
     - cmake --build .
+
