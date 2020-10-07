@@ -23,12 +23,17 @@
  */
 
 #pragma once
+#include "AbstractParser.h"
+
+
 namespace ees2d::IO {
 
 	class Su2Parser : public AbstractParser {
 public:
 		explicit Su2Parser(const std::string &path);
 		~Su2Parser() override;
+
+		// All methods defined in AbstractParser.h
 		void parseNDim(std::ifstream &) override;
 		void parseCOORDS(std::ifstream &) override;
 		void parseCONNEC(std::ifstream &) override;

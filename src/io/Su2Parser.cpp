@@ -22,24 +22,26 @@
  * Authors: Amin Ouled-Mohamed & Ali Omais, Polytechnique Montreal, 2020-
  */
 
-#include <stdlib.h>
-
+#include <cstdlib>
 #include <iostream>
 #include <sstream>
 
-#include <utils/Timer.h>
-#include "Parser.h"
+#include "AbstractParser.h"
+#include "Su2Parser.h"
+#include "utils/Timer.h"
 
-using namespace ees2d::IO;
-using namespace ees2d::Utils;
+using ees2d::IO::Su2Parser;
+using ees2d::Utils::Timer;
 using std::cout, std::endl, std::cerr;
 
-Su2Parser::Su2Parser(const std::string &path) : Parser::Parser(path) {
+
+Su2Parser::Su2Parser(const std::string &path) : AbstractParser::AbstractParser(path) {
 
 	std::ifstream m_fileIO{m_path};
+
 	if (m_fileIO.is_open()) {
 		cout << "Su2 Mesh file found\n"
-		     << "SU2 Parser Initialized !" << endl;
+		     << "SU2 AbstractParser Initialized !" << endl;
 		m_proceed = true;
 	} else {
 		cerr << "Unable to open mesh file !" << endl;
@@ -48,16 +50,19 @@ Su2Parser::Su2Parser(const std::string &path) : Parser::Parser(path) {
 }
 
 
-Su2Parser::~Su2Parser() { cout << "SU2 Parser Destroyed !" << endl; }
+Su2Parser::~Su2Parser() { cout << "SU2 AbstractParser Destroyed !" << endl; }
 
 void Su2Parser::parseCONNEC(std::ifstream &m_fileIO) {
+
+
 	std::string line;
+
+	// Setting m_fileIO back to the beginning the file
 	m_fileIO.seekg(m_fileIO.beg);
 
 	while (std::getline(m_fileIO, line)) {
 
 		if (line.find("NELEM") != std::string::npos) {
-
 			std::stringstream ss(line);//Temporary stringstream to parse int from string
 			ss.seekg(6) >> m_Nelems;   //Begin at Pos num 6 to extract int : NELEM = 2
 			cout << "Number of elements : " << m_Nelems << "\n";
@@ -67,42 +72,49 @@ void Su2Parser::parseCONNEC(std::ifstream &m_fileIO) {
 
 
 void Su2Parser::parseNDim(std::ifstream &m_fileIO) {
+	// Parse mesh dimension from SU2 file
+
 	std::string line;
 	while (std::getline(m_fileIO, line)) {
 
 		if (line.find("NDIME") != std::string::npos) {
-
 			std::stringstream ss(line);//Temporary stringstream to parse int from string
 			ss.seekg(6) >> m_Ndim;     //Begin at Pos num 6 to extract int : NDIME= 2
-			cout << "Number of dimensions : " << m_Ndim << "\n";
 			break;
 		}
+
+	}
+
+	if (m_Ndim != 2) {
+		// Exit software if not a 2D mesh
+
+		cerr << "Not a 2D mesh !" << endl;
+		exit(EXIT_FAILURE);
 	}
 }
 
 
 void Su2Parser::parseCOORDS(std::ifstream &m_fileIO) {
 	std::string line;
-  //Timer timeit("parseCoords");
-	m_fileIO.seekg(m_fileIO.beg);
+    Timer timeit("PARSECOORDS");
+	m_fileIO.seekg(std::ifstream::beg);
 	while (std::getline(m_fileIO, line)) {
-		if (line.find("NPOIN") != std::string::npos) {
 
+		if (line.find("NPOIN") != std::string::npos) {
 			std::stringstream ss1(line);//Temporary stringstream to parse int from string
 			ss1.seekg(6) >> m_Ngrids;   //Begin at Pos num 6 to extract int : NPOIN = 2
 			cout << "Number of points : " << m_Ngrids << "\n";
 			m_COORDS.reserve(m_Ngrids * 2);
-			ss1.flush();
 			double x, y;
-			for (size_t i = 0; i < m_Ngrids; ++i) {
 
+			for (size_t i = 0; i < m_Ngrids; ++i) {
 				std::getline(m_fileIO, line);
 				std::stringstream ss1(line);
 				ss1 >> x >> y;
 				m_COORDS.push_back(x);
 				m_COORDS.push_back(y);
-				ss1.flush();
 			}
+
 			break;
 		}
 	}

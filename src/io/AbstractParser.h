@@ -38,6 +38,7 @@ public:
 		explicit AbstractParser(const std::string &path) : m_path(path){};
 		virtual ~AbstractParser(){};
 
+		// Pure virtual function to extract number of dimensions
 		virtual void parseNDim(std::ifstream &) = 0;
 		virtual void parseCOORDS(std::ifstream &) = 0;
 		virtual void parseCONNEC(std::ifstream &) = 0;
@@ -46,6 +47,7 @@ public:
 		std::vector<double>& get_coords(){return m_COORDS;}
 
 protected:
+	// class attributes
 		bool m_proceed = false;
 		std::string m_path;
 		int m_Ndim{0};
