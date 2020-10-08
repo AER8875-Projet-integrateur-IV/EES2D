@@ -40,40 +40,48 @@ namespace ees2d::IO {
 		virtual ~AbstractParser(){};
 
 		// Pure virtual function to extract number of dimensions
-		virtual void parseNDim(std::ifstream &) = 0;
-		virtual void parseCOORDS(std::ifstream &) = 0;
-		virtual void parseCONNEC(std::ifstream &) = 0;
-		virtual void parseNPSUE(std::ifstream &) = 0;
+		virtual void parseDimensionInfo(std::ifstream &) = 0;
+		virtual void parseGridsInfo(std::ifstream &) = 0;
+		virtual void parseElementsInfo(std::ifstream &) = 0;
+		virtual void parseBoundaryConditionsInfo(std::ifstream &) = 0;
 		virtual void Parse() = 0;
 
 		// Getters
 		inline std::vector<std::tuple<double, double>> &get_coords() { return m_COORDS; }
-		inline std::vector<int> &get_ElemIndex() { return m_ElemIndex; }
-		inline std::vector<int> &get_NPSUE() { return m_NPSUE; }
-		inline std::vector<int> &get_CONNEC() { return m_CONNEC; }
+		inline std::vector<uint32_t> &get_ElemIndex() { return m_ElemIndex; }
+		inline std::vector<uint32_t> &get_NPSUE() { return m_NPSUE; }
+		inline std::vector<uint32_t> &get_CONNEC() { return m_CONNEC; }
+		std::unordered_map<std::string, std::vector<std::vector<int>>> &get_boundaryConditions() { return m_boundaryConditions; }
 
 
 	protected:
 		// class attributes
 		bool m_proceed = false;
 		std::string m_path;
-		int m_Ndim{0};
-		int m_Ngrids{0};
-		int m_Nelems{0};
+		uint32_t m_Ndim{0};
+		uint32_t m_Ngrids{0};
+		uint32_t m_Nelems{0};
+
+		// Unordered map to hold Boundary conditions informations.
+		// Example of structure : m_BoundaryElements = {"lower" : {{1,2,3},{2,3,4}} , "left" : ....}
+		std::unordered_map<std::string, std::vector<std::vector<int>>> m_boundaryConditions;
+
+		// Number of Boundaries (markers) in mesh file
+		uint32_t m_Nboundaries{0};
 
 		//m_COORDS --> Grid Coordinates = [{X1,Y1},{X2,Y2} ...]
 		std::vector<std::tuple<double, double>> m_COORDS;
 
 		//m_ElemIds -- > Element id in same order as SU2 file [Element1_ID,Element2_ID...]
-		std::vector<int> m_ElemIds;
+		std::vector<uint32_t> m_ElemIds;
 
 		//m_ElemIndex --> Element start index in m_CONNEC vector [ELM1_START INDEX, ELM2_START INDEX...]
-		std::vector<int> m_ElemIndex;
+		std::vector<uint32_t> m_ElemIndex;
 
 		//m_NPSUE -- > Number of Points surrounding each element [NBPTS_ELEM1 NBPTS_ELEM2 ...]
-		std::vector<int> m_NPSUE;
+		std::vector<uint32_t> m_NPSUE;
 
 		//m_CONNEC --> Grid Ids connected to elements [G1,G2,G3,G1,G2,G3....]
-		std::vector<int> m_CONNEC;
+		std::vector<uint32_t> m_CONNEC;
 	};
 }// namespace ees2d::IO
