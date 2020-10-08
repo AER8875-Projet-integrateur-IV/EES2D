@@ -1,7 +1,7 @@
 language: cpp
-compiler: clang
+compiler: g++
 dist: bionic
-sudo: require
+os : linux
 
 addons:
   apt:
@@ -9,7 +9,7 @@ addons:
       - ubuntu-toolchain-r-test
       
 script:
-    - export CXX=/usr/local/clang-7.0.0/bin
+    - export CXX=/usr/lib/gcc/x86_64-linux-gnu/8
     - clang++ -v && cmake --version
     - mkdir build
     - cd build
