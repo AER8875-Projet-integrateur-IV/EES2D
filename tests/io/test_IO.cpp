@@ -1,3 +1,28 @@
+/* ---------------------------------------------------------------------
+ *
+ * Copyright (C) 2020 - by the EES2D authors
+ *
+ * This file is part of EES2D.
+ *
+ *   EES2D is free software: you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License as published by
+ *   the Free Software Foundation, either version 3 of the License, or
+ *   (at your option) any later version.
+ *
+ *   EES2D is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *   GNU General Public License for more details.
+ *
+ *   You should have received a copy of the GNU General Public License
+ *   along with EES2D.  If not, see <https://www.gnu.org/licenses/>.
+ *
+ * ---------------------------------------------------------------------
+ *
+ * Authors: Amin Ouled-Mohamed & Ali Omais, Polytechnique Montreal, 2020-
+ */
+
+
 #include <gmock/gmock.h>// Toujours inclu
 #include <gtest/gtest.h>// Toujours inclu
 #include <io/AbstractParser.h>
@@ -8,7 +33,7 @@ using ees2d::IO::Su2Parser;
 
 TEST(Test_IO, parseCOORDS) {
 	// Arrange
-	std::string path = "../../../tests/io/testmesh.su2";
+	std::string path = "testmesh.su2";
 	Su2Parser mymesh(path);
 	mymesh.Parse();
 
@@ -44,23 +69,23 @@ TEST(Test_IO, parseCONNEC) {
 	mymesh.Parse();
 
 	// Act
-	std::vector<int> ExactElemIndex{0, 3, 6, 9, 12,
-	                                15, 18, 21, 24};
+	std::vector<uint32_t> ExactElemIndex{0, 3, 6, 9, 12,
+	                                     15, 18, 21, 24};
 
-	std::vector<int> exactNPSUE{3, 3, 3, 3, 3, 3, 3, 3};
+	std::vector<uint32_t> exactNPSUE{3, 3, 3, 3, 3, 3, 3, 3};
 
-	std::vector<int> exactCONNEC{0, 1, 3,
-	                             1, 4, 3,
-	                             1, 2, 4,
-	                             2, 5, 4,
-	                             3, 4, 6,
-	                             4, 7, 6,
-	                             4, 5, 7,
-	                             5, 8, 7};
+	std::vector<uint32_t> exactCONNEC{0, 1, 3,
+	                                  1, 4, 3,
+	                                  1, 2, 4,
+	                                  2, 5, 4,
+	                                  3, 4, 6,
+	                                  4, 7, 6,
+	                                  4, 5, 7,
+	                                  5, 8, 7};
 
-	std::vector<int> ElemIndex = mymesh.get_ElemIndex();
-	std::vector<int> NPSUE = mymesh.get_NPSUE();
-	std::vector<int> CONNEC = mymesh.get_CONNEC();
+	std::vector<uint32_t> ElemIndex = mymesh.get_ElemIndex();
+	std::vector<uint32_t> NPSUE = mymesh.get_NPSUE();
+	std::vector<uint32_t> CONNEC = mymesh.get_CONNEC();
 
 	// Assert
 
