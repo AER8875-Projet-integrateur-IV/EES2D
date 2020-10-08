@@ -8,11 +8,11 @@ addons:
     sources:
       - ubuntu-toolchain-r-test
     packages:
-      - clang++10
+      - clang++
       - cmake
       
 script:
-    - sudo ln -s /usr/bin/clang++10 /usr/local/bin/clang++
+    - sudo ln -s /usr/bin/clang++  /usr/local/bin/clang++
     - export CXX=/usr/bin/clang++
     - clang++ -v && cmake --version
     - cmake ..
