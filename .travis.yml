@@ -9,8 +9,7 @@ addons:
       - ubuntu-toolchain-r-test
       
 script:
-    - sudo ln -s /usr/bin/clang++  /usr/local/bin/clang++
-    - export CXX=/usr/local/bin/clang++
+    - export CXX=/usr/local/clang-7.0.0/bin
     - clang++ -v && cmake --version
     - mkdir build
     - cd build
