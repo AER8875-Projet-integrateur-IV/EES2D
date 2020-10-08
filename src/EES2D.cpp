@@ -24,18 +24,25 @@
 
 #include "io/AbstractParser.h"
 #include "io/Su2Parser.h"
+#include "utils/Timer.h"
 #include <iostream>
 #include <vector>
 
 using ees2d::IO::Su2Parser;
+using ees2d::Utils::Timer;
 //using namespace ees2d::Utils;
 
 
 int main() {
+	Timer Timeit("software runtime");
 	std::cout << "Euler2D Software" << std::endl;
-	std::string path = "../../tests/io/testmesh.su2";
+	std::string path = "/home/amin/Downloads/naca0012_euler_1025x1025x1_O_1B.su2";
 	std::unique_ptr<Su2Parser> mymesh(std::make_unique<Su2Parser>(path));
 	mymesh->Parse();
 	auto coordinates = mymesh->get_coords();
-	std::cout << coordinates.size() << std::endl;
+	auto BoundaryConditions = mymesh->get_boundaryConditions();
+
+	for (auto &bc : BoundaryConditions) {
+		std::cout << bc.first << std::endl;
+	}
 }
