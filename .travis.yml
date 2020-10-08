@@ -1,15 +1,12 @@
 language: cpp
 compiler: clang
-dist: trusty
+dist: bionic
 sudo: require
 
 addons:
   apt:
     sources:
       - ubuntu-toolchain-r-test
-    packages:
-      - clang++
-      - cmake
       
 script:
     - sudo ln -s /usr/bin/clang++  /usr/local/bin/clang++
