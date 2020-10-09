@@ -27,13 +27,14 @@
 #include <gtest/gtest.h>// Toujours inclu
 #include <io/AbstractParser.h>
 #include <io/Su2Parser.h>
+#include <iostream>
 #include <tuple>
 #include <vector>
 using ees2d::IO::Su2Parser;
 
 TEST(Test_IO, parseCOORDS) {
 	// Arrange
-	std::string path = "testmesh.su2";
+	std::string path = "../../../tests/io/testmesh.su2";
 	Su2Parser mymesh(path);
 	mymesh.Parse();
 
@@ -65,8 +66,8 @@ TEST(Test_IO, parseCOORDS) {
 TEST(Test_IO, parseCONNEC) {
 	// Arrange
 	std::string path = "../../../tests/io/testmesh.su2";
-	Su2Parser mymesh(path);
-	mymesh.Parse();
+	Su2Parser mymesh1(path);
+	mymesh1.Parse();
 
 	// Act
 	std::vector<uint32_t> ExactElemIndex{0, 3, 6, 9, 12,
@@ -83,11 +84,16 @@ TEST(Test_IO, parseCONNEC) {
 	                                  4, 5, 7,
 	                                  5, 8, 7};
 
-	std::vector<uint32_t> ElemIndex = mymesh.get_ElemIndex();
-	std::vector<uint32_t> NPSUE = mymesh.get_NPSUE();
-	std::vector<uint32_t> CONNEC = mymesh.get_CONNEC();
+	std::vector<uint32_t> ElemIndex = mymesh1.get_ElemIndex();
+	std::vector<uint32_t> NPSUE = mymesh1.get_NPSUE();
+	std::vector<uint32_t> CONNEC = mymesh1.get_CONNEC();
+
+	std::cout << ElemIndex.size() << std::endl;
 
 	// Assert
+	ASSERT_EQ(ExactElemIndex.size(), ElemIndex.size()) << "Vectors OF ElemIndex are of unequal length";
+	ASSERT_EQ(exactNPSUE.size(), NPSUE.size()) << "Vectors of  ExactNPSUE are of unequal length";
+	ASSERT_EQ(exactCONNEC.size(), CONNEC.size()) << "Vectors of exactCONNEC  are of unequal length";
 
 	for (size_t i = 0; i < ExactElemIndex.size(); ++i) {
 		EXPECT_EQ(ExactElemIndex[i], ElemIndex[i]) << "Vectors ExactElementInex and ElemIndex differ at index " << i;
@@ -100,4 +106,9 @@ TEST(Test_IO, parseCONNEC) {
 	for (size_t i = 0; i < exactCONNEC.size(); ++i) {
 		EXPECT_EQ(exactCONNEC[i], CONNEC[i]) << "Vectors exactCONNEC and CONNEC differ at index " << i;
 	}
+}
+
+int main(int argc, char **argv) {
+	testing::InitGoogleTest(&argc, argv);
+	return RUN_ALL_TESTS();
 }

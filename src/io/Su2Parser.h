@@ -30,7 +30,7 @@ namespace ees2d::IO {
 
 	class Su2Parser : public AbstractParser {
 
-	public:
+public:
 		explicit Su2Parser(const std::string &path);
 		~Su2Parser() override;
 
@@ -41,14 +41,13 @@ namespace ees2d::IO {
 		void parseBoundaryConditionsInfo(std::ifstream &) override;
 		void Parse() override;
 
-	private:
+private:
 		// Unordered_map to define VTK_cells with following structure -> {vtk_cell_id : number_of_points}
-		std::unordered_map<uint8_t, uint8_t> m_Vtk_Cell = {
+		std::unordered_map<uint32_t, uint32_t> m_Vtk_Cell = {
 		        {3, 2},
 		        {5, 3},
 		        {9, 4},
 		};
-
 	};
 
 }// namespace ees2d::IO

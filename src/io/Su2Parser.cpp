@@ -41,7 +41,7 @@ Su2Parser::Su2Parser(const std::string &path) : AbstractParser::AbstractParser(p
 
 	if (m_fileIO.is_open()) {
 		cout << "Su2 Mesh file found\n"
-		     << "SU2 AbstractParser Initialized !" << endl;
+		     << "SU2 Su2Parser Initialized !" << endl;
 		m_proceed = true;
 	} else {
 		cerr << "Unable to open mesh file !" << endl;
@@ -50,7 +50,7 @@ Su2Parser::Su2Parser(const std::string &path) : AbstractParser::AbstractParser(p
 }
 
 
-Su2Parser::~Su2Parser() { cout << "SU2 AbstractParser Destroyed !" << endl; }
+Su2Parser::~Su2Parser() { cout << "SU2 Su2Parser Destroyed !" << endl; }
 
 
 void Su2Parser::Parse() {
@@ -143,21 +143,22 @@ void Su2Parser::parseElementsInfo(std::ifstream &m_fileIO) {
 			m_NPSUE.reserve(m_Nelems + 1);
 			m_CONNEC.reserve(m_Nelems * 2);
 
-			uint8_t type;
+			uint32_t type;
 			uint32_t grid_id;
 			uint32_t index_counter = 0;
 
 			for (uint32_t i = 0; i < m_Nelems; ++i) {
 				std::getline(m_fileIO, line);
-				std::stringstream ss1(line);
-				ss1 >> type;
+				std::stringstream ss(line);
+				ss >> type;
 
 				m_NPSUE.push_back(m_Vtk_Cell[type]);
 				index_counter += m_Vtk_Cell[type];
 				m_ElemIndex.push_back(index_counter);
 
 				for (uint32_t j = 0; j < m_Vtk_Cell[type]; ++j) {
-					ss1 >> grid_id;
+					ss >> grid_id;
+
 					m_CONNEC.push_back(grid_id);
 				}
 			}
