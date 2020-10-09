@@ -41,8 +41,4 @@ int main() {
 	mymesh->Parse();
 	auto coordinates = mymesh->get_coords();
 	auto BoundaryConditions = mymesh->get_boundaryConditions();
-
-	for (auto &bc : BoundaryConditions) {
-		std::cout << bc.first << std::endl;
-	}
 }

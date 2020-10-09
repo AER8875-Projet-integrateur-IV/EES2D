@@ -35,7 +35,7 @@ namespace ees2d::IO {
 	class AbstractParser {
 		// Abstract class serving as an interface to other parser classes
 
-	public:
+public:
 		explicit AbstractParser(const std::string &path) : m_path(path){};
 		virtual ~AbstractParser(){};
 
@@ -51,10 +51,10 @@ namespace ees2d::IO {
 		inline std::vector<uint32_t> &get_ElemIndex() { return m_ElemIndex; }
 		inline std::vector<uint32_t> &get_NPSUE() { return m_NPSUE; }
 		inline std::vector<uint32_t> &get_CONNEC() { return m_CONNEC; }
-		std::unordered_map<std::string, std::vector<std::vector<int>>> &get_boundaryConditions() { return m_boundaryConditions; }
+		std::unordered_map<std::string, std::vector<std::vector<uint32_t>>> &get_boundaryConditions() { return m_boundaryConditions; }
 
 
-	protected:
+protected:
 		// class attributes
 		bool m_proceed = false;
 		std::string m_path;
@@ -64,7 +64,7 @@ namespace ees2d::IO {
 
 		// Unordered map to hold Boundary conditions informations.
 		// Example of structure : m_BoundaryElements = {"lower" : {{1,2,3},{2,3,4}} , "left" : ....}
-		std::unordered_map<std::string, std::vector<std::vector<int>>> m_boundaryConditions;
+		std::unordered_map<std::string, std::vector<std::vector<uint32_t>>> m_boundaryConditions;
 
 		// Number of Boundaries (markers) in mesh file
 		uint32_t m_Nboundaries{0};

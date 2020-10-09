@@ -29,10 +29,11 @@
 #include <io/Su2Parser.h>
 #include <iostream>
 #include <tuple>
+#include <unordered_map>
 #include <vector>
 using ees2d::IO::Su2Parser;
 
-TEST(Test_IO, parseCOORDS) {
+TEST(Test_IO, parseGridInfo) {
 	// Arrange
 	std::string path = "../../../tests/io/testmesh.su2";
 	Su2Parser mymesh(path);
@@ -63,11 +64,11 @@ TEST(Test_IO, parseCOORDS) {
 };
 
 
-TEST(Test_IO, parseCONNEC) {
+TEST(Test_IO, parseElementsInfo) {
 	// Arrange
 	std::string path = "../../../tests/io/testmesh.su2";
-	Su2Parser mymesh1(path);
-	mymesh1.Parse();
+	Su2Parser mymesh(path);
+	mymesh.Parse();
 
 	// Act
 	std::vector<uint32_t> ExactElemIndex{0, 3, 6, 9, 12,
@@ -84,9 +85,9 @@ TEST(Test_IO, parseCONNEC) {
 	                                  4, 5, 7,
 	                                  5, 8, 7};
 
-	std::vector<uint32_t> ElemIndex = mymesh1.get_ElemIndex();
-	std::vector<uint32_t> NPSUE = mymesh1.get_NPSUE();
-	std::vector<uint32_t> CONNEC = mymesh1.get_CONNEC();
+	std::vector<uint32_t> ElemIndex = mymesh.get_ElemIndex();
+	std::vector<uint32_t> NPSUE = mymesh.get_NPSUE();
+	std::vector<uint32_t> CONNEC = mymesh.get_CONNEC();
 
 	std::cout << ElemIndex.size() << std::endl;
 
@@ -107,6 +108,34 @@ TEST(Test_IO, parseCONNEC) {
 		EXPECT_EQ(exactCONNEC[i], CONNEC[i]) << "Vectors exactCONNEC and CONNEC differ at index " << i;
 	}
 }
+
+TEST(Test_IO, parseBoundaryConditionsInfo) {
+	// Arrange
+	std::string path = "../../../tests/io/testmesh.su2";
+	Su2Parser mymesh(path);
+	mymesh.Parse();
+	// Act
+
+	std::unordered_map<std::string, std::vector<std::vector<uint32_t>>> exactBoundaryConiditon = {
+	        {"lower",
+	         {{0, 1}, {1, 2}}},
+	        {"right",
+	         {{2, 5}, {5, 8}}},
+	        {"upper",
+	         {{8, 7}, {7, 6}}},
+	        {"left",
+	         {{3, 6, 3}, {3, 3, 0}}}};
+
+	std::unordered_map<std::string, std::vector<std::vector<uint32_t>>> BoundaryCondition = mymesh.get_boundaryConditions();
+	// Assert
+	ASSERT_EQ(exactBoundaryConiditon.size(), BoundaryCondition.size()) << "maps OF BoundaryConditions are of unequal length";
+
+	ASSERT_EQ(exactBoundaryConiditon["lower"], BoundaryCondition["lower"]) << "different elements in \"lower\" Marker tag";
+	ASSERT_EQ(exactBoundaryConiditon["right"], BoundaryCondition["right"]) << "different elements in \"right\" Marker tag";
+	ASSERT_EQ(exactBoundaryConiditon["upper"], BoundaryCondition["upper"]) << "different elements in \"upper\" Marker tag";
+	ASSERT_EQ(exactBoundaryConiditon["left"], BoundaryCondition["left"]) << "different elements in \"left\" Marker tag";
+}
+
 
 int main(int argc, char **argv) {
 	testing::InitGoogleTest(&argc, argv);

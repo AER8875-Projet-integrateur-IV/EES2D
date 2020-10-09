@@ -180,7 +180,6 @@ void Su2Parser::parseBoundaryConditionsInfo(std::ifstream &m_fileIO) {
 
 		//entry condition to parse boundary info
 		if (line.find("NMARK") != std::string::npos) {
-			std::cout << "yayy" << '\n';
 			std::stringstream ss(line);
 			ss.seekg(6) >> m_Nboundaries;
 			cout << "Number of Boundaries (markers) : " << m_Nboundaries << "\n";
@@ -188,7 +187,7 @@ void Su2Parser::parseBoundaryConditionsInfo(std::ifstream &m_fileIO) {
 			// Temporary variables to hold info of each SU2 mesh line
 			std::string boundary_tag;
 			uint32_t N_boudaryelements;
-			uint8_t element_type;
+			uint32_t element_type;
 			uint32_t grid_id;
 
 			// Loop though the number of Boundary Conditions (Tags)
@@ -212,9 +211,10 @@ void Su2Parser::parseBoundaryConditionsInfo(std::ifstream &m_fileIO) {
 							std::getline(m_fileIO, line);
 							std::stringstream ss(line);
 							ss >> element_type;
+							m_boundaryConditions[boundary_tag].push_back({});
 
 							// Loop through grid representing current element
-							for (size_t k = 0; k < m_Vtk_Cell[element_type]; ++k) {
+							for (uint32_t k = 0; k < m_Vtk_Cell[element_type]; ++k) {
 								ss >> grid_id;
 								m_boundaryConditions[boundary_tag][j].push_back(grid_id);
 							}
