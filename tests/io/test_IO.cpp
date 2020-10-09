@@ -124,7 +124,7 @@ TEST(Test_IO, parseBoundaryConditionsInfo) {
 	        {"upper",
 	         {{8, 7}, {7, 6}}},
 	        {"left",
-	         {{3, 6, 3}, {3, 3, 0}}}};
+	         {{6, 3}, {3, 0}}}};
 
 	std::unordered_map<std::string, std::vector<std::vector<uint32_t>>> BoundaryCondition = mymesh.get_boundaryConditions();
 	// Assert
