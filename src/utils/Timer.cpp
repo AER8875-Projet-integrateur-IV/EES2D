@@ -1,6 +1,6 @@
 #include "Timer.h"
 #include <iostream>
-using namespace ees2d::Utils;
+using  ees2d::utils::Timer;
 
 Timer::Timer(std::string tag)
     : m_tag(tag) {

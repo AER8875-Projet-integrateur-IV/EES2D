@@ -2,7 +2,7 @@
 #include <chrono>
 #include <string>
 
-namespace ees2d::Utils {
+namespace ees2d::utils {
 
 	class Timer {
 		//Calculates time from instanciation of a Timer object until its destruction

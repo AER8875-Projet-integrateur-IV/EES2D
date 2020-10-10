@@ -21,33 +21,14 @@
  *
  * Authors: Amin Ouled-Mohamed & Ali Omais, Polytechnique Montreal, 2020-
  */
+#include "io/Su2Parser.h"
 
-#pragma once
-#include "AbstractParser.h"
+using ees2d::io::Su2Parser;
 
+namespace ees2d::mesh {
+	class Mesh {
 
-namespace ees2d::io {
-
-	class Su2Parser : public AbstractParser {
-
-public:
-		explicit Su2Parser(const std::string &path);
-		~Su2Parser() override;
-
-		// All methods defined in AbstractParser.h
-		void parseDimensionInfo(std::ifstream &) override;
-		void parseGridsInfo(std::ifstream &) override;
-		void parseElementsInfo(std::ifstream &) override;
-		void parseBoundaryConditionsInfo(std::ifstream &) override;
-		void Parse() override;
-
-private:
-		// Unordered_map to define VTK_cells with following structure -> {vtk_cell_id : number_of_points}
-		std::unordered_map<uint32_t, uint32_t> m_Vtk_Cell = {
-		        {3, 2},
-		        {5, 3},
-		        {9, 4},
-		};
+		Mesh(Su2Parser &&);
 	};
 
-}// namespace ees2d::io
+}// namespace ees2d::mesh

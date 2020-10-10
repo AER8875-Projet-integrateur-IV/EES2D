@@ -30,7 +30,7 @@
 #include <tuple>
 #include <unordered_map>
 #include <vector>
-namespace ees2d::IO {
+namespace ees2d::io {
 
 	class AbstractParser {
 		// Abstract class serving as an interface to other parser classes

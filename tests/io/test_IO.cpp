@@ -31,7 +31,7 @@
 #include <tuple>
 #include <unordered_map>
 #include <vector>
-using ees2d::IO::Su2Parser;
+using ees2d::io::Su2Parser;
 
 TEST(Test_IO, parseGridInfo) {
 	// Arrange

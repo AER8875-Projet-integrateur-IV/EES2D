@@ -28,16 +28,17 @@
 #include <iostream>
 #include <vector>
 
-using ees2d::IO::Su2Parser;
-using ees2d::Utils::Timer;
+using ees2d::io::Su2Parser;
+using ees2d::utils::Timer;
 //using namespace ees2d::Utils;
 
 
 int main() {
 	Timer Timeit("software runtime");
 	std::cout << "Euler2D Software" << std::endl;
-	std::string path = "/home/amin/Downloads/naca0012_euler_1025x1025x1_O_1B.su2";
+	std::string path = "/home/amin/Downloads/naca0012_euler_513x513x1_O_1B.su2";
 	std::unique_ptr<Su2Parser> mymesh(std::make_unique<Su2Parser>(path));
+
 	mymesh->Parse();
 	auto coordinates = mymesh->get_coords();
 	auto BoundaryConditions = mymesh->get_boundaryConditions();

@@ -30,8 +30,8 @@
 #include "Su2Parser.h"
 #include "utils/Timer.h"
 
-using ees2d::IO::Su2Parser;
-using ees2d::Utils::Timer;
+using ees2d::io::Su2Parser;
+using ees2d::utils::Timer;
 using std::cout, std::endl, std::cerr;
 
 
