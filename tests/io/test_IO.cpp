@@ -61,7 +61,7 @@ TEST(Test_IO, parseGridInfo) {
 	for (size_t i = 0; i < ExactCoords.size(); ++i) {
 		EXPECT_EQ(ExactCoords[i], ParsedCOORDS[i]) << "Vectors ExactCoords and ParsedCoords differ at index " << i;
 	}
-};
+}
 
 
 TEST(Test_IO, parseElementsInfo) {

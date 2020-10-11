@@ -28,10 +28,9 @@
 
 #include "AbstractParser.h"
 #include "Su2Parser.h"
-#include "utils/Timer.h"
+
 
 using ees2d::io::Su2Parser;
-using ees2d::utils::Timer;
 using std::cout, std::endl, std::cerr;
 
 
@@ -90,7 +89,6 @@ void Su2Parser::parseDimensionInfo(std::ifstream &m_fileIO) {
 
 
 void Su2Parser::parseGridsInfo(std::ifstream &m_fileIO) {
-	Timer timeit("Grids parser");
 	std::string line;
 
 	m_fileIO.seekg(std::ifstream::beg);
@@ -120,7 +118,6 @@ void Su2Parser::parseGridsInfo(std::ifstream &m_fileIO) {
 
 
 void Su2Parser::parseElementsInfo(std::ifstream &m_fileIO) {
-	Timer timeit("Elements parser");
 	std::string line;
 
 	// Setting m_fileIO back to the beginning the file
@@ -137,11 +134,12 @@ void Su2Parser::parseElementsInfo(std::ifstream &m_fileIO) {
 			ss.seekg(6) >> m_Nelems;
 			cout << "Number of elements : " << m_Nelems << "\n";
 
-			//Size is known for vectors, except m_CONnec
+			//Size is known for vectors,
+			// except m_CONnec, assumed at least 3 points connected to each element
 			m_ElemIndex.reserve(m_Nelems + 1);
 			m_ElemIndex.push_back(0);
 			m_NPSUE.reserve(m_Nelems + 1);
-			m_CONNEC.reserve(m_Nelems * 2);
+			m_CONNEC.reserve(m_Nelems * 3);
 
 			uint32_t type;
 			uint32_t grid_id;
@@ -169,7 +167,6 @@ void Su2Parser::parseElementsInfo(std::ifstream &m_fileIO) {
 
 
 void Su2Parser::parseBoundaryConditionsInfo(std::ifstream &m_fileIO) {
-	Timer timeit("BoundaryConditions parser");
 	std::string line;
 
 	// Setting m_fileIO back to the beginning the file
@@ -212,6 +209,7 @@ void Su2Parser::parseBoundaryConditionsInfo(std::ifstream &m_fileIO) {
 							std::stringstream ss(line);
 							ss >> element_type;
 							m_boundaryConditions[boundary_tag].push_back({});
+							m_boundaryConditions[boundary_tag].reserve(m_Vtk_Cell[element_type]);
 
 							// Loop through grid representing current element
 							for (uint32_t k = 0; k < m_Vtk_Cell[element_type]; ++k) {
