@@ -24,4 +24,4 @@ private:
 		std::chrono::time_point<std::chrono::high_resolution_clock> m_startTime;
 		std::string m_tag;
 	};
-}// namespace ees2d::Utils
+}// namespace ees2d::utils

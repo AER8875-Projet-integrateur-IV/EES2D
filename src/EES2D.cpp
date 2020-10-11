@@ -22,13 +22,14 @@
  * Authors: Amin Ouled-Mohamed & Ali Omais, Polytechnique Montreal, 2020-
  */
 
-#include "io/AbstractParser.h"
 #include "io/Su2Parser.h"
+#include "mesh/Mesh.h"
 #include "utils/Timer.h"
 #include <iostream>
 #include <vector>
 
 using ees2d::io::Su2Parser;
+using ees2d::mesh::Mesh;
 using ees2d::utils::Timer;
 //using namespace ees2d::Utils;
 
@@ -36,10 +37,15 @@ using ees2d::utils::Timer;
 int main() {
 	Timer Timeit("software runtime");
 	std::cout << "Euler2D Software" << std::endl;
-	std::string path = "/home/amin/Downloads/naca0012_euler_513x513x1_O_1B.su2";
-	std::unique_ptr<Su2Parser> mymesh(std::make_unique<Su2Parser>(path));
+	std::string path = "../../tests/io/testmesh.su2";
 
-	mymesh->Parse();
-	auto coordinates = mymesh->get_coords();
-	auto BoundaryConditions = mymesh->get_boundaryConditions();
+	std::shared_ptr<Su2Parser> parser(std::make_shared<Su2Parser>(path));
+	parser->Parse();
+  auto coordinates = parser->get_coords();
+  auto BoundaryConditions = parser->get_boundaryConditions();
+
+  std::shared_ptr<Mesh<Su2Parser>> mesh(std::make_shared<Mesh<Su2Parser>>(parser));
+	int a = mesh->connecPointElement(1, 3);
+	std::cout << a << std::endl;
+
 }
