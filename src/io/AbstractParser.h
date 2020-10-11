@@ -47,11 +47,11 @@ public:
 		virtual void Parse() = 0;
 
 		// Getters
-		inline std::vector<std::tuple<double, double>> &get_coords() { return m_COORDS; }
-		inline std::vector<uint32_t> &get_ElemIndex() { return m_ElemIndex; }
-		inline std::vector<uint32_t> &get_NPSUE() { return m_NPSUE; }
-		inline std::vector<uint32_t> &get_CONNEC() { return m_CONNEC; }
-		std::unordered_map<std::string, std::vector<std::vector<uint32_t>>> &get_boundaryConditions() { return m_boundaryConditions; }
+		inline const std::vector<std::tuple<double, double>>& get_coords() const { return m_COORDS; }
+		inline const std::vector<uint32_t> &get_ElemIndex()  { return m_ElemIndex; }
+		inline const std::vector<uint32_t> &get_NPSUE()  { return m_NPSUE; }
+		inline const std::vector<uint32_t> &get_CONNEC()  { return m_CONNEC; }
+		const std::unordered_map<std::string, std::vector<std::vector<uint32_t>>> &get_boundaryConditions() { return m_boundaryConditions; }
 
 
 protected:
@@ -84,4 +84,4 @@ protected:
 		//m_CONNEC --> Grid Ids connected to elements [G1,G2,G3,G1,G2,G3....]
 		std::vector<uint32_t> m_CONNEC;
 	};
-}// namespace ees2d::IO
+}// namespace ees2d::io
