@@ -21,14 +21,28 @@
  *
  * Authors: Amin Ouled-Mohamed & Ali Omais, Polytechnique Montreal, 2020-
  */
-#include "io/Su2Parser.h"
 
+#pragma once
+#include "io/Su2Parser.h"
+#include <iostream>
 using ees2d::io::Su2Parser;
 
+
 namespace ees2d::mesh {
+
+
 	class Mesh {
 
-		Mesh(Su2Parser &&);
+public:
+		Mesh(std::shared_ptr<Su2Parser> parser) ;
+
+		int connecPointElement(const uint32_t &pointPos, const uint32_t &elementID);
+		int pointCoordinates(const int &point_id, const int &point);
+
+
+private:
+		std::shared_ptr<Su2Parser> m_parser;
 	};
+
 
 }// namespace ees2d::mesh

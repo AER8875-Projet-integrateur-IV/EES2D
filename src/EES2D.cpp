@@ -44,7 +44,7 @@ int main() {
   auto coordinates = parser->get_coords();
   auto BoundaryConditions = parser->get_boundaryConditions();
 
-  std::shared_ptr<Mesh<Su2Parser>> mesh(std::make_shared<Mesh<Su2Parser>>(parser));
+  std::shared_ptr<Mesh> mesh(std::make_shared<Mesh>(parser));
 	int a = mesh->connecPointElement(1, 3);
 	std::cout << a << std::endl;
 
