@@ -22,30 +22,20 @@
  * Authors: Amin Ouled-Mohamed & Ali Omais, Polytechnique Montreal, 2020-
  */
 
-#include "io/Su2Parser.h"
-#include "mesh/Mesh.h"
-#include "utils/Timer.h"
 #include <iostream>
-#include <vector>
-
-using ees2d::io::Su2Parser;
+#include <utility>
+#include <mesh/Mesh.h>
 using ees2d::mesh::Mesh;
-using ees2d::utils::Timer;
-//using namespace ees2d::Utils;
 
+Mesh::Mesh(std::shared_ptr<Su2Parser> parser) : m_parser(std::move(parser)) {
+	parser = nullptr;
 
-int main() {
-	Timer Timeit("software runtime");
-	std::cout << "Euler2D Software" << std::endl;
-	std::string path = "/home/amin/Downloads/naca0012_euler_1025x1025x1_O_1B.su2";
-
-	std::shared_ptr<Su2Parser> parser(std::make_shared<Su2Parser>(path));
-	parser->Parse();
-  auto coordinates = parser->get_coords();
-  auto BoundaryConditions = parser->get_boundaryConditions();
-
-  std::shared_ptr<Mesh> mesh(std::make_shared<Mesh>(parser));
-	int a = mesh->connecPointElement(1, 3);
-	std::cout << a << std::endl;
+std::cout << "Mesh initialized !" << std::endl;
 
 }
+
+int Mesh::connecPointElement(const uint32_t &pointPos, const uint32_t &elementID) {
+	return m_parser->get_CONNEC()[m_parser->get_ElemIndex()[elementID] + pointPos];
+}
+
+
