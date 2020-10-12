@@ -21,11 +21,7 @@
  *
  * Authors: Amin Ouled-Mohamed & Ali Omais, Polytechnique Montreal, 2020-
  */
-
-
-#include <gmock/gmock.h>// Toujours inclu
 #include <gtest/gtest.h>// Toujours inclu
-#include <io/AbstractParser.h>
 #include <io/Su2Parser.h>
 #include <iostream>
 #include <tuple>
@@ -33,9 +29,9 @@
 #include <vector>
 using ees2d::io::Su2Parser;
 
-TEST(Test_IO, parseGridInfo) {
+TEST(Test_Parser, parseGridInfo) {
 	// Arrange
-	std::string path = "../../../tests/io/testmesh.su2";
+	std::string path = "../../../tests/testmesh.su2";
 	Su2Parser mymesh(path);
 	mymesh.Parse();
 
@@ -64,9 +60,9 @@ TEST(Test_IO, parseGridInfo) {
 }
 
 
-TEST(Test_IO, parseElementsInfo) {
+TEST(Test_Parser, parseElementsInfo) {
 	// Arrange
-	std::string path = "../../../tests/io/testmesh.su2";
+	std::string path = "../../../tests/testmesh.su2";
 	Su2Parser mymesh(path);
 	mymesh.Parse();
 
@@ -109,9 +105,9 @@ TEST(Test_IO, parseElementsInfo) {
 	}
 }
 
-TEST(Test_IO, parseBoundaryConditionsInfo) {
+TEST(Test_Parser, parseBoundaryConditionsInfo) {
 	// Arrange
-	std::string path = "../../../tests/io/testmesh.su2";
+	std::string path = "../../../tests/testmesh.su2";
 	Su2Parser mymesh(path);
 	mymesh.Parse();
 	// Act
