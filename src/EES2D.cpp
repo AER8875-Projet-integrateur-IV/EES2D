@@ -39,13 +39,22 @@ int main() {
 	std::cout << "Euler2D Software" << std::endl;
 	std::string path = "/home/amin/Downloads/naca0012_euler_1025x1025x1_O_1B.su2";
 
-	std::shared_ptr<Su2Parser> parser(std::make_shared<Su2Parser>(path));
+  std::shared_ptr<Su2Parser> parser(std::make_shared<Su2Parser>(path));
 	parser->Parse();
-  auto coordinates = parser->get_coords();
-  auto BoundaryConditions = parser->get_boundaryConditions();
 
-  std::shared_ptr<Mesh> mesh(std::make_shared<Mesh>(parser));
-	int a = mesh->connecPointElement(1, 3);
-	std::cout << a << std::endl;
+
+  std::unique_ptr<Mesh> mesh(std::make_unique<Mesh>(parser));
+	mesh->solveElemSurrPoint();
+	std::shared_ptr<uint32_t[]> esup2 = mesh->get_esup2();
+  std::shared_ptr<uint32_t[]> esup1 = mesh->get_esup1();
+	const uint32_t& esup2_size = mesh->get_esup2_size();
+  const uint32_t& esup1_size = mesh->get_esup1_size();
+
+	for(uint32_t i=0; i < esup1_size;i++){
+		std::cout << esup1[i] << "\n";
+	}
+
+
+
 
 }

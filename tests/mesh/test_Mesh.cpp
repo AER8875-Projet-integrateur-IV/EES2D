@@ -35,10 +35,10 @@ TEST(Test_Mesh, connecPointSurrElement) {
 	// Arrange
 	std::string path = "../../../tests/testmesh.su2";
 
-	std::shared_ptr<Su2Parser> parser = std::make_shared<Su2Parser>(path);
+  std::shared_ptr<Su2Parser> parser(std::make_shared<Su2Parser>(path));
 	parser->Parse();
 
-	std::unique_ptr<Mesh> mesh (std::make_unique<Mesh>(parser));
+	std::unique_ptr<Mesh> mesh (new Mesh(parser));
 
 	// Act
   std::vector<uint32_t> exactCONNEC{0, 1, 3,
