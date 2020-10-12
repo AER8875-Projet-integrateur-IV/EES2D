@@ -35,10 +35,11 @@ TEST(Test_Mesh, connecPointSurrElement) {
 	// Arrange
 	std::string path = "../../../tests/testmesh.su2";
 
-  std::shared_ptr<Su2Parser> parser(std::make_shared<Su2Parser>(path));
-	parser->Parse();
+  Su2Parser parser(path);
+  parser.Parse();
 
-	std::unique_ptr<Mesh> mesh (new Mesh(parser));
+  Mesh mesh(parser);
+
 
 	// Act
   std::vector<uint32_t> exactCONNEC{0, 1, 3,
@@ -50,11 +51,11 @@ TEST(Test_Mesh, connecPointSurrElement) {
                                     4, 5, 7,
                                     5, 8, 7};
 
-	int a = mesh->connecPointSurrElement(0,0);
-	int b = mesh->connecPointSurrElement(1,1);
-	int c = mesh->connecPointSurrElement(0,2);
-	int d = mesh->connecPointSurrElement(2,4);
-	int e = mesh->connecPointSurrElement(2,7);
+	int a = mesh.connecPointSurrElement(0,0);
+	int b = mesh.connecPointSurrElement(1,1);
+	int c = mesh.connecPointSurrElement(0,2);
+	int d = mesh.connecPointSurrElement(2,4);
+	int e = mesh.connecPointSurrElement(2,7);
 
 	//Assert
 
@@ -65,4 +66,36 @@ TEST(Test_Mesh, connecPointSurrElement) {
   ASSERT_EQ(7, e);
 
 }
+
+TEST(Test_Mesh, solveElemSurrPoint) {
+  // Arrange
+  std::string path = "../../../tests/testmesh.su2";
+
+  Su2Parser parser(path);
+  parser.Parse();
+
+  Mesh mesh(parser);
+	mesh.solveElemSurrPoint();
+
+  // Act
+  std::vector<uint32_t> exactesup2{0,1,4,6,9,15,18,20,23,24};
+	std::vector<uint32_t> exactesup1{0,0,1,2,2,3,0,1,4,1,2,3,4,5,6,3,6,7,4,5,5,6,7,7};
+
+	std::unique_ptr<uint32_t[]> esup2 = mesh.get_esup2();
+  std::unique_ptr<uint32_t[]> esup1 = mesh.get_esup1();
+	const uint32_t& size_esup2 = mesh.get_esup2_size();
+  const uint32_t& size_esup1 = mesh.get_esup1_size();
+
+  ASSERT_EQ(size_esup2, exactesup2.size()) << "arrays esup2 are of unequal length";
+  ASSERT_EQ(size_esup1, exactesup1.size()) << "arrays esup1 are of unequal length";
+
+  for (size_t i = 0; i < exactesup2.size(); ++i) {
+    EXPECT_EQ(exactesup2[i], esup2[i]) << "arrays esup2 differ at index " << i;
+  }
+
+  for (size_t i = 0; i < exactesup1.size(); ++i) {
+    EXPECT_EQ(exactesup1[i], esup1[i]) << "arrays esup1 differ at index " << i;
+  }
+}
+
 

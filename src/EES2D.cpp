@@ -37,18 +37,19 @@ using ees2d::utils::Timer;
 int main() {
 	Timer Timeit("software runtime");
 	std::cout << "Euler2D Software" << std::endl;
-	std::string path = "/home/amin/Downloads/naca0012_euler_1025x1025x1_O_1B.su2";
+	std::string path = "../../tests/testmesh.su2";
 
-  std::shared_ptr<Su2Parser> parser(std::make_shared<Su2Parser>(path));
-	parser->Parse();
+  Su2Parser parser(path);
+	parser.Parse();
 
 
-  std::unique_ptr<Mesh> mesh(std::make_unique<Mesh>(parser));
-	mesh->solveElemSurrPoint();
-	std::shared_ptr<uint32_t[]> esup2 = mesh->get_esup2();
-  std::shared_ptr<uint32_t[]> esup1 = mesh->get_esup1();
-	const uint32_t& esup2_size = mesh->get_esup2_size();
-  const uint32_t& esup1_size = mesh->get_esup1_size();
+  Mesh mesh(parser);
+	int a = mesh.connecPointSurrElement(3,3);
+  mesh.solveElemSurrPoint();
+	std::unique_ptr<uint32_t[]> esup2 = mesh.get_esup2();
+  std::unique_ptr<uint32_t[]> esup1 = mesh.get_esup1();
+	const uint32_t& esup2_size = mesh.get_esup2_size();
+  const uint32_t& esup1_size = mesh.get_esup1_size();
 
 	for(uint32_t i=0; i < esup1_size;i++){
 		std::cout << esup1[i] << "\n";

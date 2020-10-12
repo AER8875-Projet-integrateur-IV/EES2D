@@ -19,7 +19,7 @@ add_compile_options_config(RELEASE "-W" "-Wall" "-O2" "-pedantic"  "-I${CMAKE_CU
 add_compile_options_config(DEBUG "-W" "-Wall" "-O0" "-g3" "-pedantic" "-I${CMAKE_CURRENT_SOURCE_DIR}/src")
 
 add_subdirectory(src)
-option(PACKAGE_TESTS "Build the tests" OFF)
+option(PACKAGE_TESTS "Build the tests" ON)
 if (PACKAGE_TESTS)
     # include(CTest)
     enable_testing()
