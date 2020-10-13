@@ -22,38 +22,53 @@
  * Authors: Amin Ouled-Mohamed & Ali Omais, Polytechnique Montreal, 2020-
  */
 
-#include "mesh/Mesh.h"
+#include "mesh/Connectivity.h"
 #include <iostream>
-using ees2d::mesh::Mesh;
+using ees2d::mesh::Connectivity;
 
 
-Mesh::Mesh(Su2Parser &parser) : m_parser(parser) {
+Connectivity::Connectivity(Su2Parser &parser) : m_parser(parser) {
 
+	std::cout << " ---------------- Constructing connectivity tables !"
+	             " -----------------"
+	          << std::endl;
+
+
+	// Initializing element surrounding points arrays
 	for (auto &val : m_parser.get_NPSUE())
 		m_esup1_size += val;
 	m_esup1 = std::make_unique<uint32_t[]>(m_esup1_size);
-
-	m_esup2_size = m_parser.get_Ngrids() + 1;
-	m_esup2 = std::make_unique<uint32_t[]>(m_esup2_size);
 
 	for (uint32_t i = 0; i < m_esup1_size; i++) {
 		m_esup1[i] = 0;
 	}
 
+	m_esup2_size = m_parser.get_Ngrids() + 1;
+	m_esup2 = std::make_unique<uint32_t[]>(m_esup2_size);
+
 	for (uint32_t i = 0; i < m_esup2_size; i++) {
 		m_esup2[i] = 0;
 	}
 
-	std::cout << "Mesh initialized !" << std::endl;
+	// Initializing points surrounding points arrays
+	m_psup2_size = m_parser.get_Ngrids() + 1;
+	m_lpoin_size = m_psup2_size - 1;
+	m_psup2 = std::make_unique<uint32_t[]>(m_psup2_size);
+	m_lpoin = std::make_unique<uint32_t[]>(m_psup2_size - 1);
+  m_psup1.reserve(m_lpoin_size ); //Ngrids == m_lpoin_size
+
+	for (uint32_t i = 0; i < m_lpoin_size; i++) {
+		m_lpoin[i] = 0;
+	}
 }
 
 
-const uint32_t &Mesh::connecPointSurrElement(const uint32_t &pointPos, const uint32_t &elementID) {
+const uint32_t &Connectivity::connecPointSurrElement(const uint32_t &pointPos, const uint32_t &elementID) {
 	return m_parser.get_CONNEC()[m_parser.get_ElemIndex()[elementID] + pointPos];
 }
 
 
-void Mesh::solveElemSurrPoint() {
+void Connectivity::solveElemSurrPoint() {
 
 	const uint32_t &Ngrids = m_parser.get_Ngrids();
 	const uint32_t &Nelems = m_parser.get_Nelems();
@@ -92,4 +107,40 @@ void Mesh::solveElemSurrPoint() {
 		m_esup2[ipoin] = m_esup2[ipoin - 1];
 	}
 	m_esup2[0] = 0;
+
+	std::cout << "Element to point connectivity : Done\n";
+}
+
+
+void Connectivity::solvePointSurrPoint() {
+
+	m_psup2[0] = 0;
+	uint32_t istor = 0;
+	uint32_t ielem = 0;
+  uint32_t jpoin = 0;
+
+	for (uint32_t ipoin = 0; ipoin < m_parser.get_Ngrids(); ipoin++) {
+
+		for (uint32_t iesup = m_esup2[ipoin]; iesup < m_esup2[ipoin + 1]; iesup++) {
+			ielem = m_esup1[iesup];
+
+			for (uint32_t inode = 0; inode < m_parser.get_NPSUE()[ielem]; inode++) {
+				jpoin = connecPointSurrElement(inode,ielem);
+				if ( (jpoin != ipoin) && (m_lpoin[jpoin] != ipoin || ipoin == 0) ){
+          istor += 1;
+					m_psup1.push_back(jpoin);
+					m_lpoin[jpoin]= ipoin;
+
+				}
+			}
+		}
+    m_psup2[ipoin+1] = istor;
+	}
+
+}
+
+
+void ees2d::mesh::Connectivity::solve() {
+	solveElemSurrPoint();
+	solvePointSurrPoint();
 }

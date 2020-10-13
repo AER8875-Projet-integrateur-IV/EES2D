@@ -40,7 +40,8 @@ Su2Parser::Su2Parser(const std::string &path) : AbstractParser::AbstractParser(p
 
 	if (m_fileIO.is_open()) {
 		cout << "Su2 Mesh file found\n"
-		     << "SU2 Su2Parser Initialized !" << endl;
+		     << "-----------------  Parsing Su2 Mesh file !"
+		        " ------------------------" << endl;
 		m_proceed = true;
 	} else {
 		cerr << "Unable to open mesh file !" << endl;
@@ -49,7 +50,7 @@ Su2Parser::Su2Parser(const std::string &path) : AbstractParser::AbstractParser(p
 }
 
 
-Su2Parser::~Su2Parser() { cout << "SU2 Su2Parser Destroyed !" << endl; }
+Su2Parser::~Su2Parser() { cout << "Su2 Parser Destroyed !" << endl; }
 
 
 void Su2Parser::Parse() {

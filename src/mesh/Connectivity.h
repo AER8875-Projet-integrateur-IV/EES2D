@@ -30,25 +30,46 @@ using ees2d::io::Su2Parser;
 
 namespace ees2d::mesh {
 
-	class Mesh {
+	class Connectivity {
 
 public:
-		Mesh(Su2Parser& parser);
+		Connectivity(Su2Parser &parser);
 
 		const uint32_t &connecPointSurrElement(const uint32_t &pointPos, const uint32_t &elementID);
 		void solveElemSurrPoint();
+		void solvePointSurrPoint();
+		void solve();
 
-		inline const std::unique_ptr<uint32_t[]> get_esup2() { return std::move(m_esup2); }
-		inline const std::unique_ptr<uint32_t[]> get_esup1() { return std::move(m_esup1); }
+		// getters for arrays and vectors
+		inline const std::shared_ptr<uint32_t[]> get_esup2() { return m_esup2; }
+		inline const std::shared_ptr<uint32_t[]> get_esup1() { return m_esup1; }
+		inline const std::shared_ptr<uint32_t[]> get_psup2() { return m_psup2; }
+		inline const std::vector<uint32_t>* get_psup1() {return &m_psup1;}
+
+		//getters for values
 		inline const uint32_t &get_esup2_size() { return m_esup2_size; }
 		inline const uint32_t &get_esup1_size() { return m_esup1_size; }
+		inline const uint32_t &get_psup2_size() { return m_psup2_size; }
+
+
 
 private:
-		Su2Parser& m_parser;
-		std::unique_ptr<uint32_t[]> m_esup2 = nullptr;
-		std::unique_ptr<uint32_t[]> m_esup1 = nullptr;
+		Su2Parser &m_parser;
+
+		std::shared_ptr<uint32_t[]> m_esup2 = nullptr;
+		std::shared_ptr<uint32_t[]> m_esup1 = nullptr;
+		std::shared_ptr<uint32_t[]> m_psup2 = nullptr;
+		std::shared_ptr<uint32_t[]> m_lpoin = nullptr;
+
+		//size is unknown for psup1, should be dynamically allocated
+		std::vector<uint32_t> m_psup1;
+
+
+
 		uint32_t m_esup2_size{0};
 		uint32_t m_esup1_size{0};
+		uint32_t m_psup2_size{0};
+		uint32_t m_lpoin_size{0};
 	};
 
 

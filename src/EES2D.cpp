@@ -23,13 +23,13 @@
  */
 
 #include "io/Su2Parser.h"
-#include "mesh/Mesh.h"
+#include "mesh/Connectivity.h"
 #include "utils/Timer.h"
 #include <iostream>
 #include <vector>
 
 using ees2d::io::Su2Parser;
-using ees2d::mesh::Mesh;
+using ees2d::mesh::Connectivity;
 using ees2d::utils::Timer;
 //using namespace ees2d::Utils;
 
@@ -39,23 +39,16 @@ int main() {
 	std::cout << "Euler2D Software" << std::endl;
 	std::string path = "../../tests/testmesh.su2";
 
-  Su2Parser parser(path);
+	Su2Parser parser(path);
 	parser.Parse();
 
 
-  Mesh mesh(parser);
-	int a = mesh.connecPointSurrElement(3,3);
-  mesh.solveElemSurrPoint();
-	std::unique_ptr<uint32_t[]> esup2 = mesh.get_esup2();
-  std::unique_ptr<uint32_t[]> esup1 = mesh.get_esup1();
-	const uint32_t& esup2_size = mesh.get_esup2_size();
-  const uint32_t& esup1_size = mesh.get_esup1_size();
+	Connectivity connectivity(parser);
+	connectivity.solve();
 
-	for(uint32_t i=0; i < esup1_size;i++){
-		std::cout << esup1[i] << "\n";
-	}
+	auto psup2 = connectivity.get_psup2();
+	auto psup2_size = connectivity.get_psup2_size();
 
-
-
+	const std::vector<uint32_t> *psup1 = connectivity.get_psup1();
 
 }
