@@ -47,14 +47,13 @@ public:
 		virtual void Parse() = 0;
 
 		// Getters
-		inline const std::vector<std::tuple<double, double>>& get_coords() const { return m_COORDS; }
-		inline const std::vector<uint32_t> &get_ElemIndex()  { return m_ElemIndex; }
-		inline const std::vector<uint32_t> &get_NPSUE()  { return m_NPSUE; }
-		inline const std::vector<uint32_t> &get_CONNEC()  { return m_CONNEC; }
+		inline const std::vector<std::tuple<double, double>> &get_coords() const { return m_COORDS; }
+		inline const std::vector<uint32_t> &get_ElemIndex() { return m_ElemIndex; }
+		inline const std::vector<uint32_t> &get_NPSUE() { return m_NPSUE; }
+		inline const std::vector<uint32_t> &get_CONNEC() { return m_CONNEC; }
 		const std::unordered_map<std::string, std::vector<std::vector<uint32_t>>> &get_boundaryConditions() { return m_boundaryConditions; }
-		inline const uint32_t& get_Ngrids() {return m_Ngrids;}
-		inline const uint32_t& get_Nelems() {return m_Nelems;}
-
+		inline const uint32_t &get_Ngrids() { return m_Ngrids; }
+		inline const uint32_t &get_Nelems() { return m_Nelems; }
 
 
 protected:

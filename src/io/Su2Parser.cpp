@@ -41,7 +41,8 @@ Su2Parser::Su2Parser(const std::string &path) : AbstractParser::AbstractParser(p
 	if (m_fileIO.is_open()) {
 		cout << "Su2 Mesh file found\n"
 		     << "-----------------  Parsing Su2 Mesh file !"
-		        " ------------------------" << endl;
+		        " ------------------------"
+		     << endl;
 		m_proceed = true;
 	} else {
 		cerr << "Unable to open mesh file !" << endl;

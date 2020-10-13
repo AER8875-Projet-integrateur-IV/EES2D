@@ -55,11 +55,19 @@ Connectivity::Connectivity(Su2Parser &parser) : m_parser(parser) {
 	m_lpoin_size = m_psup2_size - 1;
 	m_psup2 = std::make_unique<uint32_t[]>(m_psup2_size);
 	m_lpoin = std::make_unique<uint32_t[]>(m_psup2_size - 1);
-  m_psup1.reserve(m_lpoin_size ); //Ngrids == m_lpoin_size
+	m_psup1.reserve(m_lpoin_size);//Ngrids == m_lpoin_size
 
-	for (uint32_t i = 0; i < m_lpoin_size; i++) {
-		m_lpoin[i] = 0;
+
+	// Initializing Elements surrounding elements array
+	bool all_triangles = true;
+	for (const auto &Nb_faces : m_parser.get_NPSUE()) {
+		if (Nb_faces != 3) {
+			all_triangles = false;
+			break;
+		}
 	}
+	m_esuel_size = m_parser.get_Nelems();
+	m_esuel.reserve(m_esuel_size);
 }
 
 
@@ -114,10 +122,15 @@ void Connectivity::solveElemSurrPoint() {
 
 void Connectivity::solvePointSurrPoint() {
 
+
+	for (uint32_t i = 0; i < m_lpoin_size; i++) {
+		m_lpoin[i] = 0;
+	}
+
 	m_psup2[0] = 0;
 	uint32_t istor = 0;
 	uint32_t ielem = 0;
-  uint32_t jpoin = 0;
+	uint32_t jpoin = 0;
 
 	for (uint32_t ipoin = 0; ipoin < m_parser.get_Ngrids(); ipoin++) {
 
@@ -125,22 +138,81 @@ void Connectivity::solvePointSurrPoint() {
 			ielem = m_esup1[iesup];
 
 			for (uint32_t inode = 0; inode < m_parser.get_NPSUE()[ielem]; inode++) {
-				jpoin = connecPointSurrElement(inode,ielem);
-				if ( (jpoin != ipoin) && (m_lpoin[jpoin] != ipoin || ipoin == 0) ){
-          istor += 1;
+				jpoin = connecPointSurrElement(inode, ielem);
+				if ((jpoin != ipoin) && (m_lpoin[jpoin] != ipoin || ipoin == 0)) {
+					istor += 1;
 					m_psup1.push_back(jpoin);
-					m_lpoin[jpoin]= ipoin;
-
+					m_lpoin[jpoin] = ipoin;
 				}
 			}
 		}
-    m_psup2[ipoin+1] = istor;
+		m_psup2[ipoin + 1] = istor;
+	}
+}
+
+
+void Connectivity::solveElemSurrElem() {
+
+	uint32_t nnofa = 2;// Always two nodes per face (2D)
+	std::array<uint32_t, 2> lhelp;
+	uint32_t ipoin = 0;
+	uint32_t jelem = 0;
+	uint32_t nnofj = 2;
+	uint32_t icoun = 0;
+	uint32_t jpoin = 0;
+
+	for (uint32_t i = 0; i < m_lpoin_size; i++) {
+		m_lpoin[i] = 0;
 	}
 
+	for (uint32_t ielem = 0; ielem < m_parser.get_Nelems(); ielem++) {
+
+		std::vector<uint32_t> temp_surr_elem = {};
+		if (m_parser.get_NPSUE()[ielem] == 3) {
+			m_lpofa = {{0, 1},
+			           {1, 2},
+			           {2, 0}};
+		} else if (m_parser.get_NPSUE()[ielem] == 4) {
+			m_lpofa = {{0, 1}, {1, 2}, {2, 3}, {3, 0}};
+		}
+
+		for (uint32_t ifael = 0; ifael < m_parser.get_NPSUE()[ielem]; ifael++) {
+
+			for (uint32_t nnofa = 0; nnofa < 2; nnofa++) {
+				lhelp[nnofa] = connecPointSurrElement(m_lpofa[ifael][nnofa], ielem);
+				m_lpoin[lhelp[nnofa]] = 1;
+			}
+			ipoin = lhelp[0];
+
+			for (uint32_t istor = m_esup2[ipoin]; istor < m_esup2[ipoin + 1]; istor++) {
+				jelem = m_esup1[istor];
+
+				if (jelem != ielem) {
+					for (uint32_t jfael = 0; jfael < m_parser.get_NPSUE()[ielem]; jfael++) {
+						if (nnofj == nnofa) {
+							icoun = 0;
+							for (uint32_t jnofa = 0; jnofa < nnofa; jnofa++) {
+								jpoin = connecPointSurrElement(m_lpofa[jfael][jnofa], jelem);
+								icoun = icoun + m_lpoin[jpoin];
+							}
+							if (icoun == nnofa) {
+								temp_surr_elem.push_back(jelem);
+							}
+						}
+					}
+				}
+			}
+			for (uint32_t nnofa = 0; nnofa < 2; nnofa++) {
+				m_lpoin[lhelp[nnofa]] = 0;
+			}
+		}
+		m_esuel.push_back(temp_surr_elem);
+	}
 }
 
 
 void ees2d::mesh::Connectivity::solve() {
 	solveElemSurrPoint();
 	solvePointSurrPoint();
+	solveElemSurrElem();
 }

@@ -37,8 +37,9 @@ using ees2d::utils::Timer;
 int main() {
 	Timer Timeit("software runtime");
 	std::cout << "Euler2D Software" << std::endl;
-	std::string path = "../../tests/testmesh.su2";
 
+	std::string path = "../../tests/testmesh.su2";
+	//std::string path = "/home/amin/Downloads/naca0012_euler_1025x1025x1_O_1B.su2";
 	Su2Parser parser(path);
 	parser.Parse();
 
@@ -48,7 +49,15 @@ int main() {
 
 	auto psup2 = connectivity.get_psup2();
 	auto psup2_size = connectivity.get_psup2_size();
+	auto NPSUE = parser.get_NPSUE();
 
-	const std::vector<uint32_t> *psup1 = connectivity.get_psup1();
+	auto esuel = connectivity.get_esuel();
+	auto esuel_size = connectivity.get_esuel_size();
 
+	for (auto &elem : (*esuel)) {
+		for (auto &value : elem) {
+			std::cout << value << " ";
+		}
+		std::cout << "\n";
+	}
 }

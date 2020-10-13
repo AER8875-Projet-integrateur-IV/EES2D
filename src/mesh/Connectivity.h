@@ -21,11 +21,12 @@
  *
  * Authors: Amin Ouled-Mohamed & Ali Omais, Polytechnique Montreal, 2020-
  */
-
 #pragma once
 #include "io/Su2Parser.h"
 #include <iostream>
 using ees2d::io::Su2Parser;
+
+typedef std::shared_ptr<uint32_t[]> sharedPtrArray;
 
 
 namespace ees2d::mesh {
@@ -38,38 +39,42 @@ public:
 		const uint32_t &connecPointSurrElement(const uint32_t &pointPos, const uint32_t &elementID);
 		void solveElemSurrPoint();
 		void solvePointSurrPoint();
+		void solveElemSurrElem();
 		void solve();
 
 		// getters for arrays and vectors
-		inline const std::shared_ptr<uint32_t[]> get_esup2() { return m_esup2; }
-		inline const std::shared_ptr<uint32_t[]> get_esup1() { return m_esup1; }
-		inline const std::shared_ptr<uint32_t[]> get_psup2() { return m_psup2; }
-		inline const std::vector<uint32_t>* get_psup1() {return &m_psup1;}
+		inline const sharedPtrArray get_esup2() { return m_esup2; }
+		inline const sharedPtrArray get_esup1() { return m_esup1; }
+		inline const sharedPtrArray get_psup2() { return m_psup2; }
+		inline const std::vector<uint32_t> *get_psup1() { return &m_psup1; }
+		//inline const std::shared_ptr<std::unique_ptr<uint32_t[]>[]> get_esuel() {return m_esuel;}
+		inline const std::vector<std::vector<uint32_t>> *get_esuel() { return &m_esuel; }
 
 		//getters for values
 		inline const uint32_t &get_esup2_size() { return m_esup2_size; }
 		inline const uint32_t &get_esup1_size() { return m_esup1_size; }
 		inline const uint32_t &get_psup2_size() { return m_psup2_size; }
-
+		inline const uint32_t &get_esuel_size() { return m_esuel_size; }
 
 
 private:
 		Su2Parser &m_parser;
 
-		std::shared_ptr<uint32_t[]> m_esup2 = nullptr;
-		std::shared_ptr<uint32_t[]> m_esup1 = nullptr;
-		std::shared_ptr<uint32_t[]> m_psup2 = nullptr;
-		std::shared_ptr<uint32_t[]> m_lpoin = nullptr;
+		sharedPtrArray m_esup2 = nullptr;
+		sharedPtrArray m_esup1 = nullptr;
+		sharedPtrArray m_psup2 = nullptr;
+		sharedPtrArray m_lpoin = nullptr;
+		std::vector<std::vector<uint32_t>> m_esuel;
+		std::vector<std::vector<uint32_t>> m_lpofa;
 
 		//size is unknown for psup1, should be dynamically allocated
 		std::vector<uint32_t> m_psup1;
-
-
 
 		uint32_t m_esup2_size{0};
 		uint32_t m_esup1_size{0};
 		uint32_t m_psup2_size{0};
 		uint32_t m_lpoin_size{0};
+		uint32_t m_esuel_size{0};
 	};
 
 
