@@ -52,7 +52,6 @@ int main() {
 	auto NPSUE = parser.get_NPSUE();
 
 	auto esuel = connectivity.get_esuel();
-	auto esuel_size = connectivity.get_esuel_size();
 
 	for (auto &elem : (*esuel)) {
 		for (auto &value : elem) {

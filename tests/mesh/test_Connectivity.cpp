@@ -75,7 +75,7 @@ TEST(Test_Connectivty, solveElemSurrPoint) {
 	parser.Parse();
 
 	Connectivity connectivity(parser);
-	connectivity.solveElemSurrPoint();
+	connectivity.solve();
 
 	// Act
 	std::vector<uint32_t> exactesup2{0, 1, 4, 6, 9, 15, 18, 20, 23, 24};
@@ -131,4 +131,27 @@ TEST(Test_Connectivity, solvePointSurrPoint) {
 	for (size_t i = 0; i < exactpsup1.size(); ++i) {
 		EXPECT_EQ(exactpsup1[i], (*psup1)[i]) << "arrays psup1 differ at index " << i;
 	}
+}
+
+TEST(Test_Connectivity, solveElemSurrElem) {
+  // Arrange
+  std::string path = "../../../tests/testmesh.su2";
+
+  Su2Parser parser(path);
+  parser.Parse();
+
+  Connectivity connectivity(parser);
+  connectivity.solve();
+
+  // Act
+  std::vector<std::vector<uint32_t>> exactesuel{{1},{2,4,0},{3,1},{6,2},{1,5},{6,4},{3,7,5},{6}};
+
+  auto esuel = connectivity.get_esuel();
+
+
+  ASSERT_EQ(esuel->size(), exactesuel.size()) << "arrays esuel are of unequal length";
+
+  for (size_t i = 0; i < exactesuel.size(); ++i) {
+    EXPECT_EQ(exactesuel[i], (*esuel)[i]) << "arrays psup1 differ at index " << i;
+  }
 }
