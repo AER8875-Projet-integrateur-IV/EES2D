@@ -47,13 +47,10 @@ int main() {
 	Connectivity connectivity(parser);
 	connectivity.solve();
 
-	auto psup2 = connectivity.get_psup2();
-	auto psup2_size = connectivity.get_psup2_size();
-	auto NPSUE = parser.get_NPSUE();
 
-	auto esuel = connectivity.get_esuel();
+	auto ineled = connectivity.get_FaceToElem();
 
-	for (auto &elem : (*esuel)) {
+	for (auto &elem : (*ineled)) {
 		for (auto &value : elem) {
 			std::cout << value << " ";
 		}

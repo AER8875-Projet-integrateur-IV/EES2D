@@ -22,12 +22,12 @@
  * Authors: Amin Ouled-Mohamed & Ali Omais, Polytechnique Montreal, 2020-
  */
 
+#include "Su2Parser.h"
+#include "AbstractParser.h"
 #include <cstdlib>
+#include <iomanip>
 #include <iostream>
 #include <sstream>
-
-#include "AbstractParser.h"
-#include "Su2Parser.h"
 
 
 using ees2d::io::Su2Parser;
@@ -40,7 +40,7 @@ Su2Parser::Su2Parser(const std::string &path) : AbstractParser::AbstractParser(p
 
 	if (m_fileIO.is_open()) {
 		cout << "Su2 Mesh file found\n"
-		     << "-----------------  Parsing Su2 Mesh file !"
+		     << "--------------------  Parsing Su2 Mesh file !"
 		        " ------------------------"
 		     << endl;
 		m_proceed = true;
@@ -102,7 +102,7 @@ void Su2Parser::parseGridsInfo(std::ifstream &m_fileIO) {
 
 			//Begin at Pos num 6 to extract int : NPOIN = 2
 			ss1.seekg(6) >> m_Ngrids;
-			cout << "Number of points : " << m_Ngrids << "\n";
+			cout << std::setw(40) << "Number of nodes : " << std::setw(6) << m_Ngrids << "\n";
 			m_COORDS.reserve(m_Ngrids + 1);
 			double x, y;
 
@@ -134,7 +134,7 @@ void Su2Parser::parseElementsInfo(std::ifstream &m_fileIO) {
 
 			//Begin at Pos num 6 to extract int : NELEM = ....
 			ss.seekg(6) >> m_Nelems;
-			cout << "Number of elements : " << m_Nelems << "\n";
+			cout << std::setw(40) << "Number of elements : " << std::setw(6) << m_Nelems << "\n";
 
 			//Size is known for vectors,
 			// except m_CONnec, assumed at least 3 points connected to each element
@@ -181,7 +181,7 @@ void Su2Parser::parseBoundaryConditionsInfo(std::ifstream &m_fileIO) {
 		if (line.find("NMARK") != std::string::npos) {
 			std::stringstream ss(line);
 			ss.seekg(6) >> m_Nboundaries;
-			cout << "Number of Boundaries (markers) : " << m_Nboundaries << "\n";
+			cout << std::setw(40) << "Number of Boundaries (markers) : " << std::setw(6) << m_Nboundaries << "\n";
 
 			// Temporary variables to hold info of each SU2 mesh line
 			std::string boundary_tag;

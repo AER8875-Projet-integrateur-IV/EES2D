@@ -32,7 +32,7 @@ using ees2d::io::Su2Parser;
 using ees2d::mesh::Connectivity;
 
 
-TEST(Test_Connectivity, connecPointSurrElement) {
+TEST(Test_Connectivity, connecNodeSurrElement) {
 	// Arrange
 	std::string path = "../../../tests/testmesh.su2";
 
@@ -52,11 +52,11 @@ TEST(Test_Connectivity, connecPointSurrElement) {
 	                                  4, 5, 7,
 	                                  5, 8, 7};
 
-	int a = connectivity.connecPointSurrElement(0, 0);
-	int b = connectivity.connecPointSurrElement(1, 1);
-	int c = connectivity.connecPointSurrElement(0, 2);
-	int d = connectivity.connecPointSurrElement(2, 4);
-	int e = connectivity.connecPointSurrElement(2, 7);
+	int a = connectivity.connecNodeSurrElement(0, 0);
+	int b = connectivity.connecNodeSurrElement(1, 1);
+	int c = connectivity.connecNodeSurrElement(0, 2);
+	int d = connectivity.connecNodeSurrElement(2, 4);
+	int e = connectivity.connecNodeSurrElement(2, 7);
 
 	//Assert
 
@@ -67,7 +67,7 @@ TEST(Test_Connectivity, connecPointSurrElement) {
 	ASSERT_EQ(7, e);
 }
 
-TEST(Test_Connectivty, solveElemSurrPoint) {
+TEST(Test_Connectivity, solveElemSurrNode) {
 	// Arrange
 	std::string path = "../../../tests/testmesh.su2";
 
@@ -98,7 +98,7 @@ TEST(Test_Connectivty, solveElemSurrPoint) {
 	}
 }
 
-TEST(Test_Connectivity, solvePointSurrPoint) {
+TEST(Test_Connectivity, solveNodeSurrNode) {
 	// Arrange
 	std::string path = "../../../tests/testmesh.su2";
 
@@ -116,7 +116,7 @@ TEST(Test_Connectivity, solvePointSurrPoint) {
 	                                 3, 2, 5, 6, 7, 2, 4,
 	                                 7, 8, 3, 4, 7, 4, 6, 5, 8, 5, 7};
 
-  auto psup2 = connectivity.get_psup2();
+	auto psup2 = connectivity.get_psup2();
 	const std::vector<uint32_t> *psup1;
 	psup1 = connectivity.get_psup1();
 	auto psup2_size = connectivity.get_psup2_size();
@@ -134,24 +134,107 @@ TEST(Test_Connectivity, solvePointSurrPoint) {
 }
 
 TEST(Test_Connectivity, solveElemSurrElem) {
-  // Arrange
-  std::string path = "../../../tests/testmesh.su2";
+	// Arrange
+	std::string path = "../../../tests/testmesh.su2";
 
-  Su2Parser parser(path);
-  parser.Parse();
+	Su2Parser parser(path);
+	parser.Parse();
 
-  Connectivity connectivity(parser);
-  connectivity.solve();
+	Connectivity connectivity(parser);
+	connectivity.solve();
 
-  // Act
-  std::vector<std::vector<uint32_t>> exactesuel{{1},{2,4,0},{3,1},{6,2},{1,5},{6,4},{3,7,5},{6}};
+	// Act
+	std::vector<std::vector<uint32_t>> exactesuel{{1}, {2, 4, 0}, {3, 1}, {6, 2}, {1, 5}, {6, 4}, {3, 7, 5}, {6}};
 
-  auto esuel = connectivity.get_esuel();
+	auto esuel = connectivity.get_elemToElem();
 
 
-  ASSERT_EQ(esuel->size(), exactesuel.size()) << "arrays esuel are of unequal length";
+	ASSERT_EQ(esuel->size(), exactesuel.size()) << "arrays esuel are of unequal length";
 
-  for (size_t i = 0; i < exactesuel.size(); ++i) {
-    EXPECT_EQ(exactesuel[i], (*esuel)[i]) << "arrays psup1 differ at index " << i;
-  }
+	for (size_t i = 0; i < exactesuel.size(); ++i) {
+		EXPECT_EQ(exactesuel[i], (*esuel)[i]) << "arrays psup1 differ at index " << i;
+	}
+}
+
+TEST(Test_Connectivity, solveNodeSurrFace) {
+	// Arrange
+	std::string path = "../../../tests/testmesh.su2";
+
+	Su2Parser parser(path);
+	parser.Parse();
+
+	Connectivity connectivity(parser);
+	connectivity.solve();
+
+	// Act
+	std::vector<std::vector<uint32_t>> exactNodeSurrFace{{0, 1}, {0, 3}, {1, 3},
+	                                                     {1, 4}, {1, 2}, {2, 4},
+	                                                     {2, 5}, {3, 4}, {3, 6},
+	                                                     {4, 5}, {4, 6}, {4, 7},
+	                                                     {5, 7}, {5, 8}, {6, 7}, {7, 8}};
+
+	auto NodeSurrFace = connectivity.get_FaceToNode();
+
+
+	ASSERT_EQ(NodeSurrFace->size(), exactNodeSurrFace.size()) << "arrays esuel are of unequal length";
+
+	for (size_t i = 0; i < exactNodeSurrFace.size(); ++i) {
+		EXPECT_EQ(exactNodeSurrFace[i], (*NodeSurrFace)[i]) << "arrays psup1 differ at index " << i;
+	}
+}
+
+TEST(Test_Connectivity, solveFaceSurrElem) {
+	// Arrange
+	std::string path = "../../../tests/testmesh.su2";
+
+	Su2Parser parser(path);
+	parser.Parse();
+
+	Connectivity connectivity(parser);
+	connectivity.solve();
+
+	// Act
+	std::vector<std::vector<uint32_t>> ExactFaceSurrElem{{0, 2, 1},
+	                                                     {3, 7, 2},
+	                                                     {4, 5, 3},
+	                                                     {6, 9, 5},
+	                                                     {7, 10, 8},
+	                                                     {11, 14, 10},
+	                                                     {9, 12, 11},
+	                                                     {13, 15, 12}};
+
+	auto FaceSurrElem = connectivity.get_ElemToFace();
+
+
+	ASSERT_EQ(FaceSurrElem->size(), ExactFaceSurrElem.size()) << "arrays Element to face are of unequal length";
+
+	for (size_t i = 0; i < ExactFaceSurrElem.size(); ++i) {
+		EXPECT_EQ(ExactFaceSurrElem[i], (*FaceSurrElem)[i]) << "arrays Element to face differ at index " << i;
+	}
+}
+
+TEST(Test_Connectivity, solveElemSurrFace) {
+	// Arrange
+	std::string path = "../../../tests/testmesh.su2";
+
+	Su2Parser parser(path);
+	parser.Parse();
+
+	Connectivity connectivity(parser);
+	connectivity.solve();
+
+	// Act
+	std::vector<std::vector<uint32_t>> ExactElemSurrFace{{0}, {0}, {0, 1}, {1, 2},
+	                                                {2}, {2, 3}, {3}, {1, 4},
+	                                                {4}, {3, 6}, {4, 5}, {5, 6},
+	                                                {6, 7}, {7}, {5}, {7}};
+
+	auto ElemSurrFace = connectivity.get_FaceToElem();
+
+
+	ASSERT_EQ(ElemSurrFace->size(), ExactElemSurrFace.size()) << "arrays Element to face are of unequal length";
+
+	for (size_t i = 0; i < ExactElemSurrFace.size(); ++i) {
+		EXPECT_EQ(ExactElemSurrFace[i], (*ElemSurrFace)[i]) << "arrays Element to face differ at index " << i;
+	}
 }

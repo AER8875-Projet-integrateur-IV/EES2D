@@ -27,7 +27,7 @@
 using ees2d::io::Su2Parser;
 
 typedef std::shared_ptr<uint32_t[]> sharedPtrArray;
-
+typedef std::vector<std::vector<uint32_t>> IntVector2D;
 
 namespace ees2d::mesh {
 
@@ -36,10 +36,13 @@ namespace ees2d::mesh {
 public:
 		Connectivity(Su2Parser &parser);
 
-		const uint32_t &connecPointSurrElement(const uint32_t &pointPos, const uint32_t &elementID);
-		void solveElemSurrPoint();
-		void solvePointSurrPoint();
+		const uint32_t &connecNodeSurrElement(const uint32_t &pointPos, const uint32_t &elementID);
+		void solveElemSurrNode();
+		void solveNodeSurrNode();
 		void solveElemSurrElem();
+		void solveNodeSurrFace();
+		void solveFaceSurrElem();
+		void solveElemSurrFace();
 		void solve();
 
 		// getters for arrays and vectors
@@ -47,8 +50,11 @@ public:
 		inline const sharedPtrArray get_esup1() { return m_esup1; }
 		inline const sharedPtrArray get_psup2() { return m_psup2; }
 		inline const std::vector<uint32_t> *get_psup1() { return &m_psup1; }
-		//inline const std::shared_ptr<std::unique_ptr<uint32_t[]>[]> get_esuel() {return m_esuel;}
-		inline const std::vector<std::vector<uint32_t>> *get_esuel() { return &m_esuel; }
+		//inline const std::shared_ptr<std::unique_ptr<uint32_t[]>[]> get_elemToElem() {return m_elemToElem;}
+		inline const std::vector<std::vector<uint32_t>> *get_elemToElem() { return &m_elemToElem; }
+		inline const std::vector<std::vector<uint32_t>> *get_FaceToNode() { return &m_FaceToNode; }
+		inline const std::vector<std::vector<uint32_t>> *get_ElemToFace() { return &m_ElemToFace; }
+		inline const std::vector<std::vector<uint32_t>> *get_FaceToElem() { return &m_FaceToElem; }
 
 		//getters for values
 		inline const uint32_t &get_esup2_size() { return m_esup2_size; }
@@ -64,8 +70,11 @@ private:
 		sharedPtrArray m_esup1 = nullptr;
 		sharedPtrArray m_psup2 = nullptr;
 		sharedPtrArray m_lpoin = nullptr;
-		std::vector<std::vector<uint32_t>> m_esuel;
-		std::vector<std::vector<uint32_t>> m_lpofa;
+		IntVector2D m_elemToElem;
+		IntVector2D m_FaceToNode;
+		IntVector2D m_ElemToFace;
+		IntVector2D m_FaceToElem;
+		sharedPtrArray m_inpoe1;
 
 		//size is unknown for psup1, should be dynamically allocated
 		std::vector<uint32_t> m_psup1;
