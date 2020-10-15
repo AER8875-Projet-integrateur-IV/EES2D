@@ -56,7 +56,7 @@ Connectivity::Connectivity(Su2Parser &parser) : m_parser(parser) {
 	m_psup2_size = m_parser.get_Ngrids() + 1;
 	m_lpoin_size = m_psup2_size - 1;
 	m_psup2 = std::make_unique<uint32_t[]>(m_psup2_size);
-	m_lpoin = std::make_unique<uint32_t[]>(m_psup2_size - 1);
+	m_lpoin = new uint32_t[m_lpoin_size]; // Temporary array to do calculations, not neeeded as retr
 	m_psup1.reserve(m_lpoin_size);//Ngrids == m_lpoin_size
 
 
@@ -65,7 +65,7 @@ Connectivity::Connectivity(Su2Parser &parser) : m_parser(parser) {
 	m_elemToElem.reserve(m_esuel_size);
 
 	// Initializing Node Surrounding Face arrays
-	m_inpoe1 = std::make_unique<uint32_t[]>(m_psup2_size);
+	m_inpoe1 = new uint32_t[m_psup2_size];
 }
 
 //--------------------------------------------------------------------------
@@ -76,8 +76,11 @@ void ees2d::mesh::Connectivity::solve() {
 	solveElemSurrElem();
 	solveNodeSurrFace();
 	solveFaceSurrElem();
-
 	solveElemSurrFace();
+	delete[] m_inpoe1;
+	m_inpoe1= nullptr;
+	delete[] m_lpoin;
+	m_lpoin = nullptr;
 }
 
 //--------------------------------------------------------------------

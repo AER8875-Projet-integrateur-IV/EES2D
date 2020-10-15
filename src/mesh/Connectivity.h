@@ -72,12 +72,12 @@ private:
 		sharedPtrArray m_esup1 = nullptr;                                                         // Linked list containing ElementIDs surrouding a specific node, used with m_esup2
 		std::vector<uint32_t> m_psup1;                                                            // Linked list to find Node to Node connectivity (m_psup1 and m_psup2)
 		sharedPtrArray m_psup2 = nullptr;
-		sharedPtrArray m_lpoin = nullptr;                                                          // Temporary help array used to solve connecitivity
+		uint32_t *m_lpoin = nullptr;                                                               // Temporary help array used to solve connecitivity
 		IntVector2D m_elemToElem;                                                                  // 2D Uint32 vector contains Element IDs surrounding a specific element. Usage : m_elemToElem[ELEMID][LocalElEMID]
 		IntVector2D m_faceToNode;                                                                  // 2D Uint32 vector contains NOde IDs surrounding a specific face. Usage : m_faceToNode[Face][LocalNODEID]
 		IntVector2D m_elemToFace;                                                                  // 2D Uint32 vector contains Face IDs surrounding a specific Element. Usage : m_elemToFace[ELEMID][LocalFACEID]
 		IntVector2D m_faceToElem;                                                                  // 2D Uint32 vector contains Elements IDs surrounding a specific face. Usage : m_faceToElem[FACE][localELEMID]
-		sharedPtrArray m_inpoe1;                                                                   // Temporary help array used to solve connecitivity
+		uint32_t *m_inpoe1 = nullptr;                                                              // Temporary help array used to solve connecitivity
 
 		//size is unknown for psup1, should be dynamically allocated
 
