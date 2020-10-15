@@ -28,10 +28,11 @@
 #include <iomanip>
 #include <iostream>
 #include <sstream>
-
+#include <utility>
 
 using ees2d::io::Su2Parser;
 using std::cout, std::endl, std::cerr;
+using std::swap;
 
 
 Su2Parser::Su2Parser(const std::string &path) : AbstractParser::AbstractParser(path) {
@@ -188,6 +189,10 @@ void Su2Parser::parseBoundaryConditionsInfo(std::ifstream &m_fileIO) {
 			uint32_t N_boudaryelements;
 			uint32_t element_type;
 			uint32_t grid_id;
+			uint32_t grid_id2;
+			uint32_t boundary_id =0;
+			std::vector<uint32_t> temp ={};
+      std::vector<uint32_t> temp_first_node_pos ={};
 
 			// Loop though the number of Boundary Conditions (Tags)
 			for (size_t i = 0; i < m_Nboundaries; ++i) {
@@ -197,31 +202,45 @@ void Su2Parser::parseBoundaryConditionsInfo(std::ifstream &m_fileIO) {
 				if (line.find("MARKER_TAG") != std::string::npos) {
 					std::stringstream ss(line);
 					ss.seekg(11) >> boundary_tag;
+					if(boundary_tag == "airfoil"){
+						boundary_id=-1;
+					}
+					else if(boundary_tag == "slipwall"){
+            boundary_id = -2;
+					}
+					else if(boundary_tag == "farfield"){
+            boundary_id = -3;
+					}
+					else if(boundary_tag == "condition4"){
+						boundary_id = -4;
+					}
 					std::getline(m_fileIO, line);
 
 					// Parse Number of element in current looped tag
 					if (line.find("MARKER_ELEMS") != std::string::npos) {
 						std::stringstream ss(line);
 						ss.seekg(13) >> N_boudaryelements;
-						m_boundaryConditions[boundary_tag].reserve(N_boudaryelements);
+
 
 						// Loop through Elements representing current Boundary condition (tag)
 						for (size_t j = 0; j < N_boudaryelements; ++j) {
+							temp = {};
 							std::getline(m_fileIO, line);
 							std::stringstream ss(line);
-							ss >> element_type;
-							m_boundaryConditions[boundary_tag].push_back({});
-							m_boundaryConditions[boundary_tag].reserve(m_Vtk_Cell[element_type]);
-
-							// Loop through grid representing current element
-							for (uint32_t k = 0; k < m_Vtk_Cell[element_type]; ++k) {
-								ss >> grid_id;
-								m_boundaryConditions[boundary_tag][j].push_back(grid_id);
+							ss >> element_type >> grid_id >> grid_id2;
+							if (grid_id > grid_id2){
+								swap(grid_id2,grid_id);
 							}
+							temp_first_node_pos.push_back(grid_id);
+							temp.push_back(grid_id);
+							temp.push_back(grid_id2);
+							temp.push_back(boundary_id);
+							m_boundaryConditions.push_back(temp);
 						}
 					}
 				}
 			}
+			m_boundaryConditions.push_back(temp_first_node_pos);
 			break;
 		}
 	}

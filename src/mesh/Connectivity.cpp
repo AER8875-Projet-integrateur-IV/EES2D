@@ -21,7 +21,7 @@
  *
  * Authors: Amin Ouled-Mohamed & Ali Omais, Polytechnique Montreal, 2020-
  */
-
+#include "utils/Timer.h"
 #include "mesh/Connectivity.h"
 #include <algorithm>
 #include <iomanip>
@@ -76,6 +76,7 @@ void ees2d::mesh::Connectivity::solve() {
 	solveElemSurrElem();
 	solveNodeSurrFace();
 	solveFaceSurrElem();
+
 	solveElemSurrFace();
 }
 
@@ -127,7 +128,7 @@ void Connectivity::solveElemSurrNode() {
 	}
 	m_esup2[0] = 0;
 
-	std::cout << std::setw(40) << "Element to node connectivity : " << std::setw(6) << "Done\n";
+	std::cout << std::setw(40) << "Node to Elem connectivity : " << std::setw(6) << "Done\n";
 }
 
 //--------------------------------------------------------------
@@ -260,7 +261,7 @@ void Connectivity::solveNodeSurrFace() {
 						temp = {};
 						temp.push_back(ipoin);
 						temp.push_back(jpoin);
-						m_FaceToNode.push_back(temp);
+						m_faceToNode.push_back(temp);
 						m_lpoin[jpoin] = ipoin;
 					}
 				}
@@ -279,6 +280,7 @@ void Connectivity::solveFaceSurrElem() {
 	uint32_t ipoi2 = 0;
 	uint32_t ipmin = 0;
 	uint32_t ipmax = 0;
+
 	std::vector<std::vector<uint32_t>> m_lpoed3 = {{0, 1},
 	                                               {1, 2},
 	                                               {2, 0}};
@@ -290,7 +292,7 @@ void Connectivity::solveFaceSurrElem() {
 
 	std::vector<std::vector<uint32_t>> *m_lpoed;
 
-	m_ElemToFace.reserve(m_parser.get_Nelems());
+	m_elemToFace.reserve(m_parser.get_Nelems());
 
 	std::vector<uint32_t> temp = {};
 
@@ -310,12 +312,12 @@ void Connectivity::solveFaceSurrElem() {
 			ipmax = std::max(ipoi1, ipoi2);
 
 			for (uint32_t iedge = m_inpoe1[ipmin]; iedge < m_inpoe1[ipmin + 1]; iedge++) {
-				if (m_FaceToNode[iedge][1] == ipmax) {
+				if (m_faceToNode[iedge][1] == ipmax) {
 					temp.push_back(iedge);
 				}
 			}
 		}
-		m_ElemToFace.push_back(temp);
+		m_elemToFace.push_back(temp);
 	}
 
 	std::cout << std::setw(40) << "Element to Face connectivity : " << std::setw(6) << " Done\n";
@@ -325,10 +327,12 @@ void Connectivity::solveFaceSurrElem() {
 
 void Connectivity::solveElemSurrFace() {
 
-	m_FaceToElem.reserve(m_FaceToNode.size());
+	m_faceToElem.reserve(m_faceToNode.size());
+
 
 	std::vector<uint32_t> temp;
 	temp.reserve(2);
+	const uint32_t &lastBCVectorLength = m_parser.get_boundaryConditions().back().size();
 
 	std::vector<uint32_t> help;
 	help.reserve(m_parser.get_Nelems());
@@ -336,10 +340,10 @@ void Connectivity::solveElemSurrFace() {
 		help[i] = 0;
 	}
 
-	for (uint32_t nface = 0; nface < m_FaceToNode.size(); nface++) {
+	for (uint32_t nface = 0; nface < m_faceToNode.size(); nface++) {
 		temp = {};
-		const uint32_t &node1 = m_FaceToNode[nface][0];
-		const uint32_t &node2 = m_FaceToNode[nface][1];
+		const uint32_t &node1 = m_faceToNode[nface][0];
+		const uint32_t &node2 = m_faceToNode[nface][1];
 		for (uint32_t elemsIndexNode1 = m_esup2[node1]; elemsIndexNode1 < m_esup2[node1 + 1]; elemsIndexNode1++) {
 			const uint32_t &ElemNode1 = m_esup1[elemsIndexNode1];
 			for (uint32_t elemsIndexNode2 = m_esup2[node2]; elemsIndexNode2 < m_esup2[node2 + 1]; elemsIndexNode2++) {
@@ -350,8 +354,18 @@ void Connectivity::solveElemSurrFace() {
 				}
 			}
 		}
-
-		m_FaceToElem.push_back(temp);
+		// Add Boundary element with the corresponding boundary ID
+    if (temp.size() == 1){
+			for(uint32_t i=0;i<lastBCVectorLength;i++){
+				if(node1 == m_parser.get_boundaryConditions().back()[i])
+					if(node2 == m_parser.get_boundaryConditions()[i][1]){
+            temp.push_back(m_parser.get_boundaryConditions()[i][2]);
+						m_elemToElem[temp[0]].push_back(m_parser.get_boundaryConditions()[i][2]);
+						break;
+					}
+			}
+		}
+		m_faceToElem.push_back(temp);
 	}
 
 	std::cout << std::setw(40) << "Face to Element connectivity : " << std::setw(6) << " Done\n";

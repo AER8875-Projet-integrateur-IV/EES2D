@@ -112,24 +112,16 @@ TEST(Test_Parser, parseBoundaryConditionsInfo) {
 	mymesh.Parse();
 	// Act
 
-	std::unordered_map<std::string, std::vector<std::vector<uint32_t>>> exactBoundaryConiditon = {
-	        {"lower",
-	         {{0, 1}, {1, 2}}},
-	        {"right",
-	         {{2, 5}, {5, 8}}},
-	        {"upper",
-	         {{8, 7}, {7, 6}}},
-	        {"left",
-	         {{6, 3}, {3, 0}}}};
+	std::vector<std::vector<uint32_t >> exactBoundaryConiditon = {
+          {0,1,uint32_t (-3)},{1,2,uint32_t (-3)},{2,5,uint32_t (-2)},{5,8,uint32_t (-2)},{7,8,uint32_t (-1)},{6,7,uint32_t (-1)},{3,6,uint32_t (-4)},{0,3,uint32_t (-4)},{0,1,2,5,7,6,3,0}};
 
-	std::unordered_map<std::string, std::vector<std::vector<uint32_t>>> BoundaryCondition = mymesh.get_boundaryConditions();
+  std::vector<std::vector<uint32_t >> BoundaryCondition = mymesh.get_boundaryConditions();
 	// Assert
 	ASSERT_EQ(exactBoundaryConiditon.size(), BoundaryCondition.size()) << "maps OF BoundaryConditions are of unequal length";
 
-	ASSERT_EQ(exactBoundaryConiditon["lower"], BoundaryCondition["lower"]) << "different elements in \"lower\" Marker tag";
-	ASSERT_EQ(exactBoundaryConiditon["right"], BoundaryCondition["right"]) << "different elements in \"right\" Marker tag";
-	ASSERT_EQ(exactBoundaryConiditon["upper"], BoundaryCondition["upper"]) << "different elements in \"upper\" Marker tag";
-	ASSERT_EQ(exactBoundaryConiditon["left"], BoundaryCondition["left"]) << "different elements in \"left\" Marker tag";
+	for(uint32_t i=0; i< exactBoundaryConiditon.size();i++){
+		ASSERT_EQ(exactBoundaryConiditon[i],BoundaryCondition[i]);
+	}
 }
 
 

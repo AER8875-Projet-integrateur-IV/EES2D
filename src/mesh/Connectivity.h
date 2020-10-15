@@ -36,14 +36,16 @@ namespace ees2d::mesh {
 public:
 		Connectivity(Su2Parser &parser);
 
-		const uint32_t &connecNodeSurrElement(const uint32_t &pointPos, const uint32_t &elementID);
-		void solveElemSurrNode();
-		void solveNodeSurrNode();
-		void solveElemSurrElem();
-		void solveNodeSurrFace();
-		void solveFaceSurrElem();
-		void solveElemSurrFace();
-		void solve();
+		const uint32_t &connecNodeSurrElement(const uint32_t &pointPos, const uint32_t &elementID);// Return nodeID given an Element ID and its local node ID (from 0 to 2 for a 3 node element)
+		void solve();                                                                              // Call all below methods
+		void solveElemSurrNode();                                                                  // Method to populate m_esup2 and m_esup 1 arrays
+		void solveNodeSurrNode();                                                                  // Populate m_psup1 and m_psup2 arrays
+		void solveElemSurrElem();                                                                  // Populate m_elemToElem vector
+		void solveNodeSurrFace();                                                                  // Populate m_faceToNode vector
+		void solveFaceSurrElem();                                                                  // Populate m_elemToFace vector
+		void solveElemSurrFace();                                                                  // Populate m_faceToElem vector
+		void solveElemIDtoBC();                                                                    // Populate m_ElemToBC unordred map
+
 
 		// getters for arrays and vectors
 		inline const sharedPtrArray get_esup2() { return m_esup2; }
@@ -52,9 +54,9 @@ public:
 		inline const std::vector<uint32_t> *get_psup1() { return &m_psup1; }
 		//inline const std::shared_ptr<std::unique_ptr<uint32_t[]>[]> get_elemToElem() {return m_elemToElem;}
 		inline const std::vector<std::vector<uint32_t>> *get_elemToElem() { return &m_elemToElem; }
-		inline const std::vector<std::vector<uint32_t>> *get_FaceToNode() { return &m_FaceToNode; }
-		inline const std::vector<std::vector<uint32_t>> *get_ElemToFace() { return &m_ElemToFace; }
-		inline const std::vector<std::vector<uint32_t>> *get_FaceToElem() { return &m_FaceToElem; }
+		inline const std::vector<std::vector<uint32_t>> *get_FaceToNode() { return &m_faceToNode; }
+		inline const std::vector<std::vector<uint32_t>> *get_ElemToFace() { return &m_elemToFace; }
+		inline const std::vector<std::vector<uint32_t>> *get_FaceToElem() { return &m_faceToElem; }
 
 		//getters for values
 		inline const uint32_t &get_esup2_size() { return m_esup2_size; }
@@ -66,18 +68,19 @@ public:
 private:
 		Su2Parser &m_parser;
 
-		sharedPtrArray m_esup2 = nullptr;
-		sharedPtrArray m_esup1 = nullptr;
+		sharedPtrArray m_esup2 = nullptr;                                                         // Array containing Element position in m_esup1 (Linked list)
+		sharedPtrArray m_esup1 = nullptr;                                                         // Linked list containing ElementIDs surrouding a specific node, used with m_esup2
+		std::vector<uint32_t> m_psup1;                                                            // Linked list to find Node to Node connectivity (m_psup1 and m_psup2)
 		sharedPtrArray m_psup2 = nullptr;
-		sharedPtrArray m_lpoin = nullptr;
-		IntVector2D m_elemToElem;
-		IntVector2D m_FaceToNode;
-		IntVector2D m_ElemToFace;
-		IntVector2D m_FaceToElem;
-		sharedPtrArray m_inpoe1;
+		sharedPtrArray m_lpoin = nullptr;                                                          // Temporary help array used to solve connecitivity
+		IntVector2D m_elemToElem;                                                                  // 2D Uint32 vector contains Element IDs surrounding a specific element. Usage : m_elemToElem[ELEMID][LocalElEMID]
+		IntVector2D m_faceToNode;                                                                  // 2D Uint32 vector contains NOde IDs surrounding a specific face. Usage : m_faceToNode[Face][LocalNODEID]
+		IntVector2D m_elemToFace;                                                                  // 2D Uint32 vector contains Face IDs surrounding a specific Element. Usage : m_elemToFace[ELEMID][LocalFACEID]
+		IntVector2D m_faceToElem;                                                                  // 2D Uint32 vector contains Elements IDs surrounding a specific face. Usage : m_faceToElem[FACE][localELEMID]
+		sharedPtrArray m_inpoe1;                                                                   // Temporary help array used to solve connecitivity
 
 		//size is unknown for psup1, should be dynamically allocated
-		std::vector<uint32_t> m_psup1;
+
 
 		uint32_t m_esup2_size{0};
 		uint32_t m_esup1_size{0};
@@ -85,6 +88,5 @@ private:
 		uint32_t m_lpoin_size{0};
 		uint32_t m_esuel_size{0};
 	};
-
 
 }// namespace ees2d::mesh

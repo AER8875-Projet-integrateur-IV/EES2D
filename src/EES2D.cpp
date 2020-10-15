@@ -38,22 +38,25 @@ int main() {
 	Timer Timeit("software runtime");
 	std::cout << "Euler2D Software" << std::endl;
 
-	std::string path = "../../tests/testmesh.su2";
-	//std::string path = "/home/amin/Downloads/naca0012_euler_1025x1025x1_O_1B.su2";
+	//std::string path = "../../tests/testmesh.su2";
+	std::string path = "/home/amin/Downloads/naca0012_euler_1025x1025x1_O_1B.su2";
 	Su2Parser parser(path);
 	parser.Parse();
+
+	auto BC = parser.get_boundaryConditions();
 
 
 	Connectivity connectivity(parser);
 	connectivity.solve();
 
 
-	auto ineled = connectivity.get_FaceToElem();
+	auto Element2Element = connectivity.get_elemToElem();
 
-	for (auto &elem : (*ineled)) {
-		for (auto &value : elem) {
-			std::cout << value << " ";
-		}
-		std::cout << "\n";
-	}
+
+//  for (auto &elem : *(Element2Element)) {
+//    for (auto &value : elem) {
+//      std::cout << value << " ";
+//    }
+//    std::cout << "\n";
+//  }
 }

@@ -28,8 +28,9 @@
 #include <memory>
 #include <string>
 #include <tuple>
-#include <unordered_map>
+#include <map>
 #include <vector>
+#include <unordered_map>
 namespace ees2d::io {
 
 	class AbstractParser {
@@ -51,9 +52,10 @@ public:
 		inline const std::vector<uint32_t> &get_ElemIndex() { return m_ElemIndex; }
 		inline const std::vector<uint32_t> &get_NPSUE() { return m_NPSUE; }
 		inline const std::vector<uint32_t> &get_CONNEC() { return m_CONNEC; }
-		const std::unordered_map<std::string, std::vector<std::vector<uint32_t>>> &get_boundaryConditions() { return m_boundaryConditions; }
+		const std::vector<std::vector<uint32_t >> &get_boundaryConditions() { return m_boundaryConditions; }
 		inline const uint32_t &get_Ngrids() { return m_Ngrids; }
 		inline const uint32_t &get_Nelems() { return m_Nelems; }
+		inline uint32_t get_Nelems_copy() { return m_Nelems; }
 
 
 protected:
@@ -64,9 +66,12 @@ protected:
 		uint32_t m_Ngrids{0};
 		uint32_t m_Nelems{0};
 
-		// Unordered map to hold Boundary conditions informations.
-		// Example of structure : m_BoundaryElements = {"lower" : {{1,2,3},{2,3,4}} , "left" : ....}
-		std::unordered_map<std::string, std::vector<std::vector<uint32_t>>> m_boundaryConditions;
+		// vector to hold Boundary conditions informations.
+		// Example of structure : m_BoundaryElements = {{Node1ID,Node2ID,BCID},{Node1ID,Node2ID,BCID}...
+		// last vector contains Ids of all first nodes of previous vectors ... {NODE1ID,NODE1ID,NODE1ID...}}
+		// Node2ID is always greater than Node1D
+
+		std::vector<std::vector<uint32_t >> m_boundaryConditions;
 
 		// Number of Boundaries (markers) in mesh file
 		uint32_t m_Nboundaries{0};
