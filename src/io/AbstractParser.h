@@ -52,7 +52,7 @@ public:
 		inline const std::vector<uint32_t> &get_ElemIndex() { return m_ElemIndex; }
 		inline const std::vector<uint32_t> &get_NPSUE() { return m_NPSUE; }
 		inline const std::vector<uint32_t> &get_CONNEC() { return m_CONNEC; }
-		const std::vector<std::vector<uint32_t >> &get_boundaryConditions() { return m_boundaryConditions; }
+		inline const std::vector<std::vector<uint32_t >> &get_boundaryConditions() { return m_boundaryConditions; }
 		inline const uint32_t &get_Ngrids() { return m_Ngrids; }
 		inline const uint32_t &get_Nelems() { return m_Nelems; }
 		inline uint32_t get_Nelems_copy() { return m_Nelems; }

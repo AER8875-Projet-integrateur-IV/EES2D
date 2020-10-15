@@ -214,6 +214,10 @@ void Su2Parser::parseBoundaryConditionsInfo(std::ifstream &m_fileIO) {
 					else if(boundary_tag == "condition4"){
 						boundary_id = -4;
 					}
+					else {
+						std::cerr << "Unknown boundary condition in mesh file : '" << boundary_tag << "' " <<std::endl;
+            exit(EXIT_FAILURE);
+					}
 					std::getline(m_fileIO, line);
 
 					// Parse Number of element in current looped tag
