@@ -25,7 +25,7 @@
 
 using namespace ees2d::mesh::Metrics;
 using ees2d::mesh::Connectivity;
-using ees2d::utils::Vec2;
+using ees2d::utils::Vector2;
 
 //-----------------------------------------------------
 
@@ -45,14 +45,14 @@ void MetricsData::computeCvolumesMetrics(const Connectivity &ConnectivityObject)
 	CvolumesArea.reserve(ConnectivityObject.get_parser().get_Nelems());
 
 	float Area = 0.0f;
-	Vec2<float> Centroid_Vec2;
+	Vector2<float> Centroid_Vec2;
 
 	// FOr quand elements
 	float Area123;
 	float Area134;
-	Vec2<float> Centroid123_Vec2;
-	Vec2<float> Centroid134_Vec2;
-	std::vector<Vec2<float>> elem_nodes_temp = {};
+	Vector2<float> Centroid123_Vec2;
+	Vector2<float> Centroid134_Vec2;
+	std::vector<Vector2<float>> elem_nodes_temp = {};
 
 	for (uint32_t ielem = 0; ielem < ConnectivityObject.get_parser().get_Nelems(); ielem++) {
 
@@ -62,7 +62,7 @@ void MetricsData::computeCvolumesMetrics(const Connectivity &ConnectivityObject)
 
 
 			auto& [x, y] = ConnectivityObject.get_parser().get_coords()[ConnectivityObject.connecNodeSurrElement(ilocalNode, ielem)];
-			elem_nodes_temp.push_back(Vec2(x, y));
+			elem_nodes_temp.emplace_back(x, y);
 		}
 
 		// If triangle

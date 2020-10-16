@@ -27,7 +27,6 @@
 #include "utils/Timer.h"
 #include "mesh/Metrics.h"
 #include <iostream>
-#include <vector>
 
 using ees2d::io::Su2Parser;
 using ees2d::mesh::Connectivity;
@@ -63,7 +62,7 @@ int main() {
     std::cout << "\n";
   }
 
-  for (auto& elem : metrics.CvolumesCentroid) {
+  for (auto elem : metrics.CvolumesCentroid) {
     //for (auto &value : elem) {
     std::cout << elem ;
     // }
