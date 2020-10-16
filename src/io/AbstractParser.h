@@ -31,6 +31,7 @@
 #include <map>
 #include <vector>
 #include <unordered_map>
+
 namespace ees2d::io {
 
 	class AbstractParser {

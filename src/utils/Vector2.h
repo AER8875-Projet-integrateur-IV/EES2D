@@ -26,59 +26,67 @@
 #include <cmath>
 #include <iostream>
 
+
 namespace ees2d::utils {
-	template<class T>
-	class Vec2 {
+
+	template <class T >
+  class Vector2;
+
+  template <class T>
+  std::ostream& operator << (std::ostream& ,const Vector2<T>& );
+
+  template<class T>
+	class Vector2 {
 		// Class to deal with 2D vectors
 		// Should be declared and defined in header file because its templated
 public:
 		T x, y;
 
-		Vec2() : x(0), y(0) {}
-		Vec2(T x, T y) : x(x), y(y) {}
+		Vector2() : x(0), y(0) {}
+		Vector2(T x, T y) : x(x), y(y) {}
 
 		//Copy constructor
-		Vec2(const Vec2 &v) : x(v.x), y(v.y) {}
+		Vector2(const Vector2 &v) : x(v.x), y(v.y) {}
 
 		// Copy assignment operator
-		Vec2 &operator=(const Vec2 &v) {
+		Vector2 &operator=(const Vector2 &v) {
 			x = v.x;
 			y = v.y;
 			return *this;
 		}
 
 
-		Vec2 operator+(Vec2 &v) {
-			return Vec2(x + v.x, y + v.y);
+		Vector2 operator+(Vector2 &v) {
+			return Vector2(x + v.x, y + v.y);
 		}
 
-		Vec2 operator+(Vec2 &&v) {
-			return Vec2(x + v.x, y + v.y);
+		Vector2 operator+(Vector2 &&v) {
+			return Vector2(x + v.x, y + v.y);
 		}
 
 
-		Vec2 operator-(Vec2 &v) {
-			return Vec2(x - v.x, y - v.y);
+		Vector2 operator-(Vector2 &v) {
+			return Vector2(x - v.x, y - v.y);
 		}
 
-		static float dot(Vec2 v1, Vec2 v2) {
+		static float dot(Vector2 v1, Vector2 v2) {
 			return v1.x * v2.x + v1.y * v2.y;
 		}
-		static float cross(Vec2 v1, Vec2 v2) {
+		static float cross(Vector2 v1, Vector2 v2) {
 			return (v1.x * v2.y) - (v1.y * v2.x);
 		}
 
-		Vec2 operator+(float s) {
-			return Vec2(x + s, y + s);
+		Vector2 operator+(float s) {
+			return Vector2(x + s, y + s);
 		}
-		Vec2 operator-(float s) {
-			return Vec2(x - s, y - s);
+		Vector2 operator-(float s) {
+			return Vector2(x - s, y - s);
 		}
-		Vec2 operator*(float s) {
-			return Vec2(x * s, y * s);
+		Vector2 operator*(float s) {
+			return Vector2(x * s, y * s);
 		}
-		Vec2 operator/(float s) {
-			return Vec2(x / s, y / s);
+		Vector2 operator/(float s) {
+			return Vector2(x / s, y / s);
 		}
 
 		void set(T x, T y) {
@@ -100,13 +108,14 @@ public:
 		float length() const {
 			return std::sqrt(x * x + y * y);
 		}
-		friend std::ostream& operator<<(std::ostream &os,  Vec2<float> const& v);
+
+		friend std::ostream& operator << <> (std::ostream &os, const Vector2<T>& v);
 	};
 
-	std::ostream& operator<<(std::ostream &os,  Vec2<float> const& v) {
-		os << "{ " << v.x << " , " << v.y << " }";
-		return os;
-	}
+	template <class T> std::ostream& operator<< (std::ostream &os, const ees2d::utils::Vector2<T>& v) {
+    os << "{ " << v.x << " , " << v.y << " }";
+    return os;
+  }
 	// Print overloading
 
 
