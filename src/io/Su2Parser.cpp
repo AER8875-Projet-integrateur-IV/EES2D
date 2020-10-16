@@ -105,7 +105,7 @@ void Su2Parser::parseGridsInfo(std::ifstream &m_fileIO) {
 			ss1.seekg(6) >> m_Ngrids;
 			cout << std::setw(40) << "Number of nodes : " << std::setw(6) << m_Ngrids << "\n";
 			m_COORDS.reserve(m_Ngrids + 1);
-			double x, y;
+			float x, y;
 
 			for (size_t i = 0; i < m_Ngrids; ++i) {
 				std::getline(m_fileIO, line);

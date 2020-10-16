@@ -27,6 +27,7 @@
 #include <iomanip>
 #include <iostream>
 using ees2d::mesh::Connectivity;
+using ees2d::io::Su2Parser;
 
 
 Connectivity::Connectivity(Su2Parser &parser) : m_parser(parser) {
@@ -85,7 +86,7 @@ void ees2d::mesh::Connectivity::solve() {
 
 //--------------------------------------------------------------------
 
-const uint32_t &Connectivity::connecNodeSurrElement(const uint32_t &pointPos, const uint32_t &elementID) {
+const uint32_t &Connectivity::connecNodeSurrElement(const uint32_t &pointPos, const uint32_t &elementID) const {
 	return m_parser.get_CONNEC()[m_parser.get_ElemIndex()[elementID] + pointPos];
 }
 

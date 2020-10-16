@@ -48,7 +48,7 @@ public:
 		virtual void Parse() = 0;
 
 		// Getters
-		inline const std::vector<std::tuple<double, double>> &get_coords() const { return m_COORDS; }
+		inline const std::vector<std::tuple<float, float>> &get_coords() const { return m_COORDS; }
 		inline const std::vector<uint32_t> &get_ElemIndex() { return m_ElemIndex; }
 		inline const std::vector<uint32_t> &get_NPSUE() { return m_NPSUE; }
 		inline const std::vector<uint32_t> &get_CONNEC() { return m_CONNEC; }
@@ -77,7 +77,7 @@ protected:
 		uint32_t m_Nboundaries{0};
 
 		//m_COORDS --> Grid Coordinates = [{X1,Y1},{X2,Y2} ...]
-		std::vector<std::tuple<double, double>> m_COORDS;
+		std::vector<std::tuple<float, float>> m_COORDS;
 
 		//m_ElemIds -- > Element id in same order as SU2 file [Element1_ID,Element2_ID...]
 		std::vector<uint32_t> m_ElemIds;

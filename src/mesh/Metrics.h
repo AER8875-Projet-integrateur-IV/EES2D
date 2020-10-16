@@ -20,18 +20,31 @@
 */
 
 #pragma once
+
+
 #include "mesh/Connectivity.h"
-
-using ees2d::mesh::Connectivity;
-
-
-class Metrics {
-	public:
-	Metrics(Connectivity &);
+#include "utils/Vec2.h"
 
 
-	void computeFaceMetrics();
-	void computeCvMetrics();
 
-	private:
-};
+namespace ees2d::mesh::Metrics
+{
+
+	struct MetricsData{
+
+    void computeMetrics(const ees2d::mesh::Connectivity&);           // Calls below methods
+    void computeFaceMetrics(const ees2d::mesh::Connectivity&);
+    void computeCvolumesMetrics(const ees2d::mesh::Connectivity&);
+
+		std::vector<ees2d::utils::Vec2<float>> facesMidPoint;                  // Holds mid points of faces. Usage ->
+		std::vector<ees2d::utils::Vec2<float>> facesNormalVector;              // Hold normal vectors of faces, facesNormalVector[FaceID]= = Vec2{x,y}
+
+		std::vector<float> CvolumesArea;                                        // Holds Areas of control volumes (2D) , CvolumesArea[ElementID] = Area (float)
+
+		std::vector<ees2d::utils::Vec2<float>> CvolumesCentroid;                     // Holds Centroids of control volumes (2D) Usage ->
+
+	};
+
+
+
+} // Namespace ees2d::mesh::Metrics

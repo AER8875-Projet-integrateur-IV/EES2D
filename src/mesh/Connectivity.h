@@ -24,7 +24,6 @@
 #pragma once
 #include "io/Su2Parser.h"
 #include <iostream>
-using ees2d::io::Su2Parser;
 
 typedef std::shared_ptr<uint32_t[]> sharedPtrArray;
 typedef std::vector<std::vector<uint32_t>> IntVector2D;
@@ -34,9 +33,9 @@ namespace ees2d::mesh {
 	class Connectivity {
 
 public:
-		Connectivity(Su2Parser &parser);
+		Connectivity(ees2d::io::Su2Parser &parser);
 
-		const uint32_t &connecNodeSurrElement(const uint32_t &pointPos, const uint32_t &elementID);// Return nodeID given an Element ID and its local node ID (from 0 to 2 for a 3 node element)
+		const uint32_t &connecNodeSurrElement(const uint32_t &pointPos, const uint32_t &elementID) const ;// Return nodeID given an Element ID and its local node ID (from 0 to 2 for a 3 node element)
 		void solve();                                                                              // Call all below methods
 		void solveElemSurrNode();                                                                  // Method to populate m_esup2 and m_esup 1 arrays
 		void solveNodeSurrNode();                                                                  // Populate m_psup1 and m_psup2 arrays
@@ -53,10 +52,11 @@ public:
 		inline const sharedPtrArray get_psup2() { return m_psup2; }
 		inline const std::vector<uint32_t> *get_psup1() { return &m_psup1; }
 		//inline const std::shared_ptr<std::unique_ptr<uint32_t[]>[]> get_elemToElem() {return m_elemToElem;}
-		inline const std::vector<std::vector<uint32_t>> *get_elemToElem() { return &m_elemToElem; }
-		inline const std::vector<std::vector<uint32_t>> *get_FaceToNode() { return &m_faceToNode; }
-		inline const std::vector<std::vector<uint32_t>> *get_ElemToFace() { return &m_elemToFace; }
-		inline const std::vector<std::vector<uint32_t>> *get_FaceToElem() { return &m_faceToElem; }
+		inline const std::vector<std::vector<uint32_t>> *get_elemToElem() const { return &m_elemToElem; }
+		inline const std::vector<std::vector<uint32_t>> *get_FaceToNode() const { return &m_faceToNode; }
+		inline const std::vector<std::vector<uint32_t>> *get_ElemToFace() const { return &m_elemToFace; }
+		inline const std::vector<std::vector<uint32_t>> *get_FaceToElem() const { return &m_faceToElem; }
+		inline ees2d::io::Su2Parser& get_parser() const {return m_parser;}
 
 		//getters for values
 		inline const uint32_t &get_esup2_size() { return m_esup2_size; }
@@ -66,7 +66,7 @@ public:
 
 
 private:
-		Su2Parser &m_parser;
+		ees2d::io::Su2Parser &m_parser;
 
 		sharedPtrArray m_esup2 = nullptr;                                                         // Array containing Element position in m_esup1 (Linked list)
 		sharedPtrArray m_esup1 = nullptr;                                                         // Linked list containing ElementIDs surrouding a specific node, used with m_esup2

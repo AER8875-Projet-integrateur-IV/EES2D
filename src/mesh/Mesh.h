@@ -23,13 +23,13 @@
  */
 
 #pragma once
+#include "mesh/Metrics.h"
+
 
 namespace ees2d::mesh {
 
-
 	struct Mesh{
-		Mesh(Connectivity&, CvMetrics&);
-
+		Mesh(Connectivity&, ees2d::mesh::Metrics::MetricsData&);
 	}
 
 };

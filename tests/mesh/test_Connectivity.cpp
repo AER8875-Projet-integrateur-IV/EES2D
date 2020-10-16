@@ -52,11 +52,11 @@ TEST(Test_Connectivity, connecNodeSurrElement) {
 	                                  4, 5, 7,
 	                                  5, 8, 7};
 
-	int a = connectivity.connecNodeSurrElement(0, 0);
-	int b = connectivity.connecNodeSurrElement(1, 1);
-	int c = connectivity.connecNodeSurrElement(0, 2);
-	int d = connectivity.connecNodeSurrElement(2, 4);
-	int e = connectivity.connecNodeSurrElement(2, 7);
+	const uint32_t a = connectivity.connecNodeSurrElement(0, 0);
+	const uint32_t b = connectivity.connecNodeSurrElement(1, 1);
+	const uint32_t c = connectivity.connecNodeSurrElement(0, 2);
+	const uint32_t d = connectivity.connecNodeSurrElement(2, 4);
+	const uint32_t e = connectivity.connecNodeSurrElement(2, 7);
 
 	//Assert
 

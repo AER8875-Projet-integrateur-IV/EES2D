@@ -25,12 +25,14 @@
 #include "io/Su2Parser.h"
 #include "mesh/Connectivity.h"
 #include "utils/Timer.h"
+#include "mesh/Metrics.h"
 #include <iostream>
 #include <vector>
 
 using ees2d::io::Su2Parser;
 using ees2d::mesh::Connectivity;
 using ees2d::utils::Timer;
+using namespace ees2d::mesh::Metrics;
 //using namespace ees2d::Utils;
 
 
@@ -50,14 +52,22 @@ int main() {
 	connectivity.solve();
 
 
-	auto Element2Element = connectivity.get_elemToElem();
+	MetricsData metrics;
+	metrics.computeMetrics(connectivity);
 
 
-//  for (auto &elem : *(Element2Element)) {
-//    for (auto &value : elem) {
-//      std::cout << value << " ";
-//    }
-//    std::cout << "\n";
-//  }
+	for (auto &elem : metrics.CvolumesArea) {
+    //for (auto &value : elem) {
+      std::cout << elem ;
+   // }
+    std::cout << "\n";
+  }
+
+  for (auto& elem : metrics.CvolumesCentroid) {
+    //for (auto &value : elem) {
+    std::cout << elem ;
+    // }
+    std::cout << "\n";
+  }
 	return 0;
 }
