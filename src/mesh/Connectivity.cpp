@@ -338,11 +338,6 @@ void Connectivity::solveElemSurrFace() {
 	temp.reserve(2);
 	const uint32_t &lastBCVectorLength = m_parser.get_boundaryConditions().back().size();
 
-	std::vector<uint32_t> help;
-	help.reserve(m_parser.get_Nelems());
-	for (uint32_t i = 0; i < m_parser.get_Nelems(); i++) {
-		help[i] = 0;
-	}
 
 	for (uint32_t nface = 0; nface < m_faceToNode.size(); nface++) {
 		temp = {};

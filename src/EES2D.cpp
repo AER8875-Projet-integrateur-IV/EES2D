@@ -39,8 +39,8 @@ int main() {
 	Timer Timeit("software runtime");
 	std::cout << "Euler2D Software" << std::endl;
 
-	std::string path = "../../tests/testmesh.su2";
-	//std::string path = "/home/amin/Downloads/naca0012_euler_1025x1025x1_O_1B.su2";
+	//std::string path = "../../tests/testmesh.su2";
+	std::string path = "/home/amin/Downloads/naca0012_euler_1025x1025x1_O_1B.su2";
 	Su2Parser parser(path);
 	parser.Parse();
 
@@ -54,45 +54,45 @@ int main() {
 	MetricsData metrics;
 	metrics.computeMetrics(connectivity);
 
-  for (auto &elem : metrics.CvolumesArea) {
-    //for (auto &value : elem) {
-    std::cout << elem;
-    // }
-    std::cout << "\n";
-  }
-	std::cout << "cv Centroids :" << "\n";
-
-  for (auto &elem : metrics.CvolumesCentroid) {
-    //for (auto &value : elem) {
-    std::cout << elem;
-    // }
-    std::cout << "\n";
-  }
-
-  std::cout << "faces Surfaces :" << "\n";
-
-  for (auto &elem : metrics.facesSurface) {
-    //for (auto &value : elem) {
-    std::cout << elem;
-    // }
-    std::cout << "\n";
-  }
-  std::cout << "faces MIdpoints :" << "\n";
-
-  for (auto &elem : metrics.facesMidPoint) {
-    //for (auto &value : elem) {
-    std::cout << elem;
-    // }
-    std::cout << "\n";
-  }
-
-  std::cout << "faces vector :" << "\n";
-  for (auto &elem : metrics.facesVector) {
-    //for (auto &value : elem) {
-    std::cout << elem;
-    // }
-    std::cout << "\n";
-  }
+//  for (auto &elem : metrics.CvolumesArea) {
+//    //for (auto &value : elem) {
+//    std::cout << elem;
+//    // }
+//    std::cout << "\n";
+//  }
+//	std::cout << "cv Centroids :" << "\n";
+//
+//  for (auto &elem : metrics.CvolumesCentroid) {
+//    //for (auto &value : elem) {
+//    std::cout << elem;
+//    // }
+//    std::cout << "\n";
+//  }
+//
+//  std::cout << "faces Surfaces :" << "\n";
+//
+//  for (auto &elem : metrics.facesSurface) {
+//    //for (auto &value : elem) {
+//    std::cout << elem;
+//    // }
+//    std::cout << "\n";
+//  }
+//  std::cout << "faces MIdpoints :" << "\n";
+//
+//  for (auto &elem : metrics.facesMidPoint) {
+//    //for (auto &value : elem) {
+//    std::cout << elem;
+//    // }
+//    std::cout << "\n";
+//  }
+//
+//  std::cout << "faces vector :" << "\n";
+//  for (auto &elem : metrics.facesVector) {
+//    //for (auto &value : elem) {
+//    std::cout << elem;
+//    // }
+//    std::cout << "\n";
+//  }
 
 	return 0;
 }
