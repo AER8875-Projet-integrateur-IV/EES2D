@@ -64,6 +64,10 @@ public:
 			return Vector2(x + v.x, y + v.y);
 		}
 
+		bool operator==(const Vector2 &v) const {
+			return this->x == v.x && this->y == v.y;
+		}
+
 
 		Vector2 operator-(Vector2 &v) {
 			return Vector2(x - v.x, y - v.y);

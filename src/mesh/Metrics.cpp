@@ -106,4 +106,31 @@ void MetricsData::computeCvolumesMetrics(const Connectivity &ConnectivityObject)
 
 //----------------------------------------------
 void MetricsData::computeFaceMetrics(const Connectivity &ConnectivityObject) {
+
+	const uint32_t nfaces = ConnectivityObject.get_FaceToElem()->size();
+
+	facesSurface.reserve(nfaces);
+	facesMidPoint.reserve(nfaces);
+	facesVector.reserve(nfaces);
+
+	uint32_t Node1ID;
+  uint32_t Node2ID;
+
+	for (uint32_t iface=0;iface<nfaces;iface++){
+
+		Node1ID = (*ConnectivityObject.get_FaceToNode())[iface][0];
+    Node2ID = (*ConnectivityObject.get_FaceToNode())[iface][1];
+		auto [x1,y1] = ConnectivityObject.get_parser().get_coords()[Node1ID];
+    auto [x2,y2] = ConnectivityObject.get_parser().get_coords()[Node2ID];
+
+		facesSurface.push_back(std::sqrt(std::pow(x2-x1,2.0)+std::pow(y2-y1,2.0)));
+		facesMidPoint.emplace_back(Vector2<float>((x2+x1)/2,(y2+y1)/2));
+		facesVector.emplace_back(Vector2<float>((y2-y1),(x1-x2)));
+
+	}
+
+  std::cout << std::setw(40) << "Faces surface : " << std::setw(6) << "Done\n";
+  std::cout << std::setw(40) << "Faces mid-points : " << std::setw(6) << "Done\n";
+  std::cout << std::setw(40) << "Faces orientation : " << std::setw(6) << "Done\n";
+
 }

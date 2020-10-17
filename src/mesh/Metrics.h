@@ -35,11 +35,11 @@ namespace ees2d::mesh::Metrics
     void computeFaceMetrics(const ees2d::mesh::Connectivity&);
     void computeCvolumesMetrics(const ees2d::mesh::Connectivity&);
 
+
 		std::vector<ees2d::utils::Vector2<float>> facesMidPoint;                  // Holds mid points of faces. Usage ->
-		std::vector<ees2d::utils::Vector2<float>> facesNormalVector;              // Hold normal vectors of faces, facesNormalVector[FaceID]= = Vector2{x,y}
-
+		std::vector<float> facesSurface;
+		std::vector<ees2d::utils::Vector2<float>> facesVector;              // Hold normal vectors of faces, facesNormalVector[FaceID]= = Vector2{x,y}
 		std::vector<float> CvolumesArea;                                        // Holds Areas of control volumes (2D) , CvolumesArea[ElementID] = Area (float)
-
 		std::vector<ees2d::utils::Vector2<float>> CvolumesCentroid;                     // Holds Centroids of control volumes (2D) Usage ->
 
 	};

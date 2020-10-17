@@ -1,10 +1,12 @@
 message("adding test")
 # create an exectuable in which the tests will be stored
 add_executable(test_Connectivity test_Connectivity.cpp)
+add_executable(test_Metrics test_Metrics.cpp)
 # link the Google test infrastructure, mocking library, and a default main fuction to
 # the test executable.  Remove g_test_main if writing your own main function.
 
 target_link_libraries(test_Connectivity gtest gmock gtest_main IO Mesh)
+target_link_libraries(test_Metrics gtest gmock gtest_main IO Mesh Utils)
 
 
 
@@ -15,4 +17,10 @@ gtest_discover_tests(test_Connectivity
         WORKING_DIRECTORY ${PROJECT_DIR}
         PROPERTIES VS_DEBUGGER_WORKING_DIRECTORY "${PROJECT_DIR}"
         )
+gtest_discover_tests(test_Metrics
+# set a working directory so your project root so that you can find test data via paths relative to the project root
+WORKING_DIRECTORY ${PROJECT_DIR}
+PROPERTIES VS_DEBUGGER_WORKING_DIRECTORY "${PROJECT_DIR}"
+)
 set_target_properties(test_Connectivity PROPERTIES FOLDER tests)
+set_target_properties(test_Metrics PROPERTIES FOLDER tests)
