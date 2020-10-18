@@ -22,46 +22,4 @@
  * Authors: Amin Ouled-Mohamed & Ali Omais, Polytechnique Montreal, 2020-
  */
 
-#include "io/Su2Parser.h"
-#include "mesh/Connectivity.h"
-#include "utils/Timer.h"
-#include "mesh/Metrics.h"
-#include <iostream>
-#include "mesh/Mesh.h"
-
-using ees2d::io::Su2Parser;
-using ees2d::mesh::Connectivity;
-using ees2d::utils::Timer;
-using ees2d::mesh::Metrics::MetricsData;
-using ees2d::mesh::Mesh;
-//using namespace ees2d::Utils;
-
-
-int main() {
-	Timer Timeit("software runtime");
-	std::cout << "Euler2D Software" << std::endl;
-
-	//std::string path = "../../tests/testmesh.su2";
-	std::string path = "/home/amin/Downloads/naca0012_euler_1025x1025x1_O_1B.su2";
-	Su2Parser parser(path);
-	parser.Parse();
-
-	auto BC = parser.get_boundaryConditions();
-
-
-	Connectivity connectivity(parser);
-	connectivity.solve();
-
-
-	MetricsData metrics;
-	metrics.compute(connectivity);
-
-	Mesh mesh(connectivity, metrics);
-
-
-  std::cout << mesh.ElemToElem(2,2) << "\n";
-  std::cout << mesh.CvolumeCentroid(2) << "\n";
-  std::cout << mesh.CvolumeArea(2) << "\n" ;
-
-	return 0;
-}
+#pragma once

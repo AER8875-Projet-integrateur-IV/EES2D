@@ -32,7 +32,7 @@ using ees2d::utils::Timer;
 
 //-----------------------------------------------------
 
-void MetricsData::computeMetrics(const Connectivity &ConnectivityObject) {
+void MetricsData::compute(const Connectivity &ConnectivityObject) {
 	Timer timeit("Metrics");
   std::cout << " -------------- Computing Geometrical Quantities!"
                " --------------"
@@ -78,20 +78,29 @@ void MetricsData::computeCvolumesMetrics(const Connectivity &ConnectivityObject)
 			Centroid_Vec2 = (elem_nodes_temp[0] + elem_nodes_temp[1] + elem_nodes_temp[2]) * (1.0f / 3.0f);
 			CvolumesCentroid.push_back(Centroid_Vec2);
 
-			Area = 0.5f * std::abs((elem_nodes_temp[0].x - elem_nodes_temp[1].x) * (elem_nodes_temp[0].y + elem_nodes_temp[1].y) + (elem_nodes_temp[1].x - elem_nodes_temp[2].x) * (elem_nodes_temp[1].y + elem_nodes_temp[2].y) + (elem_nodes_temp[2].x - elem_nodes_temp[0].x) * (elem_nodes_temp[2].y + elem_nodes_temp[0].y));
+			Area = 0.5f * std::abs((elem_nodes_temp[0].x - elem_nodes_temp[1].x) * (elem_nodes_temp[0].y + elem_nodes_temp[1].y) +
+			                       (elem_nodes_temp[1].x - elem_nodes_temp[2].x) * (elem_nodes_temp[1].y + elem_nodes_temp[2].y) +
+			                       (elem_nodes_temp[2].x - elem_nodes_temp[0].x) * (elem_nodes_temp[2].y + elem_nodes_temp[0].y));
+
 			CvolumesArea.push_back(Area);
 
 		} else if (elem_nodes_temp.size() == 4) {
 
-			Area = 0.5f * std::abs((elem_nodes_temp[0].x - elem_nodes_temp[2].x) * (elem_nodes_temp[1].y - elem_nodes_temp[3].y) + (elem_nodes_temp[3].x - elem_nodes_temp[1].x) * (elem_nodes_temp[0].y - elem_nodes_temp[2].y));
+			Area = 0.5f * std::abs((elem_nodes_temp[0].x - elem_nodes_temp[2].x) * (elem_nodes_temp[1].y - elem_nodes_temp[3].y)
+			                       + (elem_nodes_temp[3].x - elem_nodes_temp[1].x) * (elem_nodes_temp[0].y - elem_nodes_temp[2].y));
+
 			CvolumesArea.push_back(Area);
 
 			Centroid123_Vec2 = (elem_nodes_temp[0] + elem_nodes_temp[1] + elem_nodes_temp[2]) * (1.0f / 3.0f);
 			Centroid134_Vec2 = (elem_nodes_temp[0] + elem_nodes_temp[2] + elem_nodes_temp[3]) * (1.0f / 3.0f);
 
-			Area123 = 0.5f * std::abs((elem_nodes_temp[0].x - elem_nodes_temp[1].x) * (elem_nodes_temp[0].y + elem_nodes_temp[1].y) + (elem_nodes_temp[1].x - elem_nodes_temp[2].x) * (elem_nodes_temp[1].y + elem_nodes_temp[2].y) + (elem_nodes_temp[2].x - elem_nodes_temp[0].x) * (elem_nodes_temp[2].y + elem_nodes_temp[0].y));
+			Area123 = 0.5f * std::abs((elem_nodes_temp[0].x - elem_nodes_temp[1].x) * (elem_nodes_temp[0].y + elem_nodes_temp[1].y)
+			                          + (elem_nodes_temp[1].x - elem_nodes_temp[2].x) * (elem_nodes_temp[1].y + elem_nodes_temp[2].y)
+			                          + (elem_nodes_temp[2].x - elem_nodes_temp[0].x) * (elem_nodes_temp[2].y + elem_nodes_temp[0].y));
 
-			Area134 = 0.5f * std::abs((elem_nodes_temp[0].x - elem_nodes_temp[2].x) * (elem_nodes_temp[0].y + elem_nodes_temp[2].y) + (elem_nodes_temp[2].x - elem_nodes_temp[3].x) * (elem_nodes_temp[2].y + elem_nodes_temp[3].y) + (elem_nodes_temp[3].x - elem_nodes_temp[0].x) * (elem_nodes_temp[3].y + elem_nodes_temp[0].y));
+			Area134 = 0.5f * std::abs((elem_nodes_temp[0].x - elem_nodes_temp[2].x) * (elem_nodes_temp[0].y + elem_nodes_temp[2].y)
+			                          + (elem_nodes_temp[2].x - elem_nodes_temp[3].x) * (elem_nodes_temp[2].y + elem_nodes_temp[3].y)
+			                          + (elem_nodes_temp[3].x - elem_nodes_temp[0].x) * (elem_nodes_temp[3].y + elem_nodes_temp[0].y));
 
 			Centroid_Vec2 = (Centroid123_Vec2 * Area123) + (Centroid134_Vec2 * (Area134 * Area123)) + Area134;
 

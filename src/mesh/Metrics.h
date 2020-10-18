@@ -31,7 +31,7 @@ namespace ees2d::mesh::Metrics
 
 	struct MetricsData{
 
-    void computeMetrics(const ees2d::mesh::Connectivity&);           // Calls below methods
+    void compute(const ees2d::mesh::Connectivity&);           // Calls below methods
     void computeFaceMetrics(const ees2d::mesh::Connectivity&);
     void computeCvolumesMetrics(const ees2d::mesh::Connectivity&);
 
