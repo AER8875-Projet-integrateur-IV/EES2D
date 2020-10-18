@@ -27,8 +27,10 @@
 #include <iostream>
 
 
-namespace ees2d::io;
+namespace ees2d::io {
 class VtuWriter{
 
-	VtuWriter(std::string vtuFileName)
+	VtuWriter(std::string vtuFileName);
 };
+
+}
