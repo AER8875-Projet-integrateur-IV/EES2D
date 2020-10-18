@@ -23,3 +23,12 @@
  */
 
 #pragma once
+#include <string>
+#include <iostream>
+
+
+namespace ees2d::io;
+class VtuWriter{
+
+	VtuWriter(std::string vtuFileName)
+};

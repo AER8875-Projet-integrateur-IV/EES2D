@@ -1,0 +1,75 @@
+-------------------------------------------------------------------------------
+%%%%%%%%%%%%%%%%     EES2D Software Input file    %%%%%%%%%%%%%%%%%%%%%
+Author :
+Simulation Title :
+Date :
+Comments :
+-------------------------------------------------------------------------------
+
+START
+------------------- PRE-PROCESSING CONTROL -------------------
+# Extension of the mesh file . Options : Su2 | Gmsh (Not implemented yet)
+MESH_FORMAT = Su2
+
+#Path to mesh file (from executable directory)
+MESH_FILE = "../../tests/testmesh.su2"
+
+#Type of mesh. Options : Structured | Unstructured
+MESH_TYPE = "Unstructured"
+
+------------------- SIMULATION CONTROL -------------------
+
+# Type of speed. Unchosen field will be ignored. Options : MACH | VELOCITY
+
+SPEED OPTION = MACH
+
+# Velocity in m/s
+VELOCITY = 0
+
+MACH = 0.6
+
+# Airflow pressure in Pa
+AIRFLOW_PRESURE =
+
+# Temperature in K
+AIRFLOW_TEMPERATURE =
+
+# Viscosity in Ns/m^2
+AIRFLOW_VISCOSITY =
+
+# Density in kg/m^3
+AIRFLOW_DENSITY =
+
+# Gamma value
+GAMMA = 1.4
+
+# Gas constant in J/kg.K
+GAS_CONSTANT =
+
+# Specific heat in J/Kg.k
+SPECIFIC_HEAT =
+
+------------------- SOLVER CONTROL ------------------------
+
+# Discretization of the Convective Fluxes . Options : Roe | AUSM (not implement yet)
+SCHEME = Roe
+
+# Minimum residual to stop solver
+MIN_RESIDUAL = 1e-4
+
+# Number of maximum iterations to stop solver
+MAX_ITER = 200
+
+# Number of opemmp threads used by the solver
+OPEMMP_THREADS_NUM = 4
+
+-------------------- POST-PROCESSING CONTROL ----------------
+# Post processng file format . Options : TECPLOT | VTK
+OUTPUT_FORMAT = VTK
+
+# Path to file output, from executable directory (without file extension)
+OUTPUT_FILE = "../../../sim1"
+
+# generate log file . Options : true | false
+GENERATE_LOG = true
+END
