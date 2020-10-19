@@ -28,6 +28,7 @@
 #include "mesh/Mesh.h"
 #include "mesh/Metrics.h"
 #include "utils/Timer.h"
+#include "io/VtuWriter.h"
 #include <iostream>
 using ees2d::io::InputParser;
 using ees2d::io::Su2Parser;
@@ -35,18 +36,19 @@ using ees2d::mesh::Connectivity;
 using ees2d::mesh::Mesh;
 using ees2d::mesh::Metrics::MetricsData;
 using ees2d::utils::Timer;
+using ees2d::io::VtuWriter;
 //using namespace ees2d::Utils;
 
 
 int main() {
 	Timer Timeit("software runtime");
 	std::cout << "Euler2D Software" << std::endl;
+
 	std::string inputFilePath = "../../tests/io/testControlFile.ees2d";
-	InputParser SimulationParameters{inputFilePath};
-	SimulationParameters.parse();
+	InputParser simulationParameters{inputFilePath};
+	simulationParameters.parse();
 
-
-	Su2Parser parser(SimulationParameters.m_meshFile);
+	Su2Parser parser(simulationParameters.m_meshFile);
 	parser.Parse();
 
 	Connectivity connectivity(parser);
@@ -56,6 +58,12 @@ int main() {
 	metrics.compute(connectivity);
 
 	Mesh mesh(connectivity, metrics);
+
+
+	if (simulationParameters.m_outputFormat == "VTK"){
+		VtuWriter vtufile(simulationParameters.m_outputFile, connectivity);
+		vtufile.writeMesh();
+	}
 
 	return 0;
 }

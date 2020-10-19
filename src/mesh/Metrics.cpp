@@ -21,19 +21,18 @@
 
 
 #include "mesh/Metrics.h"
-#include "utils/Timer.h"
+
 #include <cmath>
 #include <iomanip>
 
 using namespace ees2d::mesh::Metrics;
 using ees2d::mesh::Connectivity;
 using ees2d::utils::Vector2;
-using ees2d::utils::Timer;
+
 
 //-----------------------------------------------------
 
 void MetricsData::compute(const Connectivity &ConnectivityObject) {
-	Timer timeit("Metrics");
   std::cout << " -------------- Computing Geometrical Quantities!"
                " --------------"
             << std::endl;

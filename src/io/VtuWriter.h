@@ -25,12 +25,18 @@
 #pragma once
 #include <string>
 #include <iostream>
-
+#include "mesh/Mesh.h"
 
 namespace ees2d::io {
 class VtuWriter{
+	public:
+	VtuWriter(std::string& vtuFileName, ees2d::mesh::Connectivity&);
+	~VtuWriter();
+	void writeMesh();                                         // Writes only mesh without solution
+	void writeSolution();                                     // Writes mesh and solution at every element/node
 
-	VtuWriter(std::string vtuFileName);
+	ees2d::mesh::Connectivity& m_connectivity;
+	std::string m_vtuFileName;
 };
 
 }

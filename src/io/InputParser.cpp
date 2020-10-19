@@ -26,6 +26,7 @@
 #include <fstream>
 #include <iostream>
 #include <sstream>
+#include <iomanip>
 
 using ees2d::io::InputParser;
 using std::ifstream, std::cout, std::endl;
@@ -119,7 +120,7 @@ void InputParser::parse() {
           ss1.seekg(14) >> m_generateLog;
         }
 			}
-      cout << "Control file parsed !" << endl;
+      std::cout << std::setw(40) << "Parsing Input File : " << std::setw(6) << "Done\n";
 			break;
 		}
 	}

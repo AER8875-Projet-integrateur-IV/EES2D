@@ -21,13 +21,13 @@
  *
  * Authors: Amin Ouled-Mohamed & Ali Omais, Polytechnique Montreal, 2020-
  */
-#include "utils/Timer.h"
 #include "mesh/Connectivity.h"
+#include "utils/Timer.h"
 #include <algorithm>
 #include <iomanip>
 #include <iostream>
-using ees2d::mesh::Connectivity;
 using ees2d::io::Su2Parser;
+using ees2d::mesh::Connectivity;
 
 
 Connectivity::Connectivity(Su2Parser &parser) : m_parser(parser) {
@@ -57,8 +57,8 @@ Connectivity::Connectivity(Su2Parser &parser) : m_parser(parser) {
 	m_psup2_size = m_parser.get_Ngrids() + 1;
 	m_lpoin_size = m_psup2_size - 1;
 	m_psup2 = std::make_unique<uint32_t[]>(m_psup2_size);
-	m_lpoin = new uint32_t[m_lpoin_size]; // Temporary array to do calculations, not neeeded as retr
-	m_psup1.reserve(m_lpoin_size);//Ngrids == m_lpoin_size
+	m_lpoin = new uint32_t[m_lpoin_size];// Temporary array to do calculations, not neeeded as retr
+	m_psup1.reserve(m_lpoin_size);       //Ngrids == m_lpoin_size
 
 
 	// Initializing Elements surrounding elements array
@@ -79,7 +79,7 @@ void ees2d::mesh::Connectivity::solve() {
 	solveFaceSurrElem();
 	solveElemSurrFace();
 	delete[] m_inpoe1;
-	m_inpoe1= nullptr;
+	m_inpoe1 = nullptr;
 	delete[] m_lpoin;
 	m_lpoin = nullptr;
 }
@@ -354,14 +354,13 @@ void Connectivity::solveElemSurrFace() {
 			}
 		}
 		// Add Boundary element with the corresponding boundary ID
-    if (temp.size() == 1){
-			for(uint32_t i=0;i<lastBCVectorLength;i++){
-				if(node1 == m_parser.get_boundaryConditions().back()[i])
-					if(node2 == m_parser.get_boundaryConditions()[i][1]){
-            temp.push_back(m_parser.get_boundaryConditions()[i][2]);
-						m_elemToElem[temp[0]].push_back(m_parser.get_boundaryConditions()[i][2]);
-						break;
-					}
+		if (temp.size() == 1) {
+			for (uint32_t i = 0; i < lastBCVectorLength; i++) {
+				if (node1 == m_parser.get_boundaryConditions().back()[i] && node2 == m_parser.get_boundaryConditions()[i][1]) {
+					temp.push_back(m_parser.get_boundaryConditions()[i][2]);
+					m_elemToElem[temp[0]].push_back(m_parser.get_boundaryConditions()[i][2]);
+					break;
+				}
 			}
 		}
 		m_faceToElem.push_back(temp);
