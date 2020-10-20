@@ -14,9 +14,9 @@ MESH_FORMAT = SU2
 
 #Path to mesh file (from executable directory)
 MESH_FILE = /home/amin/Downloads/naca0012_euler_513x513x1_O_1B.su2
-/home/amin/Downloads/naca0012_129x129_1B_JAMESON.su2
 ../../tests/naca0012_euler_65x65x1_O_1B.su2
-
+/home/amin/Downloads/naca0012_euler_513x513x1_O_1B.su2
+/home/amin/Downloads/naca0012_129x129_1B_JAMESON.su2
 
 #Type of mesh. Options : STRUCTURED | UNSTRUCTURED
 MESH_TYPE = UNSTRUCTURED

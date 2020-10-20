@@ -31,8 +31,13 @@ namespace ees2d::io {
 class VtuWriter{
 	public:
 	VtuWriter(std::string& vtuFileName, ees2d::mesh::Connectivity&);
-	~VtuWriter();
 	void writeMesh();                                         // Writes only mesh without solution
+	void writePoints(std::ofstream&);
+	void writeCells(std::ofstream&);
+	void beginFile(std::ofstream&);
+	void endFile(std::ofstream&);
+	void writePointsData(std::ofstream&);
+	void writeCellsData(std::ofstream&);
 	void writeSolution();                                     // Writes mesh and solution at every element/node
 
 	ees2d::mesh::Connectivity& m_connectivity;
