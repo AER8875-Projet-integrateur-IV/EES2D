@@ -201,7 +201,7 @@ void Su2Parser::parseBoundaryConditionsInfo(std::ifstream &m_fileIO) {
 				if (line.find("MARKER_TAG") != std::string::npos) {
 					std::stringstream ss(line);
 					ss.seekg(11) >> boundary_tag;
-					if(boundary_tag == "airfoil"){
+					if(boundary_tag == "airfoil" || boundary_tag=="wall"){
 						boundary_id=-1;
 					}
 					else if(boundary_tag == "slipwall"){

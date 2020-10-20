@@ -30,7 +30,7 @@
 namespace ees2d::io {
 class VtuWriter{
 	public:
-	VtuWriter(std::string& vtuFileName, ees2d::mesh::Connectivity&);
+	VtuWriter(std::string& vtuFileName, ees2d::mesh::Connectivity&, ees2d::mesh::Mesh&);
 	void writeMesh();                                         // Writes only mesh without solution
 	void writePoints(std::ofstream&);
 	void writeCells(std::ofstream&);
@@ -42,6 +42,7 @@ class VtuWriter{
 
 	ees2d::mesh::Connectivity& m_connectivity;
 	std::string m_vtuFileName;
+	ees2d::mesh::Mesh& m_mesh;
 };
 
 }

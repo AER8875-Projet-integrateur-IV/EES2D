@@ -26,13 +26,13 @@
 #include <iostream>
 #include <tuple>
 
-
 using ees2d::io::VtuWriter;
 using ees2d::mesh::Connectivity;
+using ees2d::mesh::Mesh;
 using std::ofstream, std::cout;
 
-VtuWriter::VtuWriter(std::string &vtuFileName, Connectivity &connectivity)
-    : m_vtuFileName(vtuFileName), m_connectivity(connectivity) {}
+VtuWriter::VtuWriter(std::string &vtuFileName, Connectivity &connectivity, Mesh &mesh)
+    : m_vtuFileName(vtuFileName), m_connectivity(connectivity), m_mesh(mesh) {}
 
 
 void VtuWriter::writeMesh() {
@@ -42,11 +42,24 @@ void VtuWriter::writeMesh() {
 	beginFile(fileStream);
 	writePoints(fileStream);
 	writeCells(fileStream);
-  endFile(fileStream);
+	endFile(fileStream);
 	fileStream.close();
 
 	cout << "Vtu mesh file generated (at " << m_vtuFileName << " )" << std::endl;
 }
+
+//----------------------------------------------------------------
+void VtuWriter::writeSolution() {
+	ofstream fileStream(m_vtuFileName);
+	beginFile(fileStream);
+	writePoints(fileStream);
+	writeCells(fileStream);
+	writeCellsData(fileStream);
+	endFile(fileStream);
+	fileStream.close();
+
+	cout << "Vtu solution file generated (at " << m_vtuFileName << " )" << std::endl;
+};
 
 //----------------------------------------------------------------
 
@@ -68,10 +81,11 @@ void VtuWriter::writePoints(ofstream &fileStream) {
 	           << "\n";
 	uint32_t returnline = 0;
 	for (auto &XY : m_connectivity.get_parser().get_coords()) {
-		returnline += 1;
+
 		fileStream << std::get<0>(XY) << " " << std::get<1>(XY) << " "
 		           << "0.0"
 		           << "\t";
+		returnline += 1;
 		if (returnline % 3 == 0) {
 			fileStream << "\n";
 		}
@@ -139,23 +153,41 @@ void VtuWriter::writeCells(ofstream &fileStream) {
 		}
 	}
 
-  fileStream << "</DataArray>"
-             << "\n"
-             << "</Cells>"
-             << "\n";
+	fileStream << "</DataArray>"
+	           << "\n"
+	           << "</Cells>"
+	           << "\n";
 }
 //---------------------------------------------------------------
 
-void VtuWriter::writePointsData(ofstream&) {
+void VtuWriter::writePointsData(ofstream &) {
 }
 
 //---------------------------------------------------------------
-void VtuWriter::writeCellsData(ofstream&) {
+void VtuWriter::writeCellsData(ofstream &fileStream) {
+	fileStream << "<CellData Scalars=\"Areas\">"
+	           << "<DataArray type=\"Float32\" Name=\"Areas\" format=\"ascii\" >"
+	           << "\n";
+
+	uint32_t returnline = 0;
+	for (uint32_t i = 0; i < m_connectivity.get_parser().get_Nelems(); i++) {
+
+		fileStream << m_mesh.CvolumeArea(i) << " ";
+		returnline += 1;
+		if (returnline % 10 == 0) {
+			fileStream << "\n";
+		}
+	}
+
+	fileStream << "</DataArray>"
+	           << "\n"
+	           << "</CellData>"
+	           << "\n";
 }
 
 //---------------------------------------------------------------
 void ees2d::io::VtuWriter::endFile(ofstream &fileStream) {
-	fileStream<< "</Piece>"
+	fileStream << "</Piece>"
 	           << "\n"
 	           << "</UnstructuredGrid>"
 	           << "\n"

@@ -61,8 +61,8 @@ int main() {
 
 
 	if (simulationParameters.m_outputFormat == "VTK"){
-		VtuWriter vtufile(simulationParameters.m_outputFile, connectivity);
-		vtufile.writeMesh();
+		VtuWriter vtufile(simulationParameters.m_outputFile, connectivity, mesh);
+		vtufile.writeSolution();
 	}
 
 	return 0;
