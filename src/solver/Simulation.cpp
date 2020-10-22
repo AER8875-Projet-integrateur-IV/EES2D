@@ -24,22 +24,24 @@
 #include <cmath>
 
 
-using ees2d::solver::Simulation;
+using namespace ees2d::solver;
 
-Simulation::Simulation(ees2d::mesh::Mesh & mesh, ees2d::io::InputParser simParameters) {
+Simulation::Simulation(ees2d::mesh::Mesh &mesh, ees2d::io::InputParser &simParameters) {
 
-	u.reserve(mesh.N_elems);
-	v.reserve(mesh.N_elems);
-  rho.reserve(mesh.N_elems);
-  p.reserve(mesh.N_elems);
-  H.reserve(mesh.N_elems);
-  E.reserve(mesh.N_elems);
+	u.resize(mesh.N_elems);
+	v.resize(mesh.N_elems);
+	rho.resize(mesh.N_elems);
+	p.resize(mesh.N_elems);
+	H.resize(mesh.N_elems);
+	E.resize(mesh.N_elems);
+	dt.resize(mesh.N_elems);
 
-	std::fill(u.begin(),u.end(),simParameters.m_velocity*std::cos((M_PI/180)*simParameters.m_aoa));
-	std::fill(v.begin(),v.end(),simParameters.m_velocity*std::sin((M_PI/180)*simParameters.m_aoa));
-  std::fill(rho.begin(),rho.end(),simParameters.m_Density);
-	std::fill(p.begin(),p.end(),simParameters.m_Pressure)
-	std:fill
-
+	std::fill(u.begin(), u.end(), simParameters.m_velocity * std::cos((M_PI / 180)* simParameters.m_aoa ));
+	std::fill(v.begin(), v.end(), simParameters.m_velocity * std::sin((M_PI / 180) * simParameters.m_aoa));
+	std::fill(rho.begin(), rho.end(), simParameters.m_Density);
+	std::fill(p.begin(), p.end(), simParameters.m_Pressure);
+	std::fill(H.begin(), H.end(), 0);
+	std::fill(dt.begin(), dt.end(), 0);
+	std::fill(E.begin(), E.end(), 0);
 
 }

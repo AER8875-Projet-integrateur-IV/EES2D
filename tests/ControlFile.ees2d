@@ -13,7 +13,7 @@ START
 MESH_FORMAT = SU2
 
 #Path to mesh file (from executable directory)
-MESH_FILE = /home/amin/Downloads/NACA0012_65_triangles.su2
+MESH_FILE = ../../tests/naca0012_euler_65x65x1_O_1B.su2
 
 ../../tests/naca0012_euler_65x65x1_O_1B.su2
 /home/amin/Downloads/naca0012_euler_513x513x1_O_1B.su2
@@ -38,7 +38,7 @@ angle of attack in degrees
 AOA = 2.5
 
 # Airflow pressure in Pa
-AIRFLOW_PRESURE = 101325
+AIRFLOW_PRESSURE = 101325
 
 # Temperature in K
 AIRFLOW_TEMPERATURE = 288.15
@@ -77,7 +77,7 @@ OPEMMP_THREADS_NUM = 4
 OUTPUT_FORMAT = VTK
 
 # Path to file output, from executable directory (without file extension)
-OUTPUT_FILE = ../../../Documents/NACA0012_65_triangles.vtu
+OUTPUT_FILE = ../../../Documents/naca0012_euler_65x65x1_O_1B.vtu
 
 # generate log file . Options : TRUE | FALSE
 GENERATE_LOG = TRUE

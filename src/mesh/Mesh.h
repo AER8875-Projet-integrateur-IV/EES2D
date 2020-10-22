@@ -30,8 +30,14 @@ namespace ees2d::mesh {
 
 	struct Mesh {
 
-		Mesh(Connectivity &connectivity, Metrics::MetricsData &metrics)
-		    : m_connectivity(connectivity), m_metrics(metrics) {}
+		Mesh(Connectivity &connectivity, MetricsData &metrics)
+		    : m_connectivity(connectivity), m_metrics(metrics) {
+
+			N_elems = m_connectivity.get_elemToElem()->size();
+			N_faces = m_connectivity.get_FaceToElem()->size();
+			N_nodes = m_connectivity.get_parser().get_Ngrids();
+
+		}
 
 
 		inline const uint32_t &ElemToNode(const uint32_t &ElemId, const uint32_t &LocalNodeID) const {
@@ -82,12 +88,12 @@ namespace ees2d::mesh {
 			return m_metrics.CvolumesCentroid[ElemId];
 		}
 
-		size_t N_elems = m_connectivity.get_elemToElem()->size();
-		size_t N_faces = m_connectivity.get_FaceToElem()->size();
-		size_t N_nodes = m_connectivity.get_parser().get_Ngrids();
+		size_t N_elems;
+		size_t N_faces;
+		size_t N_nodes;
 
 private:
-		ees2d::mesh::Metrics::MetricsData &m_metrics;
+		ees2d::mesh::MetricsData &m_metrics;
 		ees2d::mesh::Connectivity &m_connectivity;
 	};
 

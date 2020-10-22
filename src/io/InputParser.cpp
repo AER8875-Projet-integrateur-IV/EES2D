@@ -85,7 +85,7 @@ void InputParser::parse() {
           ss1.seekg(6) >> m_Mach;
         }
         else if (line.find("AOA") != std::string::npos){
-          ss1.seekg(5) >> m_Mach;
+          ss1.seekg(5) >> m_aoa;
         }
         else if (line.find("AIRFLOW_PRESSURE") != std::string::npos){
           ss1.seekg(18) >> m_Pressure;

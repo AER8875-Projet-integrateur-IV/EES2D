@@ -21,7 +21,7 @@
  *
  * Authors: Amin Ouled-Mohamed & Ali Omais, Polytechnique Montreal, 2020-
  */
-//
+
 
 #include "io/Su2Parser.h"
 #include "mesh/Connectivity.h"

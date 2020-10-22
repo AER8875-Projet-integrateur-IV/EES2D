@@ -25,7 +25,7 @@
 #include <cmath>
 #include <iomanip>
 
-using namespace ees2d::mesh::Metrics;
+using namespace ees2d::mesh;
 using ees2d::mesh::Connectivity;
 using ees2d::utils::Vector2;
 
@@ -40,6 +40,7 @@ void MetricsData::compute(const Connectivity &ConnectivityObject) {
 	MetricsData::computeCvolumesMetrics(ConnectivityObject);
 
 	MetricsData::computeFaceMetrics(ConnectivityObject);
+
 }
 
 

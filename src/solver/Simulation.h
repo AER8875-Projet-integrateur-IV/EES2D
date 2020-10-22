@@ -27,18 +27,17 @@
 namespace ees2d::solver {
 
 
-struct Simulation {
-	Simulation(ees2d::mesh::Mesh& ,ees2d::io::InputParser);
+	struct Simulation {
+		Simulation(ees2d::mesh::Mesh &, ees2d::io::InputParser &);
 
-	// Vectors
-	std::vector<float> u;
-  std::vector<float> v;
-  std::vector<float> rho;
-  std::vector<float> p;
-  std::vector<float> H;
-	std::vector<float> E;
-  std::vector<float> dt;
-	std::vector<float>
-};
+		// Vectors
+		std::vector<float> u;
+		std::vector<float> v;
+		std::vector<float> rho;
+		std::vector<float> p;
+		std::vector<float> H;
+		std::vector<float> E;
+		std::vector<float> dt;
+	};
 
-} // namespace ees2d::solver
+}// namespace ees2d::solver

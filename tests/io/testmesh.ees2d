@@ -1,0 +1,81 @@
+-------------------------------------------------------------------------------
+%%%%%%%%%%%%%%%%     EES2D Software Input file    %%%%%%%%%%%%%%%%%%%%%
+Author : AMIN OULED-MOHAMED
+Simulation Title : TESTING WITH TESTMESH.SU2 FILE
+Date : 18-10-2020
+Comments :
+-------------------------------------------------------------------------------
+
+START
+
+------------------- PRE-PROCESSING CONTROL -------------------
+# Extension of the mesh file . Options : SU2 | GMSH (Not implemented yet)
+MESH_FORMAT = SU2
+
+#Path to mesh file (from executable directory)
+MESH_FILE = ../../../tests/testmesh.su2
+
+#Type of mesh. Options : STRUCTURED | UNSTRUCTURED
+MESH_TYPE = UNSTRUCTURED
+
+------------------- SIMULATION CONTROL -------------------
+
+# Type of speed. Unchosen field will be ignored. Options : MACH | VELOCITY
+
+SPEED_OPTION = MACH
+
+# Velocity in m/s
+VELOCITY = 0
+
+MACH = 0.6
+
+angle of attack in degrees
+AOA = 2.5
+
+# Airflow pressure in Pa
+AIRFLOW_PRESSURE = 101325.0
+
+# Temperature in K
+AIRFLOW_TEMPERATURE = 288.15
+
+# Viscosity in Ns/m^2
+AIRFLOW_VISCOSITY = 1.853e-5
+
+# Density in kg/m^3
+AIRFLOW_DENSITY = 1.2886
+
+# Gamma value
+GAMMA = 1.4
+
+# Gas constant in J/kg.K
+GAS_CONSTANT = 287.058
+
+# Specific heat in J/Kg.k
+SPECIFIC_HEAT = 1004.7
+
+------------------- SOLVER CONTROL ------------------------
+
+# Discretization of the Convective Fluxes . Options : ROE | AUSM (not implement yet)
+SCHEME = ROE
+
+# Minimum residual to stop solver
+MIN_RESIDUAL = 1e-4
+
+# Number of maximum iterations to stop solver
+MAX_ITER = 200
+
+# Number of opemmp threads used by the solver
+OPEMMP_THREADS_NUM = 4
+
+-------------------- POST-PROCESSING CONTROL ----------------
+# Post processng file format . Options : TECPLOT | VTK
+OUTPUT_FORMAT = VTK
+
+# Path to file output, from executable directory (without file extension)
+OUTPUT_FILE = ../../../../Documents/NACA0012_65_triangles.vtu
+
+# generate log file . Options : TRUE | FALSE
+GENERATE_LOG = TRUE
+
+
+END

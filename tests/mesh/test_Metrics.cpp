@@ -32,7 +32,7 @@
 
 using ees2d::io::Su2Parser;
 using ees2d::mesh::Connectivity;
-using ees2d::mesh::Metrics::MetricsData;
+using ees2d::mesh::MetricsData;
 using ees2d::utils::Vector2;
 
 

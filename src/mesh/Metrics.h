@@ -26,7 +26,7 @@
 #include "utils/Vector2.h"
 
 
-namespace ees2d::mesh::Metrics
+namespace ees2d::mesh
 {
 
 	struct MetricsData{
