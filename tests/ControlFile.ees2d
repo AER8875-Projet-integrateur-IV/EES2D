@@ -13,7 +13,7 @@ START
 MESH_FORMAT = SU2
 
 #Path to mesh file (from executable directory)
-MESH_FILE = ../../tests/naca0012_euler_65x65x1_O_1B.su2
+MESH_FILE = /home/amin/Downloads/naca0012_euler_1025x1025x1_O_1B.su2
 
 ../../tests/naca0012_euler_65x65x1_O_1B.su2
 /home/amin/Downloads/naca0012_euler_513x513x1_O_1B.su2
@@ -35,7 +35,7 @@ VELOCITY = 0
 MACH = 0.6
 
 angle of attack in degrees
-AOA = 2.5
+AOA = 10.0
 
 # Airflow pressure in Pa
 AIRFLOW_PRESSURE = 101325
@@ -77,7 +77,7 @@ OPEMMP_THREADS_NUM = 4
 OUTPUT_FORMAT = VTK
 
 # Path to file output, from executable directory (without file extension)
-OUTPUT_FILE = ../../../Documents/naca0012_euler_65x65x1_O_1B.vtu
+OUTPUT_FILE = ../../../Documents/naca0012_euler_1025x1025x1_O_1B.vtu
 
 # generate log file . Options : TRUE | FALSE
 GENERATE_LOG = TRUE

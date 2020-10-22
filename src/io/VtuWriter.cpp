@@ -29,10 +29,11 @@
 using ees2d::io::VtuWriter;
 using ees2d::mesh::Connectivity;
 using ees2d::mesh::Mesh;
+using ees2d::solver::Simulation;
 using std::ofstream, std::cout;
 
-VtuWriter::VtuWriter(std::string &vtuFileName, Connectivity &connectivity, Mesh &mesh)
-    : m_vtuFileName(vtuFileName), m_connectivity(connectivity), m_mesh(mesh) {}
+VtuWriter::VtuWriter(std::string &vtuFileName, Connectivity &connectivity, Mesh &mesh, Simulation& sim)
+    : m_vtuFileName(vtuFileName), m_connectivity(connectivity), m_mesh(mesh), m_sim(sim) {}
 
 
 void VtuWriter::writeMesh() {
@@ -165,7 +166,8 @@ void VtuWriter::writePointsData(ofstream &) {
 
 //---------------------------------------------------------------
 void VtuWriter::writeCellsData(ofstream &fileStream) {
-	fileStream << "<CellData Scalars=\"Areas\">"
+	fileStream << "<CellData Scalars=\"Areas\" Vectors=\"velocity\" >"
+	           << "\n"
 	           << "<DataArray type=\"Float32\" Name=\"Areas\" format=\"ascii\" >"
 	           << "\n";
 
@@ -180,9 +182,20 @@ void VtuWriter::writeCellsData(ofstream &fileStream) {
 	}
 
 	fileStream << "</DataArray>"
-	           << "\n"
-	           << "</CellData>"
 	           << "\n";
+
+	 // Ecriture des vitesses
+	fileStream << "<DataArray type=\"Float32\" Name=\"velocity\" format=\"ascii\" NumberOfComponents=\"3\" >"
+             << "\n";
+	for(uint32_t i=0; i < m_sim.u.size();i++){
+		fileStream << (m_sim.u[i]) << " " << m_sim.v[i] << " " << "0.0" << "\n";
+	}
+
+  fileStream << "</DataArray>"
+             << "\n"
+             << "</CellData>"
+             << "\n";
+
 }
 
 //---------------------------------------------------------------

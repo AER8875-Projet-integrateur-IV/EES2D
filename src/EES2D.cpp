@@ -63,14 +63,14 @@ int main() {
 
 	Mesh mesh(connectivity, metrics);
 
-
+  Simulation mysim(mesh,simulationParameters);
 
 	if (simulationParameters.m_outputFormat == "VTK"){
-		VtuWriter vtufile(simulationParameters.m_outputFile, connectivity, mesh);
+		VtuWriter vtufile(simulationParameters.m_outputFile, connectivity, mesh,mysim);
 		vtufile.writeSolution();
 	}
 
-	Simulation mysim(mesh,simulationParameters);
+
 
 	return 0;
 }
