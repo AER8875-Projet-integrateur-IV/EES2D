@@ -82,6 +82,10 @@ namespace ees2d::mesh {
 			return m_metrics.CvolumesCentroid[ElemId];
 		}
 
+		size_t N_elems = m_connectivity.get_elemToElem()->size();
+		size_t N_faces = m_connectivity.get_FaceToElem()->size();
+		size_t N_nodes = m_connectivity.get_parser().get_Ngrids();
+
 private:
 		ees2d::mesh::Metrics::MetricsData &m_metrics;
 		ees2d::mesh::Connectivity &m_connectivity;

@@ -45,6 +45,7 @@ public:
 		std::string m_spdOption;
 		float m_velocity=0;
 		float m_Mach = 0;
+		float m_aoa = 0;
 		float m_Pressure = 0;
 		float m_Temp = 0;
 		float m_Visc = 0;

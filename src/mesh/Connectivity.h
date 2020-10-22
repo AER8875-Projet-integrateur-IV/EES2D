@@ -25,7 +25,7 @@
 #include "io/Su2Parser.h"
 #include <iostream>
 
-typedef std::shared_ptr<uint32_t[]> sharedPtrArray;
+typedef std::shared_ptr<uint32_t[]> sharedUintPtrArray;
 typedef std::vector<std::vector<uint32_t>> IntVector2D;
 
 namespace ees2d::mesh {
@@ -47,9 +47,9 @@ public:
 
 
 		// getters for arrays and vectors
-		inline const sharedPtrArray get_esup2() { return m_esup2; }
-		inline const sharedPtrArray get_esup1() { return m_esup1; }
-		inline const sharedPtrArray get_psup2() { return m_psup2; }
+		inline const sharedUintPtrArray get_esup2() { return m_esup2; }
+		inline const sharedUintPtrArray get_esup1() { return m_esup1; }
+		inline const sharedUintPtrArray get_psup2() { return m_psup2; }
 		inline const std::vector<uint32_t> *get_psup1() { return &m_psup1; }
 		//inline const std::shared_ptr<std::unique_ptr<uint32_t[]>[]> get_elemToElem() {return m_elemToElem;}
 		inline const std::vector<std::vector<uint32_t>> *get_elemToElem() const { return &m_elemToElem; }
@@ -68,10 +68,10 @@ public:
 private:
 		ees2d::io::Su2Parser &m_parser;
 
-		sharedPtrArray m_esup2 = nullptr;                                                         // Array containing Element position in m_esup1 (Linked list)
-		sharedPtrArray m_esup1 = nullptr;                                                         // Linked list containing ElementIDs surrouding a specific node, used with m_esup2
+		sharedUintPtrArray m_esup2 = nullptr;                                                         // Array containing Element position in m_esup1 (Linked list)
+		sharedUintPtrArray m_esup1 = nullptr;                                                         // Linked list containing ElementIDs surrouding a specific node, used with m_esup2
 		std::vector<uint32_t> m_psup1;                                                            // Linked list to find Node to Node connectivity (m_psup1 and m_psup2)
-		sharedPtrArray m_psup2 = nullptr;
+		sharedUintPtrArray m_psup2 = nullptr;
 		uint32_t *m_lpoin = nullptr;                                                               // Temporary help array used to solve connecitivity
 		IntVector2D m_elemToElem;                                                                  // 2D Uint32 vector contains Element IDs surrounding a specific element. Usage : m_elemToElem[ELEMID][LocalElEMID]
 		IntVector2D m_faceToNode;                                                                  // 2D Uint32 vector contains NOde IDs surrounding a specific face. Usage : m_faceToNode[Face][LocalNODEID]

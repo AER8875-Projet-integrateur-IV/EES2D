@@ -27,10 +27,14 @@
 #include <iostream>
 #include <sstream>
 #include <iomanip>
+#include <cmath>
+
 
 using ees2d::io::InputParser;
 using std::ifstream, std::cout, std::endl;
 using std::stringstream;
+
+
 InputParser::InputParser(std::string &inputPath)
     : m_inputPath(inputPath) {
 
@@ -78,7 +82,10 @@ void InputParser::parse() {
           ss1.seekg(10) >> m_velocity;
         }
         else if (line.find("MACH") != std::string::npos){
-          ss1.seekg(11) >> m_Mach;
+          ss1.seekg(6) >> m_Mach;
+        }
+        else if (line.find("AOA") != std::string::npos){
+          ss1.seekg(5) >> m_Mach;
         }
         else if (line.find("AIRFLOW_PRESSURE") != std::string::npos){
           ss1.seekg(18) >> m_Pressure;
@@ -119,6 +126,10 @@ void InputParser::parse() {
         else if (line.find("GENERATE_LOG") != std::string::npos){
           ss1.seekg(14) >> m_generateLog;
         }
+			}
+
+			if (m_spdOption == "MACH"){
+				m_velocity = m_Mach * std::sqrt(m_Gamma*m_gasConstant*m_Temp);
 			}
       std::cout << std::setw(40) << "Parsing Input File : " << std::setw(6) << "Done\n";
 			break;

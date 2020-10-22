@@ -34,26 +34,29 @@ VELOCITY = 0
 
 MACH = 0.6
 
+angle of attack in degrees
+AOA = 2.5
+
 # Airflow pressure in Pa
-AIRFLOW_PRESURE =
+AIRFLOW_PRESURE = 101325
 
 # Temperature in K
-AIRFLOW_TEMPERATURE =
+AIRFLOW_TEMPERATURE = 288.15
 
 # Viscosity in Ns/m^2
-AIRFLOW_VISCOSITY =
+AIRFLOW_VISCOSITY = 1.853e-5
 
 # Density in kg/m^3
-AIRFLOW_DENSITY =
+AIRFLOW_DENSITY = 1.2886
 
 # Gamma value
 GAMMA = 1.4
 
 # Gas constant in J/kg.K
-GAS_CONSTANT =
+GAS_CONSTANT = 287.058
 
 # Specific heat in J/Kg.k
-SPECIFIC_HEAT =
+SPECIFIC_HEAT = 1004.7
 
 ------------------- SOLVER CONTROL ------------------------
 
