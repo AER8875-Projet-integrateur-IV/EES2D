@@ -59,18 +59,18 @@ TEST(test_Simulation, SimulationConstructor) {
 	Simulation mysim(mesh, simulationParameters);
 
 	//Act
-	std::vector<float> *u = &mysim.u;
-	std::vector<float> *v = &mysim.v;
-	std::vector<float> *rho = &mysim.rho;
-	std::vector<float> *p = &mysim.p;
+	std::vector<double> *u = &mysim.u;
+	std::vector<double> *v = &mysim.v;
+	std::vector<double> *rho = &mysim.rho;
+	std::vector<double> *p = &mysim.p;
 
-	std::vector<float> exact_u = {203.983885, 203.983885, 203.983885, 203.983885,
+	std::vector<double> exact_u = {203.983885, 203.983885, 203.983885, 203.983885,
 	                              203.983885, 203.983885, 203.983885, 203.983885};
-	std::vector<float> exact_v = {8.90613, 8.90613, 8.90613, 8.90613, 8.90613,
+	std::vector<double> exact_v = {8.90613, 8.90613, 8.90613, 8.90613, 8.90613,
 	                              8.90613, 8.90613, 8.90613};
-	std::vector<float> exact_rho = {1.2886,1.2886,1.2886,1.2886,
+	std::vector<double> exact_rho = {1.2886,1.2886,1.2886,1.2886,
                                   1.2886,1.2886,1.2886,1.2886};
-	std::vector<float> exact_p = {101325,101325,101325,101325,
+	std::vector<double> exact_p = {101325,101325,101325,101325,
                                 101325,101325,101325,101325};
 
 	//Assert
@@ -81,18 +81,18 @@ TEST(test_Simulation, SimulationConstructor) {
 
 
   for (size_t i = 0; i < exact_u.size(); ++i) {
-    EXPECT_FLOAT_EQ(exact_u[i], (*u)[i]) << "vectors u differ at index " << i;
+    EXPECT_DOUBLE_EQ(exact_u[i], (*u)[i]) << "vectors u differ at index " << i;
   }
 
   for (size_t i = 0; i < exact_v.size(); ++i) {
-    EXPECT_FLOAT_EQ(exact_v[i], (*v)[i]) << "vectors v differ at index " << i;
+    EXPECT_DOUBLE_EQ(exact_v[i], (*v)[i]) << "vectors v differ at index " << i;
   }
 
   for (size_t i = 0; i < exact_rho.size(); ++i) {
-    EXPECT_FLOAT_EQ(exact_rho[i], (*rho)[i]) << "vectors rho differ at index " << i;
+    EXPECT_DOUBLE_EQ(exact_rho[i], (*rho)[i]) << "vectors rho differ at index " << i;
   }
 
   for (size_t i = 0; i < exact_p.size(); ++i) {
-    EXPECT_FLOAT_EQ(exact_p[i], (*p)[i]) << "vectors p differ at index " << i;
+    EXPECT_DOUBLE_EQ(exact_p[i], (*p)[i]) << "vectors p differ at index " << i;
   }
 }

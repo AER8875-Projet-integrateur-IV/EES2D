@@ -78,7 +78,7 @@ void VtuWriter::beginFile(ofstream &fileStream) {
 void VtuWriter::writePoints(ofstream &fileStream) {
 
 	fileStream << "<Points>"
-	           << "<DataArray type=\"Float32\" NumberOfComponents=\"3\" format=\"ascii\">"
+	           << "<DataArray type=\"Float64\" NumberOfComponents=\"3\" format=\"ascii\">"
 	           << "\n";
 	uint32_t returnline = 0;
 	for (auto &XY : m_connectivity.get_parser().get_coords()) {
@@ -168,7 +168,7 @@ void VtuWriter::writePointsData(ofstream &) {
 void VtuWriter::writeCellsData(ofstream &fileStream) {
 	fileStream << "<CellData Scalars=\"Areas\" Vectors=\"velocity\" >"
 	           << "\n"
-	           << "<DataArray type=\"Float32\" Name=\"Areas\" format=\"ascii\" >"
+	           << "<DataArray type=\"Float64\" Name=\"Areas\" format=\"ascii\" >"
 	           << "\n";
 
 	uint32_t returnline = 0;
@@ -185,7 +185,7 @@ void VtuWriter::writeCellsData(ofstream &fileStream) {
 	           << "\n";
 
 	 // Ecriture des vitesses
-	fileStream << "<DataArray type=\"Float32\" Name=\"velocity\" format=\"ascii\" NumberOfComponents=\"3\" >"
+	fileStream << "<DataArray type=\"Float64\" Name=\"velocity\" format=\"ascii\" NumberOfComponents=\"3\" >"
              << "\n";
 	for(uint32_t i=0; i < m_sim.u.size();i++){
 		fileStream << (m_sim.u[i]) << " " << m_sim.v[i] << " " << "0.0" << "\n";

@@ -43,20 +43,20 @@ public:
 
 		// Simulation variables
 		std::string m_spdOption;
-		float m_velocity=0;
-		float m_Mach = 0;
-		float m_aoa = 0;
-		float m_Pressure = 0;
-		float m_Temp = 0;
-		float m_Visc = 0;
-		float m_Density = 0;
-		float m_Gamma = 0;
-		float m_gasConstant = 0;
-		float m_SpecificHeat = 0;
+		double m_velocity=0;
+		double m_Mach = 0;
+		double m_aoa = 0;
+		double m_Pressure = 0;
+		double m_Temp = 0;
+		double m_Visc = 0;
+		double m_Density = 0;
+		double m_Gamma = 0;
+		double m_gasConstant = 0;
+		double m_SpecificHeat = 0;
 
 		//Solver variables
 		std::string m_scheme;
-		float m_minResiudal = 0;
+		double m_minResiudal = 0;
 		uint32_t m_maxIter = 0;
 		uint32_t m_threadsNum = 0;
 

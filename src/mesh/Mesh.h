@@ -68,23 +68,23 @@ namespace ees2d::mesh {
 			return (*m_connectivity.get_FaceToElem())[FaceId][LocalElemId];
 		}
 		//---------------------------------------------------
-		inline const float &FaceSurface(const uint32_t &FaceId) const {
+		inline const double &FaceSurface(const uint32_t &FaceId) const {
 			return m_metrics.facesSurface[FaceId];
 		}
 		//---------------------------------------------------
-		inline const float &CvolumeArea(const uint32_t &ElemId) const {
+		inline const double &CvolumeArea(const uint32_t &ElemId) const {
 			return m_metrics.CvolumesArea[ElemId];
 		}
 		//---------------------------------------------------
-		inline const ees2d::utils::Vector2<float> &FaceMidPoint(const uint32_t &FaceId) const {
+		inline const ees2d::utils::Vector2<double> &FaceMidPoint(const uint32_t &FaceId) const {
 			return m_metrics.facesMidPoint[FaceId];
 		}
 		//---------------------------------------------------
-		inline const ees2d::utils::Vector2<float> &FaceVector(const uint32_t &FaceId) const {
+		inline const ees2d::utils::Vector2<double> &FaceVector(const uint32_t &FaceId) const {
 			return m_metrics.facesVector[FaceId];
 		}
 		//---------------------------------------------------
-		inline const ees2d::utils::Vector2<float> &CvolumeCentroid(const uint32_t &ElemId) const {
+		inline const ees2d::utils::Vector2<double> &CvolumeCentroid(const uint32_t &ElemId) const {
 			return m_metrics.CvolumesCentroid[ElemId];
 		}
 

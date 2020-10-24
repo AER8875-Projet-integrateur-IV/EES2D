@@ -36,7 +36,7 @@ TEST(Test_Parser, parseGridInfo) {
 	mymesh.Parse();
 
 	// Act
-	std::vector<std::tuple<float, float>> ExactCoords{
+	std::vector<std::tuple<double, double>> ExactCoords{
 	        {0.0, 0.0},
 	        {0.5, 0.0},
 	        {1.0, 0.0},
@@ -48,7 +48,7 @@ TEST(Test_Parser, parseGridInfo) {
 	        {1.0, 1.0}};
 
 
-	std::vector<std::tuple<float, float>> ParsedCOORDS = mymesh.get_coords();
+	std::vector<std::tuple<double, double>> ParsedCOORDS = mymesh.get_coords();
 
 
 	// Assert

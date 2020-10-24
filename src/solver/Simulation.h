@@ -31,13 +31,13 @@ namespace ees2d::solver {
 		Simulation(ees2d::mesh::Mesh &, ees2d::io::InputParser &);
 
 		// Vectors
-		std::vector<float> u;
-		std::vector<float> v;
-		std::vector<float> rho;
-		std::vector<float> p;
-		std::vector<float> H;
-		std::vector<float> E;
-		std::vector<float> dt;
+		std::vector<double> u;
+		std::vector<double> v;
+		std::vector<double> rho;
+		std::vector<double> p;
+		std::vector<double> H;
+		std::vector<double> E;
+		std::vector<double> dt;
 	};
 
 }// namespace ees2d::solver

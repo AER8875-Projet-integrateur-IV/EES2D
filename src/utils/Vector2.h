@@ -73,23 +73,23 @@ public:
 			return Vector2(x - v.x, y - v.y);
 		}
 
-		static float dot(Vector2 v1, Vector2 v2) {
+		static double dot(Vector2 v1, Vector2 v2) {
 			return v1.x * v2.x + v1.y * v2.y;
 		}
-		static float cross(Vector2 v1, Vector2 v2) {
+		static double cross(Vector2 v1, Vector2 v2) {
 			return (v1.x * v2.y) - (v1.y * v2.x);
 		}
 
-		Vector2 operator+(float s) {
+		Vector2 operator+(double s) {
 			return Vector2(x + s, y + s);
 		}
-		Vector2 operator-(float s) {
+		Vector2 operator-(double s) {
 			return Vector2(x - s, y - s);
 		}
-		Vector2 operator*(float s) {
+		Vector2 operator*(double s) {
 			return Vector2(x * s, y * s);
 		}
-		Vector2 operator/(float s) {
+		Vector2 operator/(double s) {
 			return Vector2(x / s, y / s);
 		}
 
@@ -98,18 +98,18 @@ public:
 			this->y = y;
 		}
 
-		void rotate(float deg) {
-			float theta = deg / 180.0 * M_PI;
-			float c = cos(theta);
-			float s = sin(theta);
-			float tx = x * c - y * s;
-			float ty = x * s + y * c;
+		void rotate(double deg) {
+			double theta = deg / 180.0 * M_PI;
+			double c = cos(theta);
+			double s = sin(theta);
+			double tx = x * c - y * s;
+			double ty = x * s + y * c;
 			x = tx;
 			y = ty;
 		}
 
 
-		float length() const {
+		double length() const {
 			return std::sqrt(x * x + y * y);
 		}
 

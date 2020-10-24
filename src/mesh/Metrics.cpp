@@ -51,15 +51,15 @@ void MetricsData::computeCvolumesMetrics(const Connectivity &ConnectivityObject)
 	CvolumesCentroid.reserve(ConnectivityObject.get_parser().get_Nelems());
 	CvolumesArea.reserve(ConnectivityObject.get_parser().get_Nelems());
 
-	float Area = 0.0f;
-	Vector2<float> Centroid_Vec2;
+	double Area = 0.0f;
+	Vector2<double> Centroid_Vec2;
 
 	// FOr quand elements
-	float Area123;
-	float Area134;
-	Vector2<float> Centroid123_Vec2;
-	Vector2<float> Centroid134_Vec2;
-	std::vector<Vector2<float>> elem_nodes_temp = {};
+	double Area123;
+	double Area134;
+	Vector2<double> Centroid123_Vec2;
+	Vector2<double> Centroid134_Vec2;
+	std::vector<Vector2<double>> elem_nodes_temp = {};
 
 	for (uint32_t ielem = 0; ielem < ConnectivityObject.get_parser().get_Nelems(); ielem++) {
 
@@ -124,6 +124,8 @@ void MetricsData::computeFaceMetrics(const Connectivity &ConnectivityObject) {
 
 	uint32_t Node1ID;
   uint32_t Node2ID;
+	double length=0;
+
 
 	for (uint32_t iface=0;iface<nfaces;iface++){
 
@@ -131,10 +133,10 @@ void MetricsData::computeFaceMetrics(const Connectivity &ConnectivityObject) {
     Node2ID = (*ConnectivityObject.get_FaceToNode())[iface][1];
 		auto [x1,y1] = ConnectivityObject.get_parser().get_coords()[Node1ID];
     auto [x2,y2] = ConnectivityObject.get_parser().get_coords()[Node2ID];
-
-		facesSurface.push_back(std::sqrt(std::pow(x2-x1,2.0)+std::pow(y2-y1,2.0)));
-		facesMidPoint.emplace_back(Vector2<float>((x2+x1)/2,(y2+y1)/2));
-		facesVector.emplace_back(Vector2<float>((y2-y1),(x1-x2)));
+    length = std::sqrt(std::pow(x2-x1,2.0)+std::pow(y2-y1,2.0));
+		facesSurface.push_back(length);
+		facesMidPoint.emplace_back(Vector2<double>((x2+x1)/2,(y2+y1)/2));
+		facesVector.emplace_back(Vector2<double>((y2-y1)/length,(x1-x2)/length));
 
 	}
 

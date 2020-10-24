@@ -61,6 +61,10 @@ int main() {
 	MetricsData metrics;
 	metrics.compute(connectivity);
 
+	for(auto& faceOrientation : metrics.facesVector){
+	std::cout << faceOrientation << std::endl;
+  };
+
 	Mesh mesh(connectivity, metrics);
 
   Simulation mysim(mesh,simulationParameters);

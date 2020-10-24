@@ -51,20 +51,20 @@ TEST(Test_Metrics, ccomputeCvolumesMetrics) {
 
 
 	// Act
-	std::vector<float> exactcvAreas{0.125, 0.125, 0.125, 0.125,
+	std::vector<double> exactcvAreas{0.125, 0.125, 0.125, 0.125,
 	                                0.125, 0.125, 0.125, 0.125};
 
-	std::vector<Vector2<float>> exactcvCentroids{Vector2<float>(0.5 / 3, 0.5 / 3),
-	                                             Vector2<float>(1.0 / 3, 1.0 / 3),
-	                                             Vector2<float>(2.0 / 3, 0.5 / 3),
-	                                             Vector2<float>(2.5 / 3, 1.0 / 3),
-	                                             Vector2<float>(0.5 / 3, 2.0 / 3),
-	                                             Vector2<float>(1.0 / 3, 2.5 / 3),
-	                                             Vector2<float>(2.0 / 3, 2.0 / 3),
-	                                             Vector2<float>(2.5 / 3, 2.5 / 3)};
+	std::vector<Vector2<double>> exactcvCentroids{Vector2<double>(0.5 / 3, 0.5 / 3),
+	                                             Vector2<double>(1.0 / 3, 1.0 / 3),
+	                                             Vector2<double>(2.0 / 3, 0.5 / 3),
+	                                             Vector2<double>(2.5 / 3, 1.0 / 3),
+	                                             Vector2<double>(0.5 / 3, 2.0 / 3),
+	                                             Vector2<double>(1.0 / 3, 2.5 / 3),
+	                                             Vector2<double>(2.0 / 3, 2.0 / 3),
+	                                             Vector2<double>(2.5 / 3, 2.5 / 3)};
 
-	std::vector<float> *cvAreas = &metrics.CvolumesArea;
-	std::vector<Vector2<float>> *cvCentroids = &metrics.CvolumesCentroid;
+	std::vector<double> *cvAreas = &metrics.CvolumesArea;
+	std::vector<Vector2<double>> *cvCentroids = &metrics.CvolumesCentroid;
 
 
 	//Assert
@@ -77,8 +77,8 @@ TEST(Test_Metrics, ccomputeCvolumesMetrics) {
 	ASSERT_EQ(cvCentroids->size(), exactcvCentroids.size()) << "arrays cvCentroids are of unequal length";
 
 	for (size_t i = 0; i < exactcvCentroids.size(); ++i) {
-		ASSERT_FLOAT_EQ(exactcvCentroids[i].x, (*cvCentroids)[i].x) << "arrays cvCentroids differ at index " << i;
-		ASSERT_FLOAT_EQ(exactcvCentroids[i].y, (*cvCentroids)[i].y) << "arrays cvCentroids differ at index " << i;
+		ASSERT_DOUBLE_EQ(exactcvCentroids[i].x, (*cvCentroids)[i].x) << "arrays cvCentroids differ at index " << i;
+		ASSERT_DOUBLE_EQ(exactcvCentroids[i].y, (*cvCentroids)[i].y) << "arrays cvCentroids differ at index " << i;
 	}
 }
 
@@ -97,43 +97,43 @@ TEST(Test_Metrics, ccomputeFaceMetrics) {
 
 
 	// Act
-	std::vector<float> exactfaceSurfaces{0.5, 0.5, 0.707107f, 0.5,
+	std::vector<double> exactfaceSurfaces{0.5, 0.5, 0.707107f, 0.5,
 	                                     0.5, 0.707107f,0.5 , 0.5,
 	                                     0.5, 0.5, 0.707107f, 0.5,
 	                                     0.707107f, 0.5, 0.5, 0.5};
 
-	std::vector<Vector2<float>> exactfaceMidpoints{Vector2<float>(0.25, 0.0),
-	                                               Vector2<float>(0, 0.25),
-	                                               Vector2<float>(0.25, 0.25),
-	                                               Vector2<float>(0.5, 0.25),
-	                                               Vector2<float>(0.75, 0),
-	                                               Vector2<float>(0.75, 0.25),
-	                                               Vector2<float>(1.0, 0.25),
-	                                               Vector2<float>(0.25, 0.5),
-	                                               Vector2<float>(0.0, 0.75),
-	                                               Vector2<float>(0.75, 0.5),
-	                                               Vector2<float>(0.25, 0.75),
-	                                               Vector2<float>(0.5, 0.75),
-	                                               Vector2<float>(0.75, 0.75),
-	                                               Vector2<float>(1.0, 0.75),
-	                                               Vector2<float>(0.25, 1.0),
-	                                               Vector2<float>(0.75, 1.0)};
+	std::vector<Vector2<double>> exactfaceMidpoints{Vector2<double>(0.25, 0.0),
+	                                               Vector2<double>(0, 0.25),
+	                                               Vector2<double>(0.25, 0.25),
+	                                               Vector2<double>(0.5, 0.25),
+	                                               Vector2<double>(0.75, 0),
+	                                               Vector2<double>(0.75, 0.25),
+	                                               Vector2<double>(1.0, 0.25),
+	                                               Vector2<double>(0.25, 0.5),
+	                                               Vector2<double>(0.0, 0.75),
+	                                               Vector2<double>(0.75, 0.5),
+	                                               Vector2<double>(0.25, 0.75),
+	                                               Vector2<double>(0.5, 0.75),
+	                                               Vector2<double>(0.75, 0.75),
+	                                               Vector2<double>(1.0, 0.75),
+	                                               Vector2<double>(0.25, 1.0),
+	                                               Vector2<double>(0.75, 1.0)};
 
-	std::vector<float> *faceSurfaces = &metrics.facesSurface;
-	std::vector<Vector2<float>> *faceMidpoints = &metrics.facesMidPoint;
+	std::vector<double> *faceSurfaces = &metrics.facesSurface;
+	std::vector<Vector2<double>> *faceMidpoints = &metrics.facesMidPoint;
 
 
 	//Assert
 	ASSERT_EQ(faceSurfaces->size(), exactfaceSurfaces.size()) << "arrays faceSurface are of unequal length";
 
 	for (size_t i = 0; i < exactfaceSurfaces.size(); ++i) {
-    ASSERT_FLOAT_EQ(exactfaceSurfaces[i], (*faceSurfaces)[i]) << "arrays faceSurface differ at index " << i;
+    ASSERT_DOUBLE_EQ(exactfaceSurfaces[i], (*faceSurfaces)[i]) << "arrays faceSurface differ at index " << i;
 	}
 
 	ASSERT_EQ(faceMidpoints->size(), exactfaceMidpoints.size()) << "arrays faceMidpoints are of unequal length";
 
 	for (size_t i = 0; i < exactfaceMidpoints.size(); ++i) {
-		ASSERT_FLOAT_EQ(exactfaceMidpoints[i].x, (*faceMidpoints)[i].x) << "arrays faceMidpoints differ at index " << i;
-		ASSERT_FLOAT_EQ(exactfaceMidpoints[i].y, (*faceMidpoints)[i].y) << "arrays faceMidpoints differ at index " << i;
+		ASSERT_DOUBLE_EQ(exactfaceMidpoints[i].x, (*faceMidpoints)[i].x) << "arrays faceMidpoints differ at index " << i;
+		ASSERT_DOUBLE_EQ(exactfaceMidpoints[i].y, (*faceMidpoints)[i].y) << "arrays faceMidpoints differ at index " << i;
 	}
 }
