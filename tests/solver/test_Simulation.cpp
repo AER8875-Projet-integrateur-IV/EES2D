@@ -81,18 +81,18 @@ TEST(test_Simulation, SimulationConstructor) {
 
 
   for (size_t i = 0; i < exact_u.size(); ++i) {
-    EXPECT_DOUBLE_EQ(exact_u[i], (*u)[i]) << "vectors u differ at index " << i;
+    ASSERT_NEAR(exact_u[i], (*u)[i],1e-5) << "vectors u differ at index " << i;
   }
 
   for (size_t i = 0; i < exact_v.size(); ++i) {
-    EXPECT_DOUBLE_EQ(exact_v[i], (*v)[i]) << "vectors v differ at index " << i;
+    ASSERT_NEAR(exact_v[i], (*v)[i],1e-5) << "vectors v differ at index " << i;
   }
 
   for (size_t i = 0; i < exact_rho.size(); ++i) {
-    EXPECT_DOUBLE_EQ(exact_rho[i], (*rho)[i]) << "vectors rho differ at index " << i;
+    ASSERT_NEAR(exact_rho[i], (*rho)[i],1e-5) << "vectors rho differ at index " << i;
   }
 
   for (size_t i = 0; i < exact_p.size(); ++i) {
-    EXPECT_DOUBLE_EQ(exact_p[i], (*p)[i]) << "vectors p differ at index " << i;
+    ASSERT_NEAR(exact_p[i], (*p)[i],1e-5) << "vectors p differ at index " << i;
   }
 }

@@ -36,7 +36,7 @@ using ees2d::mesh::MetricsData;
 using ees2d::utils::Vector2;
 
 
-TEST(Test_Metrics, ccomputeCvolumesMetrics) {
+TEST(Test_Metrics, computeCvolumesMetrics) {
 	// Arrange
 	std::string path = "../../../tests/testmesh.su2";
 
@@ -71,18 +71,18 @@ TEST(Test_Metrics, ccomputeCvolumesMetrics) {
 	ASSERT_EQ(cvAreas->size(), exactcvAreas.size()) << "arrays cvAreas are of unequal length";
 
 	for (size_t i = 0; i < exactcvAreas.size(); ++i) {
-		EXPECT_EQ(exactcvAreas[i], (*cvAreas)[i]) << "arrays cvAreas differ at index " << i;
+		ASSERT_NEAR(exactcvAreas[i], (*cvAreas)[i],0.000001) << "arrays cvAreas differ at index " << i;
 	}
 
 	ASSERT_EQ(cvCentroids->size(), exactcvCentroids.size()) << "arrays cvCentroids are of unequal length";
 
 	for (size_t i = 0; i < exactcvCentroids.size(); ++i) {
-		ASSERT_DOUBLE_EQ(exactcvCentroids[i].x, (*cvCentroids)[i].x) << "arrays cvCentroids differ at index " << i;
-		ASSERT_DOUBLE_EQ(exactcvCentroids[i].y, (*cvCentroids)[i].y) << "arrays cvCentroids differ at index " << i;
+		ASSERT_NEAR(exactcvCentroids[i].x, (*cvCentroids)[i].x,0.000001) << "arrays cvCentroids differ at index " << i;
+		ASSERT_NEAR(exactcvCentroids[i].y, (*cvCentroids)[i].y,0.000001) << "arrays cvCentroids differ at index " << i;
 	}
 }
 
-TEST(Test_Metrics, ccomputeFaceMetrics) {
+TEST(Test_Metrics, computeFaceMetrics) {
 	// Arrange
 	std::string path = "../../../tests/testmesh.su2";
 
@@ -97,9 +97,9 @@ TEST(Test_Metrics, ccomputeFaceMetrics) {
 
 
 	// Act
-	std::vector<double> exactfaceSurfaces{0.5, 0.5, 0.707107f, 0.5,
-	                                     0.5, 0.707107f,0.5 , 0.5,
-	                                     0.5, 0.5, 0.707107f, 0.5,
+	std::vector<double> exactfaceSurfaces{0.5, 0.5, 0.707107, 0.5,
+	                                     0.5, 0.707107,0.5 , 0.5,
+	                                     0.5, 0.5, 0.707107, 0.5,
 	                                     0.707107f, 0.5, 0.5, 0.5};
 
 	std::vector<Vector2<double>> exactfaceMidpoints{Vector2<double>(0.25, 0.0),
@@ -127,13 +127,13 @@ TEST(Test_Metrics, ccomputeFaceMetrics) {
 	ASSERT_EQ(faceSurfaces->size(), exactfaceSurfaces.size()) << "arrays faceSurface are of unequal length";
 
 	for (size_t i = 0; i < exactfaceSurfaces.size(); ++i) {
-    ASSERT_DOUBLE_EQ(exactfaceSurfaces[i], (*faceSurfaces)[i]) << "arrays faceSurface differ at index " << i;
+    ASSERT_NEAR(exactfaceSurfaces[i], (*faceSurfaces)[i],0.000001) << "arrays faceSurface differ at index " << i;
 	}
 
 	ASSERT_EQ(faceMidpoints->size(), exactfaceMidpoints.size()) << "arrays faceMidpoints are of unequal length";
 
 	for (size_t i = 0; i < exactfaceMidpoints.size(); ++i) {
-		ASSERT_DOUBLE_EQ(exactfaceMidpoints[i].x, (*faceMidpoints)[i].x) << "arrays faceMidpoints differ at index " << i;
-		ASSERT_DOUBLE_EQ(exactfaceMidpoints[i].y, (*faceMidpoints)[i].y) << "arrays faceMidpoints differ at index " << i;
+		ASSERT_NEAR(exactfaceMidpoints[i].x, (*faceMidpoints)[i].x,0.000001) << "arrays faceMidpoints differ at index " << i;
+		ASSERT_NEAR(exactfaceMidpoints[i].y, (*faceMidpoints)[i].y,0.000001) << "arrays faceMidpoints differ at index " << i;
 	}
 }

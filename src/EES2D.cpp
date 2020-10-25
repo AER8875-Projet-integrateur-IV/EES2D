@@ -31,7 +31,7 @@
 #include "io/VtuWriter.h"
 #include <iostream>
 #include "solver/Simulation.h"
-
+#include "solver/Solver.h"
 using ees2d::io::InputParser;
 using ees2d::io::Su2Parser;
 using ees2d::mesh::Connectivity;
@@ -40,6 +40,7 @@ using ees2d::mesh::MetricsData;
 using ees2d::utils::Timer;
 using ees2d::io::VtuWriter;
 using ees2d::solver::Simulation;
+using ees2d::solver::Solver;
 //using namespace ees2d::Utils;
 
 
@@ -50,7 +51,7 @@ int main() {
 	std::string inputFilePath = "../../tests/ControlFile.ees2d";
 	InputParser simulationParameters{inputFilePath};
 	simulationParameters.parse();
-	simulationParameters.printAll();
+
 
 	Su2Parser parser(simulationParameters.m_meshFile);
 	parser.Parse();
@@ -61,19 +62,20 @@ int main() {
 	MetricsData metrics;
 	metrics.compute(connectivity);
 
-	for(auto& faceOrientation : metrics.facesVector){
-	std::cout << faceOrientation << std::endl;
-  };
+
 
 	Mesh mesh(connectivity, metrics);
 
   Simulation mysim(mesh,simulationParameters);
+
 
 	if (simulationParameters.m_outputFormat == "VTK"){
 		VtuWriter vtufile(simulationParameters.m_outputFile, connectivity, mesh,mysim);
 		vtufile.writeSolution();
 	}
 
+	Solver solver(mysim,mesh);
+	solver.run();
 
 
 	return 0;

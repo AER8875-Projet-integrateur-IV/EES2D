@@ -144,9 +144,9 @@ TEST(Test_Connectivity, solveElemSurrElem) {
 	connectivity.solve();
 
 	// Act
-	std::vector<std::vector<uint32_t>> exactesuel{{1,uint32_t(-3),uint32_t(-4)}, {2, 4, 0}, {3, 1,uint32_t(-3)},
-	                                              {6, 2,uint32_t(-2)}, {1, 5,uint32_t(-4)}, {6, 4,uint32_t(-1)},
-	                                              {3, 7, 5}, {6,uint32_t(-2),uint32_t(-1)}};
+	std::vector<std::vector<uint32_t>> exactesuel{{1,uint32_t(-3),uint32_t(-3)}, {2, 4, 0}, {3, 1,uint32_t(-3)},
+	                                              {6, 2,uint32_t(-3)}, {1, 5,uint32_t(-3)}, {6, 4,uint32_t(-3)},
+	                                              {3, 7, 5}, {6,uint32_t(-3),uint32_t(-3)}};
 
 	auto esuel = connectivity.get_elemToElem();
 
@@ -226,10 +226,10 @@ TEST(Test_Connectivity, solveElemSurrFace) {
 	connectivity.solve();
 
 	// Act
-	std::vector<std::vector<uint32_t>> ExactElemSurrFace{{0,uint32_t(-3)}, {0,uint32_t(-4)}, {0, 1}, {1, 2},
-	                                                {2,uint32_t(-3)}, {2, 3}, {3,uint32_t(-2)}, {1, 4},
-	                                                {4,uint32_t(-4)}, {3, 6}, {4, 5}, {5, 6},
-	                                                {6, 7}, {7,uint32_t(-2)}, {5,uint32_t(-1)}, {7,uint32_t(-1)}};
+	std::vector<std::vector<uint32_t>> ExactElemSurrFace{{0,uint32_t(-3)}, {0,uint32_t(-3)}, {0, 1}, {1, 2},
+	                                                {2,uint32_t(-3)}, {2, 3}, {3,uint32_t(-3)}, {1, 4},
+	                                                {4,uint32_t(-3)}, {3, 6}, {4, 5}, {5, 6},
+	                                                {6, 7}, {7,uint32_t(-3)}, {5,uint32_t(-3)}, {7,uint32_t(-3)}};
 
 	auto ElemSurrFace = connectivity.get_FaceToElem();
 

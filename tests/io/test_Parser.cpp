@@ -113,7 +113,7 @@ TEST(Test_Parser, parseBoundaryConditionsInfo) {
 	// Act
 
 	std::vector<std::vector<uint32_t >> exactBoundaryConiditon = {
-          {0,1,uint32_t (-3)},{1,2,uint32_t (-3)},{2,5,uint32_t (-2)},{5,8,uint32_t (-2)},{7,8,uint32_t (-1)},{6,7,uint32_t (-1)},{3,6,uint32_t (-4)},{0,3,uint32_t (-4)},{0,1,2,5,7,6,3,0}};
+          {0,1,uint32_t (-3)},{1,2,uint32_t (-3)},{2,5,uint32_t (-3)},{5,8,uint32_t (-3)},{7,8,uint32_t (-3)},{6,7,uint32_t (-3)},{3,6,uint32_t (-3)},{0,3,uint32_t (-3)},{0,1,2,5,7,6,3,0}};
 
   std::vector<std::vector<uint32_t >> BoundaryCondition = mymesh.get_boundaryConditions();
 	// Assert

@@ -93,8 +93,9 @@ namespace ees2d::mesh {
 		size_t N_nodes;
 
 private:
-		ees2d::mesh::MetricsData &m_metrics;
 		ees2d::mesh::Connectivity &m_connectivity;
+		ees2d::mesh::MetricsData &m_metrics;
+
 	};
 
 }// namespace ees2d::mesh
