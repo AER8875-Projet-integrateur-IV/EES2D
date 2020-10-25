@@ -39,10 +39,11 @@ class VtuWriter{
 	void endFile(std::ofstream&);
 	void writePointsData(std::ofstream&);
 	void writeCellsData(std::ofstream&);
-	void writeSolution();                                     // Writes mesh and solution at every element/node
-
+	void writeSolution();
+	// Writes mesh and solution at every element/node
+  std::string m_vtuFileName;
 	ees2d::mesh::Connectivity& m_connectivity;
-	std::string m_vtuFileName;
+
 	ees2d::mesh::Mesh& m_mesh;
 	ees2d::solver::Simulation& m_sim;
 };

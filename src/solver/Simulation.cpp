@@ -27,6 +27,8 @@
 using namespace ees2d::solver;
 
 Simulation::Simulation(ees2d::mesh::Mesh &mesh, ees2d::io::InputParser &simParameters) {
+
+	//Initialize freestream values
   gammaInf = simParameters.m_Gamma;
 	gasConstantInf = simParameters.m_gasConstant;
 	uInf  = simParameters.m_velocity * std::cos((M_PI / 180)* simParameters.m_aoa ) ;
@@ -37,6 +39,7 @@ Simulation::Simulation(ees2d::mesh::Mesh &mesh, ees2d::io::InputParser &simParam
 	pressureInf = simParameters.m_Pressure;
 	tempInf = simParameters.m_Temp;
 
+	// Initialize solution vectors
 	u.resize(mesh.N_elems);
 	v.resize(mesh.N_elems);
 	rho.resize(mesh.N_elems);
@@ -48,7 +51,7 @@ Simulation::Simulation(ees2d::mesh::Mesh &mesh, ees2d::io::InputParser &simParam
 	Mach.resize(mesh.N_elems);
 	temp.resize(mesh.N_elems);
 
-
+  // fill solution vectors with Initial Conditions
 	std::fill(u.begin(), u.end(), uInf);
 	std::fill(v.begin(), v.end(), vInf);
 	std::fill(Mach.begin(),Mach.end(),MachInf);
