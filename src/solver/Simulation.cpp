@@ -27,6 +27,15 @@
 using namespace ees2d::solver;
 
 Simulation::Simulation(ees2d::mesh::Mesh &mesh, ees2d::io::InputParser &simParameters) {
+  gammaInf = simParameters.m_Gamma;
+	gasConstantInf = simParameters.m_gasConstant;
+	uInf  = simParameters.m_velocity * std::cos((M_PI / 180)* simParameters.m_aoa ) ;
+	vInf =  simParameters.m_velocity * std::sin((M_PI / 180) * simParameters.m_aoa) ;
+	soundSpeedInf = std::sqrt(simParameters.m_Gamma*simParameters.m_Temp*simParameters.m_gasConstant);
+	MachInf = simParameters.m_velocity/(soundSpeedInf);
+	rhoInf = simParameters.m_Density;
+	pressureInf = simParameters.m_Pressure;
+	tempInf = simParameters.m_Temp;
 
 	u.resize(mesh.N_elems);
 	v.resize(mesh.N_elems);
@@ -35,13 +44,20 @@ Simulation::Simulation(ees2d::mesh::Mesh &mesh, ees2d::io::InputParser &simParam
 	H.resize(mesh.N_elems);
 	E.resize(mesh.N_elems);
 	dt.resize(mesh.N_elems);
+	residuals.resize(mesh.N_elems);
+	Mach.resize(mesh.N_elems);
+	temp.resize(mesh.N_elems);
 
-	std::fill(u.begin(), u.end(), simParameters.m_velocity * std::cos((M_PI / 180)* simParameters.m_aoa ));
-	std::fill(v.begin(), v.end(), simParameters.m_velocity * std::sin((M_PI / 180) * simParameters.m_aoa));
-	std::fill(rho.begin(), rho.end(), simParameters.m_Density);
-	std::fill(p.begin(), p.end(), simParameters.m_Pressure);
+
+	std::fill(u.begin(), u.end(), uInf);
+	std::fill(v.begin(), v.end(), vInf);
+	std::fill(Mach.begin(),Mach.end(),MachInf);
+	std::fill(rho.begin(), rho.end(), rhoInf);
+	std::fill(p.begin(), p.end(), pressureInf);
 	std::fill(H.begin(), H.end(), 0);
 	std::fill(dt.begin(), dt.end(), 0);
 	std::fill(E.begin(), E.end(), 0);
+	std::fill(residuals.begin(),residuals.end(),0);
+	std::fill(temp.begin(),temp.end(),tempInf);
 
 }

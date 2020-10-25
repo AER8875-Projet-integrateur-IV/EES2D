@@ -38,6 +38,19 @@ namespace ees2d::solver {
 		std::vector<double> H;
 		std::vector<double> E;
 		std::vector<double> dt;
+		std::vector<double> residuals;
+		std::vector<double> Mach;
+		std::vector<double> temp;
+
+		double uInf;
+		double vInf;
+		double pressureInf;
+		double rhoInf;
+		double MachInf;
+		double soundSpeedInf;
+		double gasConstantInf;
+		double gammaInf;
+		double tempInf;
 	};
 
 }// namespace ees2d::solver
