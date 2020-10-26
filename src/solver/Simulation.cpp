@@ -22,6 +22,9 @@
 #include "solver/Simulation.h"
 #include <algorithm>
 #include <cmath>
+#include "solver/ConservativeVariables.h"
+#include "solver/ConvectiveFlux.h"
+
 
 
 using namespace ees2d::solver;
@@ -51,16 +54,21 @@ Simulation::Simulation(ees2d::mesh::Mesh &mesh, ees2d::io::InputParser &simParam
 	Mach.resize(mesh.N_elems);
 	temp.resize(mesh.N_elems);
 
+	convectiveFluxes.resize(mesh.N_elems);
+	conservativeVariables.resize(mesh.N_elems);
+
   // fill solution vectors with Initial Conditions
 	std::fill(u.begin(), u.end(), uInf);
 	std::fill(v.begin(), v.end(), vInf);
 	std::fill(Mach.begin(),Mach.end(),MachInf);
 	std::fill(rho.begin(), rho.end(), rhoInf);
 	std::fill(p.begin(), p.end(), pressureInf);
-	std::fill(H.begin(), H.end(), 0);
+  std::fill(E.begin(), E.end(), rhoInf*(0.5*(uInf*uInf+vInf*vInf) + (pressureInf/(rhoInf*(gammaInf-1))) ));
+	std::fill(H.begin(), H.end(), E[0]+pressureInf/rhoInf);
 	std::fill(dt.begin(), dt.end(), 0);
-	std::fill(E.begin(), E.end(), 0);
-	std::fill(residuals.begin(),residuals.end(),0);
+	std::fill(residuals.begin(),residuals.end(),Residual(0,0,0,0));
 	std::fill(temp.begin(),temp.end(),tempInf);
+	std::fill(convectiveFluxes.begin(),convectiveFluxes.end(),ConvectiveFlux(0,0,0,0));
+	std::fill(conservativeVariables.begin(),conservativeVariables.end(),ConservativeVariables(0,0,0,0));
 
 }

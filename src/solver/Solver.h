@@ -22,6 +22,8 @@
 #pragma once
 
 #include "solver/Simulation.h"
+#include "solver/ConvectiveFlux.h"
+#include "solver/ConservativeVariables.h"
 
 namespace ees2d::solver {
 
@@ -32,12 +34,13 @@ class Solver {
 	void run();
 
 	struct faceParams{
-	double temp;
-	double rho;
-	double p;
-	double u;
-	double v;
+	double rho=0;
+	double p=0;
+	double u=0;
+	double v=0;
 	};
+
+	faceParams faceP;
 
 	private:
 		  ees2d::solver::Simulation& m_sim;
