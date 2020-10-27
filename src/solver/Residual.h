@@ -28,33 +28,46 @@ namespace ees2d::solver {
 
 		// Convective flux vector
 public:
-    Residual(){};
+		Residual(){};
 		Residual(double rhoV_residual, double rho_uV_residual, double rho_vV_residual, double rho_HV_residual)
 		    : m_rhoV_residual(rhoV_residual), m_rho_uV_residual(rho_uV_residual), m_rho_vV_residual(rho_vV_residual), m_rho_HV_residual(rho_HV_residual) {}
 
 
 		inline Residual operator+(ConvectiveFlux &v) {
 			return Residual(m_rhoV_residual + v.m_rhoV,
-			                      m_rho_uV_residual + v.m_rho_uV,
-			                      m_rho_vV_residual + v.m_rho_vV,
-			                      m_rho_HV_residual + v.m_rho_HV);
+			                m_rho_uV_residual + v.m_rho_uV,
+			                m_rho_vV_residual + v.m_rho_vV,
+			                m_rho_HV_residual + v.m_rho_HV);
 		}
 		inline Residual operator-(ConvectiveFlux &v) {
 			return Residual(m_rhoV_residual - v.m_rhoV,
-			                      m_rho_uV_residual - v.m_rho_uV,
-			                      m_rho_vV_residual - v.m_rho_vV,
-			                      m_rho_HV_residual - v.m_rho_HV);
+			                m_rho_uV_residual - v.m_rho_uV,
+			                m_rho_vV_residual - v.m_rho_vV,
+			                m_rho_HV_residual - v.m_rho_HV);
+		}
+		inline Residual operator+=(ConvectiveFlux &&v) {
+			return Residual(m_rhoV_residual + v.m_rhoV,
+			                m_rho_uV_residual + v.m_rho_uV,
+			                m_rho_vV_residual + v.m_rho_vV,
+			                m_rho_HV_residual + v.m_rho_HV);
+		}
+
+		inline Residual operator-=(ConvectiveFlux &&v) {
+			return Residual(m_rhoV_residual - v.m_rhoV,
+			                m_rho_uV_residual - v.m_rho_uV,
+			                m_rho_vV_residual - v.m_rho_vV,
+			                m_rho_HV_residual - v.m_rho_HV);
 		}
 
 		inline Residual operator*(double s) {
 			return Residual(m_rhoV_residual * s, m_rho_uV_residual * s, m_rho_vV_residual * s, m_rho_HV_residual * s);
 		}
 
-		inline void reset(){
-			this->m_rhoV_residual=0;
-			this->m_rho_uV_residual=0;
-			this->m_rho_vV_residual=0;
-			this->m_rho_HV_residual=0;
+		inline void reset() {
+			this->m_rhoV_residual = 0;
+			this->m_rho_uV_residual = 0;
+			this->m_rho_vV_residual = 0;
+			this->m_rho_HV_residual = 0;
 		}
 
 

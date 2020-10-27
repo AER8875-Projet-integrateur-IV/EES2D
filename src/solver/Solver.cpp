@@ -20,6 +20,7 @@
 */
 #include "Solver.h"
 #include "BoundaryConditions.h"
+#include "solver/Schemes.h"
 using namespace ees2d::solver;
 
 Solver::Solver(ees2d::solver::Simulation &sim, ees2d::mesh::Mesh &mesh)
@@ -70,11 +71,27 @@ void Solver::run() {
 		}
 		// ---------------------------
 
-		else{
-      ConvectiveFlux a(2,2,2,2);
-			Fc = a ;
+		else {
+			Fc = scheme::RoeScheme(Elem1ID,
+			                       Elem2ID,
+			                       iface,
+			                       m_sim,
+			                       m_mesh);
 		}
 
-		std::cout << Fc.m_rhoV <<  "/" << Fc.m_rho_uV <<  "/" << Fc.m_rho_vV <<  "/"  << Fc.m_rho_HV <<  "/" << std::endl;
+
+
+		if (Elem2ID == uint32_t(-1) || Elem2ID == uint32_t(-3)) {
+			m_sim.residuals[Elem1ID] += Fc * m_mesh.FaceSurface(iface);
+		}
+		else {
+			m_sim.residuals[Elem1ID] += (Fc * m_mesh.FaceSurface(iface));
+			m_sim.residuals[Elem2ID] -= (Fc * m_mesh.FaceSurface(iface));
+		}
+
+		//std::cout << Fc.m_rhoV << "/" << Fc.m_rho_uV << "/" << Fc.m_rho_vV << "/" << Fc.m_rho_HV << "/" << std::endl;
+	}
+	for (auto& residual : m_sim.residuals){
+    std::cout << residual.m_rhoV_residual << "/" << residual.m_rho_uV_residual << "/" << residual.m_rho_vV_residual << "/" << residual.m_rho_HV_residual << "/" << std::endl;
 	}
 }

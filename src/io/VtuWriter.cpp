@@ -60,7 +60,7 @@ void VtuWriter::writeSolution() {
 	fileStream.close();
 
 	cout << "Vtu solution file generated (at " << m_vtuFileName << " )" << std::endl;
-};
+}
 
 //----------------------------------------------------------------
 
