@@ -62,10 +62,6 @@ int main() {
 	connectivity.solve();
 
 
-	for(auto& elems : (*connectivity.get_FaceToElem())){
-		std::cout << elems[0] << "/" << elems[1] << std::endl;
-	}
-
 	MetricsData metrics;
 	metrics.compute(connectivity);
 

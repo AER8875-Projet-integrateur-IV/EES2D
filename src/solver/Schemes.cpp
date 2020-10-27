@@ -25,8 +25,10 @@ using namespace ees2d::solver;
 ConvectiveFlux scheme::RoeScheme(const uint32_t &elemID1,
                                  const uint32_t &elemID2,
                                  const uint32_t &faceid,
+                                 Solver::faceParams &faceParams,
                                  const solver::Simulation &sim,
                                  const ees2d::mesh::Mesh &mymesh) {
+
 	// Computing Roe averages
 	double rhoHat = std::sqrt(sim.rho[elemID1] * sim.rho[elemID2]);
 	double uHat = (sim.u[elemID1] * sqrt(sim.rho[elemID1]) + sim.u[elemID2] * sqrt(sim.rho[elemID2])) / (sqrt(sim.rho[elemID1]) + sqrt(sim.rho[elemID2]));
@@ -35,6 +37,11 @@ ConvectiveFlux scheme::RoeScheme(const uint32_t &elemID1,
 	double qHatSquared = uHat * uHat + vHat * vHat;
 	double cHat = sqrt((sim.gammaInf - 1) * (HHat - (qHatSquared) / 2));
 	double VHat = uHat * mymesh.FaceVector(faceid).x + uHat * mymesh.FaceVector(faceid).y;
+
+	faceParams.u = uHat;
+	faceParams.v = vHat;
+	faceParams.rho = rhoHat;
+	faceParams.p = (sim.p[elemID2] + sim.p[elemID1])/2;
 
 	// Computing deltas (jump condition)
 	double pDelta = sim.p[elemID2] - sim.p[elemID1];

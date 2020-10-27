@@ -21,8 +21,8 @@
 
 #include "io/InputParser.h"
 #include "mesh/Mesh.h"
-#include "solver/ConvectiveFlux.h"
 #include "solver/ConservativeVariables.h"
+#include "solver/ConvectiveFlux.h"
 #include "solver/Residual.h"
 #pragma once
 
@@ -32,7 +32,6 @@ namespace ees2d::solver {
 
 	struct Simulation {
 		Simulation(ees2d::mesh::Mesh &, ees2d::io::InputParser &);
-
 
 
 		// Vectors
@@ -45,9 +44,9 @@ namespace ees2d::solver {
 		std::vector<double> dt;
 		std::vector<Residual> residuals;
 		std::vector<double> Mach;
-		std::vector<double> temp;
 		std::vector<ConvectiveFlux> convectiveFluxes;
 		std::vector<ConservativeVariables> conservativeVariables;
+		std::vector<double> spectralRadii;
 
 		double uInf;
 		double vInf;
@@ -58,6 +57,8 @@ namespace ees2d::solver {
 		double gasConstantInf;
 		double gammaInf;
 		double tempInf;
+		double minResidual;
+		double Einf;
 	};
 
 }// namespace ees2d::solver

@@ -20,38 +20,46 @@
 */
 
 #pragma once
+#include "solver/Residual.h"
+namespace ees2d::solver {
 
-namespace ees2d::solver{
+	class ConservativeVariables {
 
-class ConservativeVariables {
-
-    // Conservative variables vector
-public :
-		ConservativeVariables(){};
-  ConservativeVariables(double rho, double rho_u, double rho_v, double rho_E)
-            : m_rho(rho), m_rho_u(rho_u), m_rho_v(rho_v), m_rho_E(rho_E) {}
-
+		// Conservative variables vector
+public:
+		ConservativeVariables()
+		    : m_rho(0), m_rho_u(0), m_rho_v(0), m_rho_E(0){};
+		ConservativeVariables(double rho, double rho_u, double rho_v, double rho_E)
+		    : m_rho(rho), m_rho_u(rho_u), m_rho_v(rho_v), m_rho_E(rho_E) {}
 
 
-    inline ConservativeVariables operator+(ConservativeVariables &v) {
-      return ConservativeVariables(m_rho + v.m_rho,
-               m_rho_u + v.m_rho_u,
-               m_rho_v + v.m_rho_v,
-               m_rho_E + v.m_rho_E);
-    }
+		inline ConservativeVariables &operator+(ConservativeVariables &v) {
+			this->m_rho += v.m_rho;
+			this->m_rho_u += v.m_rho_u;
+			this->m_rho_v += v.m_rho_v;
+			this->m_rho_E += v.m_rho_E;
+			return *this;
+		}
 
-    inline ConservativeVariables operator-(ConservativeVariables &v) {
-      return ConservativeVariables(m_rho - v.m_rho,
-               m_rho_u - v.m_rho_u,
-               m_rho_v - v.m_rho_v,
-               m_rho_E - v.m_rho_E);
-    }
+		inline ConservativeVariables &operator-(ConservativeVariables &v) {
+			this->m_rho -= v.m_rho;
+			this->m_rho_u -= v.m_rho_u;
+			this->m_rho_v -= v.m_rho_v;
+			this->m_rho_E -= v.m_rho_E;
+			return *this;
+		}
+
+		inline ConservativeVariables &operator+=(Residual &&v) {
+			this->m_rho += v.m_rhoV_residual;
+			this->m_rho_u += v.m_rho_uV_residual;
+			this->m_rho_v += v.m_rho_vV_residual;
+			this->m_rho_E += v.m_rho_HV_residual;
+			return *this;
+		}
 
 		double m_rho;
-    double m_rho_u;
-    double m_rho_v;
-    double m_rho_E;
-
-
-};
-}
+		double m_rho_u;
+		double m_rho_v;
+		double m_rho_E;
+	};
+}// namespace ees2d::solver

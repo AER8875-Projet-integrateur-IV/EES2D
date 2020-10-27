@@ -264,6 +264,7 @@ void Connectivity::solveNodeSurrFace() {
 				if ((jpoin != ipoin) && (m_lpoin[jpoin] != ipoin || ipoin == 0)) {
 					if (ipoin < jpoin) {
 						if (ipoin == 0) {
+							skip = false;
 							for (auto &value : doubles) {
 								if (jpoin == value) {
 									skip = true;

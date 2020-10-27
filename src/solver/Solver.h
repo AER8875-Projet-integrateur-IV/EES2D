@@ -40,7 +40,7 @@ class Solver {
 	double v=0;
 	};
 
-	faceParams faceP;
+
 
 	private:
 		  ees2d::solver::Simulation& m_sim;

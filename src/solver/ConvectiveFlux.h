@@ -27,7 +27,8 @@ namespace ees2d::solver {
 
 		// Convective flux vector
 public:
-    ConvectiveFlux(){};
+		ConvectiveFlux()
+		    : m_rhoV(0), m_rho_uV(0), m_rho_vV(0), m_rho_HV(0){};
 		ConvectiveFlux(double rhoV, double rho_uV, double rho_vV, double rho_HV)
 		    : m_rhoV(rhoV), m_rho_uV(rho_uV), m_rho_vV(rho_vV), m_rho_HV(rho_HV) {}
 

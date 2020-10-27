@@ -26,6 +26,7 @@ namespace ees2d::solver::scheme {
 	ConvectiveFlux RoeScheme(const uint32_t &elemID1,
                            const uint32_t &elemID2,
                            const uint32_t &faceid,
+                           Solver::faceParams &faceParams,
                            const solver::Simulation &sim,
                            const ees2d::mesh::Mesh &);
 

@@ -129,7 +129,7 @@ void InputParser::parse() {
 			}
 
 			if (m_spdOption == "MACH"){
-				m_velocity = m_Mach * std::sqrt(m_Gamma*m_gasConstant*m_Temp);
+				m_velocity = m_Mach * std::sqrt(m_Gamma*(m_Pressure/m_Density));
 			}
       std::cout << std::setw(40) << "Parsing Input File : " << std::setw(6) << "Done\n";
 			break;
