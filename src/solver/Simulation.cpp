@@ -42,6 +42,7 @@ Simulation::Simulation(ees2d::mesh::Mesh &mesh, ees2d::io::InputParser &simParam
 	pressureInf = simParameters.m_Pressure;
 	tempInf = simParameters.m_Temp;
 
+
 	// Initialize solution vectors
 	u.resize(mesh.N_elems);
 	v.resize(mesh.N_elems);
@@ -63,8 +64,8 @@ Simulation::Simulation(ees2d::mesh::Mesh &mesh, ees2d::io::InputParser &simParam
 	std::fill(Mach.begin(),Mach.end(),MachInf);
 	std::fill(rho.begin(), rho.end(), rhoInf);
 	std::fill(p.begin(), p.end(), pressureInf);
-  std::fill(E.begin(), E.end(), rhoInf*(0.5*(uInf*uInf+vInf*vInf) + (pressureInf/(rhoInf*(gammaInf-1))) ));
-	std::fill(H.begin(), H.end(), E[0]+pressureInf/rhoInf);
+  std::fill(E.begin(), E.end(), (simParameters.m_SpecificHeat/gammaInf)*tempInf + (uInf*uInf + vInf*vInf)/2);
+	std::fill(H.begin(), H.end(), E[0]+(pressureInf/rhoInf));
 	std::fill(dt.begin(), dt.end(), 0);
 	std::fill(residuals.begin(),residuals.end(),Residual(0,0,0,0));
 	std::fill(temp.begin(),temp.end(),tempInf);

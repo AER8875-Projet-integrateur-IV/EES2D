@@ -251,6 +251,8 @@ void Connectivity::solveNodeSurrFace() {
 	uint32_t ielem = 0;
 	uint32_t jpoin = 0;
 	std::vector<uint32_t> temp = {};
+	std::vector<uint32_t> doubles = {};
+	bool skip = false;
 
 	for (uint32_t ipoin = 0; ipoin < m_parser.get_Ngrids(); ipoin++) {
 
@@ -260,13 +262,34 @@ void Connectivity::solveNodeSurrFace() {
 			for (uint32_t inode = 0; inode < m_parser.get_NPSUE()[ielem]; inode++) {
 				jpoin = connecNodeSurrElement(inode, ielem);
 				if ((jpoin != ipoin) && (m_lpoin[jpoin] != ipoin || ipoin == 0)) {
-					if (ipoin < jpoin) {// Not sure in which order faces should be created
-						nedge += 1;
-						temp = {};
-						temp.push_back(ipoin);
-						temp.push_back(jpoin);
-						m_faceToNode.push_back(temp);
-						m_lpoin[jpoin] = ipoin;
+					if (ipoin < jpoin) {
+						if (ipoin == 0) {
+							for (auto &value : doubles) {
+								if (jpoin == value) {
+									skip = true;
+									break;
+								}
+							}
+							if (skip == true) {
+
+							} else if (skip == false) {
+								doubles.push_back(jpoin);
+								nedge += 1;
+								temp = {};
+								temp.push_back(ipoin);
+								temp.push_back(jpoin);
+								m_faceToNode.push_back(temp);
+								m_lpoin[jpoin] = ipoin;
+							}
+
+						} else {// Not sure in which order faces should be created
+							nedge += 1;
+							temp = {};
+							temp.push_back(ipoin);
+							temp.push_back(jpoin);
+							m_faceToNode.push_back(temp);
+							m_lpoin[jpoin] = ipoin;
+						}
 					}
 				}
 			}
@@ -356,10 +379,12 @@ void Connectivity::solveElemSurrFace() {
 		// Add Boundary element with the corresponding boundary ID
 		if (temp.size() == 1) {
 			for (uint32_t i = 0; i < lastBCVectorLength; i++) {
-				if (node1 == m_parser.get_boundaryConditions().back()[i] && node2 == m_parser.get_boundaryConditions()[i][1]) {
-					temp.push_back(m_parser.get_boundaryConditions()[i][2]);
-					m_elemToElem[temp[0]].push_back(m_parser.get_boundaryConditions()[i][2]);
-					break;
+				if (node1 == m_parser.get_boundaryConditions().back()[i]) {
+					if (node2 == m_parser.get_boundaryConditions()[i][1]) {
+						temp.push_back(m_parser.get_boundaryConditions()[i][2]);
+						m_elemToElem[temp[0]].push_back(m_parser.get_boundaryConditions()[i][2]);
+						break;
+					}
 				}
 			}
 		}

@@ -13,13 +13,19 @@ START
 MESH_FORMAT = SU2
 
 #Path to mesh file (from executable directory)
-MESH_FILE = ../../tests/testmesh.su2
+MESH_FILE = /home/amin/Downloads/NACA0012_65_triangles.su2
+../../tests/testmesh.su2
+
+../../tests/naca0012_euler_65x65x1_O_1B.su2
+/home/amin/Downloads/naca0012_129x129_1B_JAMESON.su2
+../../tests/testmesh.su2
+../../tests/naca0012_euler_65x65x1_O_1B.su2
 
 home/amin/Downloads/naca0012_euler_1025x1025x1_O_1B.su2
-../../tests/naca0012_euler_65x65x1_O_1B.su2
+
 /home/amin/Downloads/naca0012_euler_513x513x1_O_1B.su2
-/home/amin/Downloads/naca0012_euler_513x513x1_O_1B.su2
-/home/amin/Downloads/naca0012_129x129_1B_JAMESON.su2
+
+
 
 #Type of mesh. Options : STRUCTURED | UNSTRUCTURED
 MESH_TYPE = UNSTRUCTURED
@@ -33,7 +39,7 @@ SPEED_OPTION = MACH
 # Velocity in m/s
 VELOCITY = 0
 
-MACH = 0.6
+MACH = 0.85
 
 angle of attack in degrees
 AOA = 10.0
@@ -78,7 +84,7 @@ OPEMMP_THREADS_NUM = 4
 OUTPUT_FORMAT = VTK
 
 # Path to file output, from executable directory (without file extension)
-OUTPUT_FILE = ../../../Documents/testmesh.vtu
+OUTPUT_FILE = ../../../Documents/bla.vtu
 
 # generate log file . Options : TRUE | FALSE
 GENERATE_LOG = TRUE

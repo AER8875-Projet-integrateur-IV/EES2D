@@ -55,9 +55,16 @@ int main() {
 
 	Su2Parser parser(simulationParameters.m_meshFile);
 	parser.Parse();
-
+//  for (auto& nodes : parser.get_boundaryConditions()){
+//		std::cout << nodes[0] << "/" << nodes[1] << std::endl;
+//	}
 	Connectivity connectivity(parser);
 	connectivity.solve();
+
+
+	for(auto& elems : (*connectivity.get_FaceToElem())){
+		std::cout << elems[0] << "/" << elems[1] << std::endl;
+	}
 
 	MetricsData metrics;
 	metrics.compute(connectivity);
@@ -66,16 +73,17 @@ int main() {
 
 	Mesh mesh(connectivity, metrics);
 
+
   Simulation mysim(mesh,simulationParameters);
 
+  Solver solver(mysim,mesh);
+  solver.run();
 
 	if (simulationParameters.m_outputFormat == "VTK"){
 		VtuWriter vtufile(simulationParameters.m_outputFile, connectivity, mesh,mysim);
 		vtufile.writeSolution();
 	}
 
-	Solver solver(mysim,mesh);
-	solver.run();
 
 
 	return 0;
