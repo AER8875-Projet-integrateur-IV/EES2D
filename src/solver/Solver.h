@@ -33,6 +33,7 @@ class Solver {
 
 	void run();
 
+
 	struct faceParams{
 	double rho=0;
 	double p=0;
@@ -45,6 +46,7 @@ class Solver {
 	private:
 		  ees2d::solver::Simulation& m_sim;
 	    ees2d::mesh::Mesh& m_mesh;
+
 
 };
 

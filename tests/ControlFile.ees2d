@@ -14,11 +14,10 @@ MESH_FORMAT = SU2
 
 #Path to mesh file (from executable directory)
 MESH_FILE = ../../tests/testmesh.su2
-/home/amin/Downloads/NACA0012_65_triangles.su2
+
+
 
 /home/amin/Downloads/NACA0012_65_triangles.su2
-
-
 
 
 ../../tests/naca0012_euler_65x65x1_O_1B.su2
@@ -44,7 +43,7 @@ SPEED_OPTION = MACH
 # Velocity in m/s
 VELOCITY = 0
 
-MACH = 0.85
+MACH = 0.9
 
 angle of attack in degrees
 AOA = 2.0

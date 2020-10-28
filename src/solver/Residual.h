@@ -80,7 +80,7 @@ public:
 		}
 
 		inline double findMax(){
-			double member_variables[] {m_rhoV_residual,m_rho_uV_residual,m_rho_vV_residual,m_rho_HV_residual};
+			double member_variables[] {std::abs(m_rhoV_residual),std::abs(m_rho_uV_residual),std::abs(m_rho_vV_residual),std::abs(m_rho_HV_residual)};
 			return *std::max_element(member_variables,member_variables+4);
 		}
 

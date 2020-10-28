@@ -142,8 +142,8 @@ ConvectiveFlux BC::wall(const uint32_t &elemID1,
               const mesh::Mesh& mymesh) {
 
 	faceParams.p = sim.p[elemID1];
-	faceParams.u = (sim.u[elemID1]*mymesh.FaceVector(faceId).x + sim.v[elemID1]*mymesh.FaceVector(faceId).y)*mymesh.FaceVector(faceId).x;
-  faceParams.v = (sim.u[elemID1]*mymesh.FaceVector(faceId).x + sim.v[elemID1]*mymesh.FaceVector(faceId).y)*mymesh.FaceVector(faceId).y;
+	faceParams.u = sim.u[elemID1] - (sim.u[elemID1]*mymesh.FaceVector(faceId).x + sim.v[elemID1]*mymesh.FaceVector(faceId).y)*mymesh.FaceVector(faceId).x;
+  faceParams.v = sim.v[elemID1] - (sim.u[elemID1]*mymesh.FaceVector(faceId).x + sim.v[elemID1]*mymesh.FaceVector(faceId).y)*mymesh.FaceVector(faceId).y;
 	faceParams.rho = sim.rho[elemID1];
 
   double rhoV = 0;

@@ -31,8 +31,9 @@ void Solver::run() {
 	uint32_t iteration = 0;
 	std::cout << "Solver running ..." << std::endl;
 
+
 	double maxResidual = 1;
-	while (iteration < 3) {
+	while (iteration < 4) {
 		faceParams faceP;
 
 		// ID of Elements on both sides of each face
@@ -43,8 +44,6 @@ void Solver::run() {
 		}
 
 		// variables at face MidPoint
-
-
 		for (uint32_t iface = 0; iface < m_mesh.N_faces; iface++) {
 			// Get the elements IDs connected to the face
 			Elem1ID = m_mesh.FaceToElem(iface, 0);
@@ -62,7 +61,7 @@ void Solver::run() {
 				//Treamtement of farfield BC
 				else if (Elem2ID == uint32_t(-3)) {
 					//Treatement of Outflows
-					if (m_sim.Mach[Elem1ID] > m_sim.MachInf) {
+					if (m_sim.Mach[Elem1ID] >= (m_sim.MachInf + 1e-9)) {
 						if (m_sim.Mach[Elem1ID] >= 1) {
 							Fc = BC::farfieldSupersonicOutflow(Elem1ID, iface, faceP, m_sim, m_mesh);
 						} else if (m_sim.Mach[Elem1ID] < 1) {
@@ -70,13 +69,13 @@ void Solver::run() {
 						}
 					}
 					// Treatment of Inflows
-					else if (m_sim.Mach[Elem1ID] < m_sim.MachInf) {
+					else if (m_sim.Mach[Elem1ID] <= (m_sim.MachInf - 1e-9)) {
 						if (m_sim.Mach[Elem1ID] >= 1) {
 							Fc = BC::farfieldSupersonicInflow(Elem1ID, iface, faceP, m_sim, m_mesh);
 						} else if (m_sim.Mach[Elem1ID] < 1) {
 							Fc = BC::farfieldSubsonicInflow(Elem1ID, iface, faceP, m_sim, m_mesh);
 						}
-					} else if (m_sim.Mach[Elem1ID] == m_sim.MachInf) {
+					} else if (((m_sim.MachInf - 1e-9) < m_sim.Mach[Elem1ID]) && (m_sim.Mach[Elem1ID] < (m_sim.MachInf + 1e-9))) {
 						faceP.p = m_sim.pressureInf;
 						faceP.rho = m_sim.rhoInf;
 						faceP.u = m_sim.uInf;
@@ -90,7 +89,7 @@ void Solver::run() {
 			// ---------------------------
 
 			else {
-				Fc = scheme::RoeScheme(Elem1ID,
+				Fc = scheme::AveragingScheme(Elem1ID,
 				                       Elem2ID,
 				                       iface,
 				                       faceP,
@@ -104,25 +103,33 @@ void Solver::run() {
 			                           m_mesh.FaceSurface(iface);
 
 
-
 			// Calculating Residual
 			if (Elem2ID == uint32_t(-1) || Elem2ID == uint32_t(-3)) {
 				m_sim.residuals[Elem1ID] += (Fc * m_mesh.FaceSurface(iface));
 				m_sim.spectralRadii[Elem1ID] += elemSpectralRadii;
 			} else {
-				m_sim.residuals[Elem1ID] += (Fc * m_mesh.FaceSurface(iface));
-				m_sim.residuals[Elem2ID] -= (Fc * m_mesh.FaceSurface(iface));
+				// Calculating angle between midface-elem1Centroid and face orientation
+				std::vector<double> midFaceToElem1{m_mesh.CvolumeCentroid(Elem1ID).x - m_mesh.FaceMidPoint(iface).x,
+				                                   m_mesh.CvolumeCentroid(Elem1ID).y - m_mesh.FaceMidPoint(iface).y};
+				double midFaceToElemNorm = std::sqrt(midFaceToElem1[0] * midFaceToElem1[0] + midFaceToElem1[1] * midFaceToElem1[1]);
+				double DotProduct = midFaceToElem1[0] * m_mesh.FaceVector(iface).x + midFaceToElem1[1] * m_mesh.FaceVector(iface).y;
+
+				double angle = std::acos(DotProduct / (midFaceToElemNorm * 1)) * (180 / M_PI);
+				if (angle < 45) {
+					m_sim.residuals[Elem1ID] += (Fc * m_mesh.FaceSurface(iface));
+					m_sim.residuals[Elem2ID] -= (Fc * m_mesh.FaceSurface(iface));
+				} else {
+					m_sim.residuals[Elem1ID] -= (Fc * m_mesh.FaceSurface(iface));
+					m_sim.residuals[Elem2ID] += (Fc * m_mesh.FaceSurface(iface));
+				}
 				m_sim.spectralRadii[Elem1ID] += elemSpectralRadii;
 				m_sim.spectralRadii[Elem2ID] += elemSpectralRadii;
 			}
-		}
-		for(auto& spectral: m_sim.spectralRadii){
-			std::cout <<spectral<<std::endl;
-		}
-		for (auto &res : m_sim.residuals) {
-			std::cout << res.m_rhoV_residual << "/" << res.m_rho_uV_residual << "/" << res.m_rho_vV_residual << "/" << res.m_rho_HV_residual << std::endl;
+			std::cout << Fc.m_rhoV << "/" << Fc.m_rho_uV << "/" << Fc.m_rho_vV << "/" << Fc.m_rho_HV << "/" << std::endl;
 		}
 
+		// -------------------------------------------------
+		// Update conservative variables (u v rho E) and derived values (p H Mach)
 
 		double dtOverArea;
 		for (uint32_t ielem = 0; ielem < m_sim.dt.size(); ielem++) {
@@ -152,14 +159,15 @@ void Solver::run() {
 			m_sim.H[ielem] = m_sim.E[ielem] + m_sim.p[ielem] / m_sim.rho[ielem];
 			m_sim.Mach[ielem] = std::sqrt(m_sim.u[ielem] * m_sim.u[ielem] + m_sim.v[ielem] * m_sim.v[ielem]) / std::sqrt(m_sim.gammaInf * (m_sim.p[ielem] / m_sim.rho[ielem]));
 		}
+
 		maxResidual = 0;
 		double maxResidualinElement = 0;
 		for (auto &ResidualinElement : m_sim.residuals) {
-			std::cout << ResidualinElement.m_rhoV_residual << "/"
-			          << ResidualinElement.m_rho_uV_residual << "/"
-			          << ResidualinElement.m_rho_vV_residual << "/"
-			          << ResidualinElement.m_rho_HV_residual << std::endl;
 
+//			std::cout << ResidualinElement.m_rhoV_residual << "/"
+//			          << ResidualinElement.m_rho_uV_residual << "/"
+//			          << ResidualinElement.m_rho_vV_residual << "/"
+//			          << ResidualinElement.m_rho_HV_residual << std::endl;
 			maxResidualinElement = ResidualinElement.findMax();
 			if (maxResidualinElement > maxResidual) {
 
@@ -170,6 +178,5 @@ void Solver::run() {
 		iteration += 1;
 		std::cout << "Iteration :" << iteration << std::endl;
 		std::cout << "maxResidual :" << maxResidual << std::endl;
-
 	}
 }

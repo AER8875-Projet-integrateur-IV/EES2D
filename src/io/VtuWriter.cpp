@@ -166,15 +166,15 @@ void VtuWriter::writePointsData(ofstream &) {
 
 //---------------------------------------------------------------
 void VtuWriter::writeCellsData(ofstream &fileStream) {
-	fileStream << "<CellData Scalars=\"Areas\" Vectors=\"velocity\" >"
+	fileStream << "<CellData Scalars=\"Mach\" Vectors=\"velocity\" >"
 	           << "\n"
-	           << "<DataArray type=\"Float64\" Name=\"Areas\" format=\"ascii\" >"
+	           << "<DataArray type=\"Float64\" Name=\"Mach\" format=\"ascii\" >"
 	           << "\n";
 
 	uint32_t returnline = 0;
 	for (uint32_t i = 0; i < m_connectivity.get_parser().get_Nelems(); i++) {
 
-		fileStream << m_mesh.CvolumeArea(i) << " ";
+		fileStream << m_sim.Mach[i] << " ";
 		returnline += 1;
 		if (returnline % 10 == 0) {
 			fileStream << "\n";
