@@ -55,9 +55,7 @@ int main() {
 
 	Su2Parser parser(simulationParameters.m_meshFile);
 	parser.Parse();
-//  for (auto& nodes : parser.get_boundaryConditions()){
-//		std::cout << nodes[0] << "/" << nodes[1] << std::endl;
-//	}
+
 	Connectivity connectivity(parser);
 	connectivity.solve();
 
@@ -65,7 +63,10 @@ int main() {
 	MetricsData metrics;
 	metrics.compute(connectivity);
 
-
+//  auto& facevectors= metrics.facesVector;
+//	for (auto& orientation : facevectors){
+//		std::cout << orientation << std::endl;
+//	}
 
 	Mesh mesh(connectivity, metrics);
 

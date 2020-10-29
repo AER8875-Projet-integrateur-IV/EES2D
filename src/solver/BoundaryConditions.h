@@ -31,31 +31,31 @@ namespace ees2d::solver::BC {
 	                                                       const uint32_t &faceid,
 	                                                       solver::Solver::faceParams &faceParams,
 	                                                       const solver::Simulation &sim,
-	                                                       const ees2d::mesh::Mesh &);
+	                                                        ees2d::mesh::Mesh &);
 
 	ees2d::solver::ConvectiveFlux farfieldSupersonicOutflow(const uint32_t &elemID1,
 	                                                        const uint32_t &faceid,
 	                                                        solver::Solver::faceParams &faceParams,
 	                                                        const solver::Simulation &sim,
-	                                                        const ees2d::mesh::Mesh &);
+	                                                         ees2d::mesh::Mesh &);
 
 	ees2d::solver::ConvectiveFlux farfieldSubsonicInflow(const uint32_t &elemID1,
 	                                                     const uint32_t &faceid,
 	                                                     solver::Solver::faceParams &faceParams,
 	                                                     const solver::Simulation &sim,
-	                                                     const ees2d::mesh::Mesh &);
+	                                                      ees2d::mesh::Mesh &);
 
 	ees2d::solver::ConvectiveFlux farfieldSubsonicOutflow(const uint32_t &elemID1,
 	                                                      const uint32_t &faceid,
 	                                                      solver::Solver::faceParams &faceParams,
 	                                                      const solver::Simulation &sim,
-	                                                      const ees2d::mesh::Mesh &);
+	                                                       ees2d::mesh::Mesh &);
 
 	ees2d::solver::ConvectiveFlux wall(const uint32_t &elemID1,
 	                                   const uint32_t &faceid,
 	                                   solver::Solver::faceParams &faceParams,
 	                                   const solver::Simulation &sim,
-	                                   const ees2d::mesh::Mesh &);
+	                                    ees2d::mesh::Mesh &);
 
 
 }// namespace ees2d::solver::BC

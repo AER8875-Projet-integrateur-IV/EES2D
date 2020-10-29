@@ -13,12 +13,12 @@ START
 MESH_FORMAT = SU2
 
 #Path to mesh file (from executable directory)
-MESH_FILE = ../../tests/testmesh.su2
+MESH_FILE = /home/amin/Downloads/NACA0012_65_triangles.su2
+../../tests/testmesh.su2
 
 
 
-/home/amin/Downloads/NACA0012_65_triangles.su2
-
+/home/amin/Downloads/square_diagonalized_5x5.su2
 
 ../../tests/naca0012_euler_65x65x1_O_1B.su2
 /home/amin/Downloads/naca0012_129x129_1B_JAMESON.su2
@@ -43,10 +43,10 @@ SPEED_OPTION = MACH
 # Velocity in m/s
 VELOCITY = 0
 
-MACH = 0.9
+MACH = 1.5
 
 angle of attack in degrees
-AOA = 2.0
+AOA = 0.0
 
 # Airflow pressure in Pa
 AIRFLOW_PRESSURE = 101325

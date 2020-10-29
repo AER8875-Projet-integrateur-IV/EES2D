@@ -80,13 +80,17 @@ namespace ees2d::mesh {
 			return m_metrics.facesMidPoint[FaceId];
 		}
 		//---------------------------------------------------
-		inline const ees2d::utils::Vector2<double> &FaceVector(const uint32_t &FaceId) const {
+		inline  ees2d::utils::Vector2<double> &FaceVector(const uint32_t &FaceId) {
 			return m_metrics.facesVector[FaceId];
 		}
 		//---------------------------------------------------
 		inline const ees2d::utils::Vector2<double> &CvolumeCentroid(const uint32_t &ElemId) const {
 			return m_metrics.CvolumesCentroid[ElemId];
 		}
+		inline const uint32_t &NbOfNodesSurroundingElem(const uint32_t &ElemId) const {
+			return m_connectivity.get_parser().get_NPSUE()[ElemId];
+		}
+
 
 		size_t N_elems;
 		size_t N_faces;

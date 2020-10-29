@@ -28,14 +28,14 @@ namespace ees2d::solver::scheme {
                            const uint32_t &faceid,
                            Solver::faceParams &faceParams,
                            const solver::Simulation &sim,
-                           const ees2d::mesh::Mesh &);
+                            ees2d::mesh::Mesh &);
 
 	ConvectiveFlux AveragingScheme(const uint32_t &elemID1,
                                  const uint32_t &elemID2,
                                  const uint32_t &faceid,
                                  Solver::faceParams &faceParams,
                                  const solver::Simulation &sim,
-                                 const ees2d::mesh::Mesh &);
+                                  ees2d::mesh::Mesh &);
 
 }
 

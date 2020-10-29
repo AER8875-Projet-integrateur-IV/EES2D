@@ -29,7 +29,7 @@ ConvectiveFlux BC::farfieldSupersonicInflow(const uint32_t &elemID1,
                                             const uint32_t & faceId,
                                             Solver::faceParams &faceParams,
                                             const Simulation &sim,
-                                            const mesh::Mesh& mymesh) {
+                                             mesh::Mesh& mymesh) {
   faceParams.p = sim.pressureInf;
   faceParams.u = sim.uInf;
   faceParams.v = sim.vInf;
@@ -43,12 +43,7 @@ ConvectiveFlux BC::farfieldSupersonicInflow(const uint32_t &elemID1,
   double rho_vV = faceParams.rho * faceParams.v * V + mymesh.FaceVector(faceId).y*faceParams.p;
 	double rho_HV = sim.H[elemID1]*faceParams.rho*V;
 
-  double rhoVoriented = rhoV < 0 ? rhoV : -rhoV ;
-  double rho_uVoriented = rho_uV < 0 ? rho_uV : -rho_uV ;
-  double rho_vVoriented = rho_vV < 0 ? rho_vV : -rho_vV ;
-  double rho_HVoriented = rho_HV < 0 ? rho_HV : -rho_HV ;
-
-  ConvectiveFlux Fc(rhoVoriented,rho_uVoriented,rho_vVoriented,rho_HVoriented);
+  ConvectiveFlux Fc(rhoV,rho_uV,rho_vV,rho_HV);
 	return Fc;
 
 }
@@ -57,7 +52,7 @@ ConvectiveFlux BC::farfieldSupersonicOutflow(const uint32_t &elemID1,
                                              const uint32_t & faceId,
                                              Solver::faceParams &faceParams,
                                              const Simulation &sim,
-                                             const mesh::Mesh& mymesh) {
+                                              mesh::Mesh& mymesh) {
 
   faceParams.p = sim.p[elemID1];
   faceParams.u = sim.u[elemID1];
@@ -69,12 +64,9 @@ ConvectiveFlux BC::farfieldSupersonicOutflow(const uint32_t &elemID1,
   double rho_uV = faceParams.rho * faceParams.u * V + mymesh.FaceVector(faceId).x*faceParams.p;
   double rho_vV = faceParams.rho * faceParams.v * V + mymesh.FaceVector(faceId).y*faceParams.p;
   double rho_HV = sim.H[elemID1]*faceParams.rho*V;
-	double rhoVoriented = rhoV < 0 ? rhoV : -rhoV ;
-	double rho_uVoriented = rho_uV < 0 ? rho_uV : -rho_uV ;
-  double rho_vVoriented = rho_vV < 0 ? rho_vV : -rho_vV ;
-  double rho_HVoriented = rho_HV < 0 ? rho_HV : -rho_HV ;
 
-  ConvectiveFlux Fc(rhoVoriented,rho_uVoriented,rho_vVoriented,rho_HVoriented);
+
+  ConvectiveFlux Fc(rhoV,rho_uV,rho_vV,rho_HV);
   return Fc;
 
 }
@@ -83,14 +75,14 @@ ConvectiveFlux BC::farfieldSubsonicInflow(const uint32_t &elemID1,
                                 const uint32_t & faceId,
                                 Solver::faceParams &faceParams,
                                 const Simulation &sim,
-                                const mesh::Mesh& mymesh)
+                                 mesh::Mesh& mymesh)
 {
 	// face conservative values (p,rho,u,v) for a farfield Subsonic inflow boundary condition
 
 	double c_inside = std::sqrt(sim.gammaInf*(sim.p[elemID1]/sim.rho[elemID1])) ;//speed of sound inside domain
   faceParams.p = (0.5)*(sim.pressureInf+sim.p[elemID1] - sim.rho[elemID1]*c_inside*(mymesh.FaceVector(faceId).x*(sim.uInf-sim.u[elemID1])
 	                                                                                          + mymesh.FaceVector(faceId).y*(sim.vInf -sim.v[elemID1])));
-	faceParams.rho = sim.rhoInf * (faceParams.p-sim.pressureInf)/(c_inside*c_inside);
+	faceParams.rho = sim.rhoInf + (faceParams.p-sim.pressureInf)/(c_inside*c_inside);
 
 	faceParams.u = sim.uInf - mymesh.FaceVector(faceId).x*(sim.pressureInf-faceParams.p)/(sim.rho[elemID1]*c_inside);
   faceParams.v = sim.vInf - mymesh.FaceVector(faceId).y*(sim.pressureInf-faceParams.p)/(sim.rho[elemID1]*c_inside);
@@ -101,7 +93,7 @@ ConvectiveFlux BC::farfieldSubsonicInflow(const uint32_t &elemID1,
   double rho_vV = faceParams.rho * faceParams.v * V + mymesh.FaceVector(faceId).y*faceParams.p;
   double rho_HV = sim.H[elemID1]*faceParams.rho*V;
 
-  ConvectiveFlux Fc(std::abs(rhoV),std::abs(rho_uV),std::abs(rho_vV),std::abs(rho_HV));
+  ConvectiveFlux Fc(rhoV,rho_uV,rho_vV,rho_HV);
   return Fc;
 
 }
@@ -112,7 +104,7 @@ ConvectiveFlux BC::farfieldSubsonicOutflow(const uint32_t &elemID1,
                                  const uint32_t & faceId,
                                  Solver::faceParams &faceParams,
                                  const Simulation &sim,
-                                 const mesh::Mesh& mymesh) {
+                                  mesh::Mesh& mymesh) {
 
   double c_inside = std::sqrt(sim.gammaInf*(sim.p[elemID1]/sim.rho[elemID1])) ; ;
 
@@ -127,7 +119,7 @@ ConvectiveFlux BC::farfieldSubsonicOutflow(const uint32_t &elemID1,
   double rho_vV = faceParams.rho * faceParams.v * V + mymesh.FaceVector(faceId).y*faceParams.p;
   double rho_HV = sim.H[elemID1]*faceParams.rho*V;
 
-  ConvectiveFlux Fc(std::abs(rhoV),std::abs(rho_uV),std::abs(rho_vV),std::abs(rho_HV));
+  ConvectiveFlux Fc(rhoV,rho_uV,rho_vV,rho_HV);
   return Fc;
 
 
@@ -139,7 +131,7 @@ ConvectiveFlux BC::wall(const uint32_t &elemID1,
               const uint32_t & faceId,
               Solver::faceParams &faceParams,
               const ees2d::solver::Simulation &sim,
-              const mesh::Mesh& mymesh) {
+               mesh::Mesh& mymesh) {
 
 	faceParams.p = sim.p[elemID1];
 	faceParams.u = sim.u[elemID1] - (sim.u[elemID1]*mymesh.FaceVector(faceId).x + sim.v[elemID1]*mymesh.FaceVector(faceId).y)*mymesh.FaceVector(faceId).x;
@@ -147,8 +139,8 @@ ConvectiveFlux BC::wall(const uint32_t &elemID1,
 	faceParams.rho = sim.rho[elemID1];
 
   double rhoV = 0;
-  double rho_uV = std::abs(mymesh.FaceVector(faceId).x*faceParams.p);
-  double rho_vV = std::abs(mymesh.FaceVector(faceId).y*faceParams.p);
+  double rho_uV = mymesh.FaceVector(faceId).x*faceParams.p;
+  double rho_vV = mymesh.FaceVector(faceId).y*faceParams.p;
   double rho_HV = 0;
 
   ConvectiveFlux Fc(rhoV,rho_uV,rho_vV,rho_HV);

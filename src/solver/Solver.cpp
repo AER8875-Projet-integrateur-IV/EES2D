@@ -24,7 +24,8 @@
 using namespace ees2d::solver;
 
 Solver::Solver(ees2d::solver::Simulation &sim, ees2d::mesh::Mesh &mesh)
-    : m_sim(sim), m_mesh(mesh) {}
+    : m_sim(sim), m_mesh(mesh) {
+}
 
 // ---------------------------------------
 void Solver::run() {
@@ -33,8 +34,8 @@ void Solver::run() {
 
 
 	double maxResidual = 1;
-	while (iteration < 4) {
-		faceParams faceP;
+	while (maxResidual > 1e-5) {
+
 
 		// ID of Elements on both sides of each face
 		uint32_t Elem1ID;
@@ -42,54 +43,48 @@ void Solver::run() {
 		for (auto &residual : m_sim.residuals) {
 			residual.reset();
 		}
+		for(auto& spec : m_sim.spectralRadii){
+			spec = 0;
+		}
 
 		// variables at face MidPoint
 		for (uint32_t iface = 0; iface < m_mesh.N_faces; iface++) {
+
+			faceParams faceP;
 			// Get the elements IDs connected to the face
 			Elem1ID = m_mesh.FaceToElem(iface, 0);
 			Elem2ID = m_mesh.FaceToElem(iface, 1);
+
+			// Elem 1ID is the looped node
+
+
+			std::vector<double> midFaceToElem1{m_mesh.CvolumeCentroid(Elem1ID).x - m_mesh.FaceMidPoint(iface).x,
+			                                   m_mesh.CvolumeCentroid(Elem1ID).y - m_mesh.FaceMidPoint(iface).y};
+			double midFaceToElemNorm = std::sqrt(midFaceToElem1[0] * midFaceToElem1[0] + midFaceToElem1[1] * midFaceToElem1[1]);
+			double DotProduct = midFaceToElem1[0] * m_mesh.FaceVector(iface).x + midFaceToElem1[1] * m_mesh.FaceVector(iface).y;
+			double angle = std::acos(DotProduct / (midFaceToElemNorm * 1)) * (180 / M_PI);
+			if (angle < 90) {
+				m_mesh.FaceVector(iface).x *= -1;
+				m_mesh.FaceVector(iface).y *= -1;
+			}
+
+			//Initialize Convective Flux
 			ConvectiveFlux Fc;
 
-			// Check if boundary cells connected to the face
-			// -----------------------
+			// if boundary cells connected to the face
 			if (Elem2ID == uint32_t(-1) || Elem2ID == uint32_t(-3)) {
 
-				//Treatement of wall BC
-				if (Elem2ID == uint32_t(-1)) {
-					Fc = BC::wall(Elem1ID, iface, faceP, m_sim, m_mesh);
-				}
-				//Treamtement of farfield BC
-				else if (Elem2ID == uint32_t(-3)) {
-					//Treatement of Outflows
-					if (m_sim.Mach[Elem1ID] >= (m_sim.MachInf + 1e-9)) {
-						if (m_sim.Mach[Elem1ID] >= 1) {
-							Fc = BC::farfieldSupersonicOutflow(Elem1ID, iface, faceP, m_sim, m_mesh);
-						} else if (m_sim.Mach[Elem1ID] < 1) {
-							Fc = BC::farfieldSubsonicOutflow(Elem1ID, iface, faceP, m_sim, m_mesh);
-						}
-					}
-					// Treatment of Inflows
-					else if (m_sim.Mach[Elem1ID] <= (m_sim.MachInf - 1e-9)) {
-						if (m_sim.Mach[Elem1ID] >= 1) {
-							Fc = BC::farfieldSupersonicInflow(Elem1ID, iface, faceP, m_sim, m_mesh);
-						} else if (m_sim.Mach[Elem1ID] < 1) {
-							Fc = BC::farfieldSubsonicInflow(Elem1ID, iface, faceP, m_sim, m_mesh);
-						}
-					} else if (((m_sim.MachInf - 1e-9) < m_sim.Mach[Elem1ID]) && (m_sim.Mach[Elem1ID] < (m_sim.MachInf + 1e-9))) {
-						faceP.p = m_sim.pressureInf;
-						faceP.rho = m_sim.rhoInf;
-						faceP.u = m_sim.uInf;
-						faceP.v = m_sim.vInf;
-						Fc = ConvectiveFlux(0, 0, 0, 0);
-					}
-				}
-
+				Fc = computeBCFlux(Elem1ID, Elem2ID, faceP, iface);
 
 			}
-			// ---------------------------
 
+			// if internal face
 			else {
-				Fc = scheme::AveragingScheme(Elem1ID,
+				if (Elem2ID < Elem1ID) {
+					std::swap(Elem2ID, Elem1ID);
+				}
+
+				Fc = scheme::RoeScheme(Elem1ID,
 				                       Elem2ID,
 				                       iface,
 				                       faceP,
@@ -97,86 +92,157 @@ void Solver::run() {
 				                       m_mesh);
 			}
 
-			//std::cout << Fc.m_rhoV << "/" << Fc.m_rho_uV << "/" << Fc.m_rho_vV << "/" << Fc.m_rho_HV << std::endl;
-			double elemSpectralRadii = (std::abs(faceP.u * m_mesh.FaceVector(iface).x + faceP.v * m_mesh.FaceVector(iface).y) +
-			                            sqrt(m_sim.gammaInf * (faceP.p / faceP.rho))) *
-			                           m_mesh.FaceSurface(iface);
+			// Update residual of elements connected to face
+			updateResidual(Elem1ID, Elem2ID, Fc, iface);
 
+			// Update spectral radiation for timestep calculation
+			updateSpectralRadii(Elem1ID, Elem2ID, faceP, iface);
 
-			// Calculating Residual
-			if (Elem2ID == uint32_t(-1) || Elem2ID == uint32_t(-3)) {
-				m_sim.residuals[Elem1ID] += (Fc * m_mesh.FaceSurface(iface));
-				m_sim.spectralRadii[Elem1ID] += elemSpectralRadii;
-			} else {
-				// Calculating angle between midface-elem1Centroid and face orientation
-				std::vector<double> midFaceToElem1{m_mesh.CvolumeCentroid(Elem1ID).x - m_mesh.FaceMidPoint(iface).x,
-				                                   m_mesh.CvolumeCentroid(Elem1ID).y - m_mesh.FaceMidPoint(iface).y};
-				double midFaceToElemNorm = std::sqrt(midFaceToElem1[0] * midFaceToElem1[0] + midFaceToElem1[1] * midFaceToElem1[1]);
-				double DotProduct = midFaceToElem1[0] * m_mesh.FaceVector(iface).x + midFaceToElem1[1] * m_mesh.FaceVector(iface).y;
-
-				double angle = std::acos(DotProduct / (midFaceToElemNorm * 1)) * (180 / M_PI);
-				if (angle < 45) {
-					m_sim.residuals[Elem1ID] += (Fc * m_mesh.FaceSurface(iface));
-					m_sim.residuals[Elem2ID] -= (Fc * m_mesh.FaceSurface(iface));
-				} else {
-					m_sim.residuals[Elem1ID] -= (Fc * m_mesh.FaceSurface(iface));
-					m_sim.residuals[Elem2ID] += (Fc * m_mesh.FaceSurface(iface));
-				}
-				m_sim.spectralRadii[Elem1ID] += elemSpectralRadii;
-				m_sim.spectralRadii[Elem2ID] += elemSpectralRadii;
-			}
-			std::cout << Fc.m_rhoV << "/" << Fc.m_rho_uV << "/" << Fc.m_rho_vV << "/" << Fc.m_rho_HV << "/" << std::endl;
+			//std::cout << faceP.rho << "/" << faceP.u << "/" << faceP.v << "/" << faceP.p << std::endl;
 		}
 
-		// -------------------------------------------------
-		// Update conservative variables (u v rho E) and derived values (p H Mach)
+		// Loop through all elements to update timesteps and computes variables
+		double courantNumber = 0.69;
+		for (uint32_t elem = 0; elem < m_sim.dt.size(); elem++) {
 
-		double dtOverArea;
-		for (uint32_t ielem = 0; ielem < m_sim.dt.size(); ielem++) {
-			m_sim.dt[ielem] = 0.69 * m_mesh.CvolumeArea(ielem) / (m_sim.spectralRadii[ielem]);//Sigma chosen for second-order scheme with 3 stages
-			dtOverArea = (m_sim.dt[ielem] * (-1)) / m_mesh.CvolumeArea(ielem);
+			// Update time
+			updateLocalTimeSteps(elem, courantNumber);
 
+			// Update delta W of conservative Variables (rho, u ,v, E)
+			updatedeltaW(elem);
 
-			//Computing delta vector of conservative variables values
-			ConservativeVariables deltaW(m_sim.residuals[ielem].m_rhoV_residual * dtOverArea,
-			                             m_sim.residuals[ielem].m_rho_uV_residual * dtOverArea,
-			                             m_sim.residuals[ielem].m_rho_vV_residual * dtOverArea,
-			                             m_sim.residuals[ielem].m_rho_HV_residual * dtOverArea);
-
-			// Updating conservative Variables
-			m_sim.conservativeVariables[ielem].m_rho += deltaW.m_rho;
-			m_sim.conservativeVariables[ielem].m_rho_u += deltaW.m_rho_u;
-			m_sim.conservativeVariables[ielem].m_rho_v += deltaW.m_rho_v;
-			m_sim.conservativeVariables[ielem].m_rho_E += deltaW.m_rho_E;
-
-
-			m_sim.rho[ielem] = m_sim.conservativeVariables[ielem].m_rho;
-			m_sim.u[ielem] = m_sim.conservativeVariables[ielem].m_rho_u / m_sim.rho[ielem];
-			m_sim.v[ielem] = m_sim.conservativeVariables[ielem].m_rho_v / m_sim.rho[ielem];
-			m_sim.E[ielem] = m_sim.conservativeVariables[ielem].m_rho_E / m_sim.rho[ielem];
-			m_sim.p[ielem] = (m_sim.gammaInf - 1) * m_sim.rho[ielem] * (m_sim.E[ielem] - ((m_sim.u[ielem] * m_sim.u[ielem] + m_sim.v[ielem] * m_sim.v[ielem]) / 2));
-
-			m_sim.H[ielem] = m_sim.E[ielem] + m_sim.p[ielem] / m_sim.rho[ielem];
-			m_sim.Mach[ielem] = std::sqrt(m_sim.u[ielem] * m_sim.u[ielem] + m_sim.v[ielem] * m_sim.v[ielem]) / std::sqrt(m_sim.gammaInf * (m_sim.p[ielem] / m_sim.rho[ielem]));
+			// update conservative and primitve variables (rho, u, v, E , p , M ,H)
+			updateVariables(elem);
 		}
 
-		maxResidual = 0;
-		double maxResidualinElement = 0;
-		for (auto &ResidualinElement : m_sim.residuals) {
-
-//			std::cout << ResidualinElement.m_rhoV_residual << "/"
-//			          << ResidualinElement.m_rho_uV_residual << "/"
-//			          << ResidualinElement.m_rho_vV_residual << "/"
-//			          << ResidualinElement.m_rho_HV_residual << std::endl;
-			maxResidualinElement = ResidualinElement.findMax();
-			if (maxResidualinElement > maxResidual) {
-
-				maxResidual = maxResidualinElement;
-			}
-		}
+		maxResidual = findMaxResidual();
 
 		iteration += 1;
-		std::cout << "Iteration :" << iteration << std::endl;
-		std::cout << "maxResidual :" << maxResidual << std::endl;
+//		std::cout << "Iteration :" << iteration << std::endl;
+//		std::cout << "maxResidual :" << maxResidual << std::endl;
 	}
+}
+
+//----------------------------------------------------------------
+
+ConvectiveFlux Solver::computeBCFlux(const uint32_t &Elem1ID, const uint32_t &Elem2ID, faceParams &faceP, const uint32_t &iface) {
+
+	ConvectiveFlux Fc;
+
+	// Contravariant Velocity
+	double V = m_sim.u[Elem1ID] * m_mesh.FaceVector(iface).x + m_sim.v[Elem1ID] * m_mesh.FaceVector(iface).y;
+
+	//Treatement of wall BC
+	if (Elem2ID == uint32_t(-1)) {
+		Fc = BC::wall(Elem1ID, iface, faceP, m_sim, m_mesh);
+	}
+
+	//Treamtement of farfield BC
+	else if (Elem2ID == uint32_t(-3)) {
+		//Treatement of Outflows
+		if (m_sim.Mach[Elem1ID] >= 1 && V > 0) {
+			Fc = BC::farfieldSupersonicOutflow(Elem1ID, iface, faceP, m_sim, m_mesh);
+		} else if (m_sim.Mach[Elem1ID] < 1 && V > 0) {
+			Fc = BC::farfieldSubsonicOutflow(Elem1ID, iface, faceP, m_sim, m_mesh);
+		}
+		// Treatment of Inflows
+
+		else if (m_sim.Mach[Elem1ID] >= 1 && V <= 0) {
+			Fc = BC::farfieldSupersonicInflow(Elem1ID, iface, faceP, m_sim, m_mesh);
+		} else if (m_sim.Mach[Elem1ID] < 1 && V <= 0) {
+			Fc = BC::farfieldSubsonicInflow(Elem1ID, iface, faceP, m_sim, m_mesh);
+		}
+
+	}
+
+	return Fc;
+}
+
+//-------------------------------------------
+
+void Solver::updateResidual(const uint32_t &Elem1ID, const uint32_t &Elem2ID, ConvectiveFlux &Fc, const uint32_t &iface) {
+	// Calculating Residual if BC
+	if (Elem2ID == uint32_t(-1) || Elem2ID == uint32_t(-3)) {
+		m_sim.residuals[Elem1ID] += (Fc * m_mesh.FaceSurface(iface));
+		// Calculating Residual if internal face
+	} else {
+
+		m_sim.residuals[Elem1ID] += (Fc * m_mesh.FaceSurface(iface));
+		m_sim.residuals[Elem2ID] -= (Fc * m_mesh.FaceSurface(iface));
+	}
+}
+// ----------------------------------------------------
+
+
+void Solver::updateSpectralRadii(const uint32_t &Elem1ID, const uint32_t &Elem2ID, Solver::faceParams &faceP, const uint32_t &iface) {
+
+	double elemSpectralRadii = (std::abs((faceP.u * m_mesh.FaceVector(iface).x + faceP.v * m_mesh.FaceVector(iface).y)) +
+	                            sqrt(m_sim.gammaInf * (faceP.p / faceP.rho)) )*
+	                           m_mesh.FaceSurface(iface);
+
+	if (Elem2ID == uint32_t(-1) || Elem2ID == uint32_t(-3)) {
+		m_sim.spectralRadii[Elem1ID] += elemSpectralRadii;
+	} else {
+		m_sim.spectralRadii[Elem1ID] += elemSpectralRadii;
+		m_sim.spectralRadii[Elem2ID] += elemSpectralRadii;
+	}
+}
+
+// ----------------------------------------------------------------
+
+
+void Solver::updateLocalTimeSteps(const uint32_t &ielem, double &courantNumber) {
+	m_sim.dt[ielem] = courantNumber * m_mesh.CvolumeArea(ielem) / (m_sim.spectralRadii[ielem]);
+}
+// ----------------------------------------------------------------
+
+void Solver::updatedeltaW(const uint32_t &elem) {
+
+	double dtOverArea = (m_sim.dt[elem] * (-1)) / m_mesh.CvolumeArea(elem);
+	//Computing delta vector of conservative variables values
+	ConservativeVariables deltaW(m_sim.residuals[elem].m_rhoV_residual * dtOverArea,
+	                             m_sim.residuals[elem].m_rho_uV_residual * dtOverArea,
+	                             m_sim.residuals[elem].m_rho_vV_residual * dtOverArea,
+	                             m_sim.residuals[elem].m_rho_HV_residual * dtOverArea);
+
+	// Updating conservative Variables
+	m_sim.conservativeVariables[elem].m_rho += deltaW.m_rho;
+	m_sim.conservativeVariables[elem].m_rho_u += deltaW.m_rho_u;
+	m_sim.conservativeVariables[elem].m_rho_v += deltaW.m_rho_v;
+	m_sim.conservativeVariables[elem].m_rho_E += deltaW.m_rho_E;
+}
+
+// ----------------------------------------------------
+
+
+void Solver::updateVariables(const uint32_t &elem) {
+	m_sim.rho[elem] = m_sim.conservativeVariables[elem].m_rho;
+	m_sim.u[elem] = m_sim.conservativeVariables[elem].m_rho_u / m_sim.rho[elem];
+	m_sim.v[elem] = m_sim.conservativeVariables[elem].m_rho_v / m_sim.rho[elem];
+	m_sim.E[elem] = m_sim.conservativeVariables[elem].m_rho_E / m_sim.rho[elem];
+	m_sim.p[elem] = (m_sim.gammaInf - 1) * m_sim.rho[elem] * (m_sim.E[elem] - ((m_sim.u[elem] * m_sim.u[elem] + m_sim.v[elem] * m_sim.v[elem]) / 2));
+
+	m_sim.H[elem] = m_sim.E[elem] + (m_sim.p[elem] / m_sim.rho[elem]);
+	m_sim.Mach[elem] = std::sqrt(m_sim.u[elem] * m_sim.u[elem] + m_sim.v[elem] * m_sim.v[elem]) / std::sqrt(m_sim.gammaInf * (m_sim.p[elem] / m_sim.rho[elem]));
+}
+
+// ----------------------------------------------------
+
+double Solver::findMaxResidual() {
+	double maxResidual = 0;
+	double maxResidualinElement = 0;
+	for (auto &ResidualinElement : m_sim.residuals) {
+
+		//			std::cout << ResidualinElement.m_rhoV_residual << "/"
+		//			          << ResidualinElement.m_rho_uV_residual << "/"
+		//			          << ResidualinElement.m_rho_vV_residual << "/"
+		//			          << ResidualinElement.m_rho_HV_residual << std::endl;
+		maxResidualinElement = ResidualinElement.findMax();
+
+		if (maxResidualinElement > maxResidual) {
+
+			maxResidual = maxResidualinElement;
+		}
+	}
+	return maxResidual;
 }

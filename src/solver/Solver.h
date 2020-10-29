@@ -21,33 +21,36 @@
 
 #pragma once
 
-#include "solver/Simulation.h"
-#include "solver/ConvectiveFlux.h"
 #include "solver/ConservativeVariables.h"
+#include "solver/ConvectiveFlux.h"
+#include "solver/Simulation.h"
 
 namespace ees2d::solver {
 
-class Solver {
-	public:
-	Solver(ees2d::solver::Simulation&,ees2d::mesh::Mesh&);
+	class Solver {
+public:
+		Solver(ees2d::solver::Simulation &, ees2d::mesh::Mesh &);
 
-	void run();
+		struct faceParams {
+			double rho = 0;
+			double p = 0;
+			double u = 0;
+			double v = 0;
+		};
+
+		void run();
+		ConvectiveFlux computeBCFlux(const uint32_t &, const uint32_t &, Solver::faceParams &, const uint32_t &);
+		void updateResidual(const uint32_t &Elem1ID, const uint32_t &Elem2ID, ConvectiveFlux &Fc, const uint32_t &iface);
+		void updateSpectralRadii(const uint32_t &Elem1ID, const uint32_t &Elem2ID, Solver::faceParams &faceP, const uint32_t &iface);
+		void updateLocalTimeSteps(const uint32_t &ielem, double &courantNumber);
+		void updatedeltaW(const uint32_t& elem);
+		void updateVariables(const uint32_t& elem);
+		double findMaxResidual();
 
 
-	struct faceParams{
-	double rho=0;
-	double p=0;
-	double u=0;
-	double v=0;
+private:
+		ees2d::solver::Simulation &m_sim;
+		ees2d::mesh::Mesh &m_mesh;
 	};
 
-
-
-	private:
-		  ees2d::solver::Simulation& m_sim;
-	    ees2d::mesh::Mesh& m_mesh;
-
-
-};
-
-} // namespace ees2d::solver
+}// namespace ees2d::solver

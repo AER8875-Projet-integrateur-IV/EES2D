@@ -131,6 +131,7 @@ void MetricsData::computeFaceMetrics(const Connectivity &ConnectivityObject) {
 
 		Node1ID = (*ConnectivityObject.get_FaceToNode())[iface][0];
     Node2ID = (*ConnectivityObject.get_FaceToNode())[iface][1];
+
 		auto [x1,y1] = ConnectivityObject.get_parser().get_coords()[Node1ID];
     auto [x2,y2] = ConnectivityObject.get_parser().get_coords()[Node2ID];
     length = std::sqrt(std::pow(x2-x1,2.0)+std::pow(y2-y1,2.0));

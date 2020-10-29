@@ -27,7 +27,7 @@ ConvectiveFlux scheme::RoeScheme(const uint32_t &elemID1,
                                  const uint32_t &faceid,
                                  Solver::faceParams &faceParams,
                                  const solver::Simulation &sim,
-                                 const ees2d::mesh::Mesh &mymesh) {
+                                 ees2d::mesh::Mesh &mymesh) {
 
 	// Computing Roe averages
 	double rhoHat = std::sqrt(sim.rho[elemID1] * sim.rho[elemID2]);
@@ -37,14 +37,15 @@ ConvectiveFlux scheme::RoeScheme(const uint32_t &elemID1,
 	double qHatSquared = uHat * uHat + vHat * vHat;
 	double cHat = sqrt((sim.gammaInf - 1) * (HHat - (qHatSquared) / 2));
 	double VHat = uHat * mymesh.FaceVector(faceid).x + uHat * mymesh.FaceVector(faceid).y;
-
-	faceParams.u = uHat;
-	faceParams.v = vHat;
-	faceParams.rho = rhoHat;
-	//	faceParams.u = (sim.u[elemID2] + sim.u[elemID1]) / 2;
-	//	faceParams.v = (sim.v[elemID2] + sim.v[elemID1]) / 2;
-	//	faceParams.rho = (sim.rho[elemID2] + sim.rho[elemID1]) / 2;
+//
+//	faceParams.u = uHat;
+//	faceParams.v = vHat;
+//	faceParams.rho = rhoHat;
+	faceParams.u = (sim.u[elemID2] + sim.u[elemID1]) / 2;
+	faceParams.v = (sim.v[elemID2] + sim.v[elemID1]) / 2;
+	faceParams.rho = (sim.rho[elemID2] + sim.rho[elemID1]) / 2;
 	faceParams.p = (sim.p[elemID2] + sim.p[elemID1]) / 2;
+
 
 	// Computing deltas (jump condition)
 	double pDelta = sim.p[elemID2] - sim.p[elemID1];
@@ -57,7 +58,7 @@ ConvectiveFlux scheme::RoeScheme(const uint32_t &elemID1,
 	// Hartens entropy correction
 	double F1HartensCorrection;
 	double F5HartensCorrection;
-	double hartensCriterion = (1 / 15) * std::sqrt(sim.gammaInf * (sim.p[elemID1] / sim.rho[elemID1]));
+	double hartensCriterion = (1 / 10) * std::sqrt(sim.gammaInf * (sim.p[elemID1] / sim.rho[elemID1]));
 	if (std::abs(VHat - cHat) > hartensCriterion) {
 		F1HartensCorrection = std::abs(VHat - cHat);
 	} else {
@@ -114,7 +115,7 @@ ConvectiveFlux scheme::RoeScheme(const uint32_t &elemID1,
 	                   sim.rho[elemID1] * sim.H[elemID1] * V_FcL);
 
 	ConvectiveFlux Fc;
-	Fc = (FcR*(-1) + FcL - deltaF1 - deltaF234 - deltaF5) * 0.5;
+	Fc = (FcL + FcR - deltaF1 - deltaF234 - deltaF5) * 0.5;
 
 	return Fc;
 }
@@ -125,7 +126,7 @@ ConvectiveFlux scheme::AveragingScheme(const uint32_t &elemID1,
                                        const uint32_t &faceid,
                                        Solver::faceParams &faceParams,
                                        const solver::Simulation &sim,
-                                       const ees2d::mesh::Mesh &mymesh) {
+                                       ees2d::mesh::Mesh &mymesh) {
 
 	faceParams.u = (sim.u[elemID2] + sim.u[elemID1]) / 2;
 	faceParams.v = (sim.v[elemID2] + sim.v[elemID1]) / 2;
