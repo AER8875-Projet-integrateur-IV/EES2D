@@ -58,15 +58,22 @@ int main() {
 
 	Connectivity connectivity(parser);
 	connectivity.solve();
+//	auto facetonode = connectivity.get_FaceToNode();
+//  for(auto& node : (*facetonode)){
+//		std::cout << node[0] <<  " " <<  node[1] << std::endl;
+//	}
+//
+//	auto facetoelement = connectivity.get_FaceToElem();
+//	for(auto& elem : (*facetoelement)){
+//    std::cout << elem[0] <<  " " <<  elem[1] << std::endl;
+//
+//	}
 
 
 	MetricsData metrics;
 	metrics.compute(connectivity);
 
-//  auto& facevectors= metrics.facesVector;
-//	for (auto& orientation : facevectors){
-//		std::cout << orientation << std::endl;
-//	}
+
 
 	Mesh mesh(connectivity, metrics);
 

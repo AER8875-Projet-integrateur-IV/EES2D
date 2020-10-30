@@ -102,7 +102,7 @@ void Solver::run() {
 		}
 
 		// Loop through all elements to update timesteps and computes variables
-		double courantNumber = 0.69;
+		double courantNumber = 0.8;
 		for (uint32_t elem = 0; elem < m_sim.dt.size(); elem++) {
 
 			// Update time
@@ -118,8 +118,8 @@ void Solver::run() {
 		maxResidual = findMaxResidual();
 
 		iteration += 1;
-//		std::cout << "Iteration :" << iteration << std::endl;
-//		std::cout << "maxResidual :" << maxResidual << std::endl;
+		std::cout << "Iteration :" << iteration << std::endl;
+		std::cout << "maxResidual :" << maxResidual << std::endl;
 	}
 }
 

@@ -58,7 +58,7 @@ ConvectiveFlux scheme::RoeScheme(const uint32_t &elemID1,
 	// Hartens entropy correction
 	double F1HartensCorrection;
 	double F5HartensCorrection;
-	double hartensCriterion = (1 / 10) * std::sqrt(sim.gammaInf * (sim.p[elemID1] / sim.rho[elemID1]));
+	double hartensCriterion = (1 /10) * std::sqrt(sim.gammaInf * (sim.p[elemID1] / sim.rho[elemID1]));
 	if (std::abs(VHat - cHat) > hartensCriterion) {
 		F1HartensCorrection = std::abs(VHat - cHat);
 	} else {

@@ -250,31 +250,77 @@ void Connectivity::solveNodeSurrFace() {
 	uint32_t nedge = 0;
 	uint32_t ielem = 0;
 	uint32_t jpoin = 0;
+
 	std::vector<uint32_t> temp = {};
 	std::vector<uint32_t> doubles = {};
-	bool skip = false;
+	std::vector<uint32_t> temp2 = {};
+	uint32_t nodeToPush1;
+	uint32_t nodeToPush2;
+	if (m_parser.get_NPSUE()[0] == 4) {
+		uint32_t node1;
+		uint32_t node2;
+		uint32_t node3;
+		uint32_t node4;
+		for (uint32_t ielem = 0; ielem < m_parser.get_Nelems(); ielem++) {
+			temp = {};
 
-	for (uint32_t ipoin = 0; ipoin < m_parser.get_Ngrids(); ipoin++) {
+			node1 = connecNodeSurrElement(0, ielem);
+			node2 = connecNodeSurrElement(1, ielem);
+			node3 = connecNodeSurrElement(2, ielem);
+			node4 = connecNodeSurrElement(3, ielem);
+			temp.push_back(node1);
+			temp.push_back(node2);
+			temp.push_back(node3);
+			temp.push_back(node4);
+			for (uint32_t i = 0; i < 4; i++) {
+				temp2 = {};
+				nodeToPush1 = temp[i % 4];// 4%4 = 0 go back to node 0
+				nodeToPush2 = temp[(i + 1) % 4];
+				if (nodeToPush1 > nodeToPush2) {
+					std::swap(nodeToPush1, nodeToPush2);
+				}
+				temp2.push_back(nodeToPush1);
+				temp2.push_back(nodeToPush2);
+				m_faceToNode.push_back(temp2);
+			}
+		}
+		std::sort(m_faceToNode.begin(), m_faceToNode.end());
+		auto last = std::unique(m_faceToNode.begin(), m_faceToNode.end());
+		m_faceToNode.erase(last, m_faceToNode.end());
 
-		for (uint32_t iesup = m_esup2[ipoin]; iesup < m_esup2[ipoin + 1]; iesup++) {
-			ielem = m_esup1[iesup];
+	} else if (m_parser.get_NPSUE()[0] == 3) {
+		bool skip = false;
 
-			for (uint32_t inode = 0; inode < m_parser.get_NPSUE()[ielem]; inode++) {
-				jpoin = connecNodeSurrElement(inode, ielem);
-				if ((jpoin != ipoin) && (m_lpoin[jpoin] != ipoin || ipoin == 0)) {
-					if (ipoin < jpoin) {
-						if (ipoin == 0) {
-							skip = false;
-							for (auto &value : doubles) {
-								if (jpoin == value) {
-									skip = true;
-									break;
+		for (uint32_t ipoin = 0; ipoin < m_parser.get_Ngrids(); ipoin++) {
+
+			for (uint32_t iesup = m_esup2[ipoin]; iesup < m_esup2[ipoin + 1]; iesup++) {
+				ielem = m_esup1[iesup];
+
+				for (uint32_t inode = 0; inode < m_parser.get_NPSUE()[ielem]; inode++) {
+					jpoin = connecNodeSurrElement(inode, ielem);
+					if ((jpoin != ipoin) && (m_lpoin[jpoin] != ipoin || ipoin == 0)) {
+						if (ipoin < jpoin) {
+							if (ipoin == 0) {
+								skip = false;
+								for (auto &value : doubles) {
+									if (jpoin == value) {
+										skip = true;
+										break;
+									}
 								}
-							}
-							if (skip == true) {
+								if (skip == true) {
 
-							} else if (skip == false) {
-								doubles.push_back(jpoin);
+								} else if (skip == false) {
+									doubles.push_back(jpoin);
+									nedge += 1;
+									temp = {};
+									temp.push_back(ipoin);
+									temp.push_back(jpoin);
+									m_faceToNode.push_back(temp);
+									m_lpoin[jpoin] = ipoin;
+								}
+
+							} else {// Not sure in which order faces should be created
 								nedge += 1;
 								temp = {};
 								temp.push_back(ipoin);
@@ -282,20 +328,12 @@ void Connectivity::solveNodeSurrFace() {
 								m_faceToNode.push_back(temp);
 								m_lpoin[jpoin] = ipoin;
 							}
-
-						} else {// Not sure in which order faces should be created
-							nedge += 1;
-							temp = {};
-							temp.push_back(ipoin);
-							temp.push_back(jpoin);
-							m_faceToNode.push_back(temp);
-							m_lpoin[jpoin] = ipoin;
 						}
 					}
 				}
 			}
+			m_inpoe1[ipoin + 1] = nedge;
 		}
-		m_inpoe1[ipoin + 1] = nedge;
 	}
 	std::cout << std::setw(40) << "Face to node connectivity : " << std::setw(6) << " Done\n";
 }
@@ -309,45 +347,49 @@ void Connectivity::solveFaceSurrElem() {
 	uint32_t ipmin = 0;
 	uint32_t ipmax = 0;
 
-	std::vector<std::vector<uint32_t>> m_lpoed3 = {{0, 1},
-	                                               {1, 2},
-	                                               {2, 0}};
+	if (m_parser.get_NPSUE()[0] == 4) {
+		// FaceSurrElem is not used for a face based solver
 
-	std::vector<std::vector<uint32_t>> m_lpoed4 = {{0, 1},
-	                                               {1, 2},
-	                                               {2, 3},
-	                                               {3, 0}};
+	} else if (m_parser.get_NPSUE()[0] == 3) {
+		std::vector<std::vector<uint32_t>> m_lpoed3 = {{0, 1},
+		                                               {1, 2},
+		                                               {2, 0}};
 
-	std::vector<std::vector<uint32_t>> *m_lpoed;
+		std::vector<std::vector<uint32_t>> m_lpoed4 = {{0, 1},
+		                                               {1, 2},
+		                                               {2, 3},
+		                                               {3, 0}};
 
-	m_elemToFace.reserve(m_parser.get_Nelems());
+		std::vector<std::vector<uint32_t>> *m_lpoed;
 
-	std::vector<uint32_t> temp = {};
+		m_elemToFace.reserve(m_parser.get_Nelems());
 
-	for (uint32_t ielem = 0; ielem < m_parser.get_Nelems(); ielem++) {
-		temp = {};
-		for (uint32_t iedel = 0; iedel < m_parser.get_NPSUE()[ielem]; iedel++) {
+		std::vector<uint32_t> temp = {};
 
-			if (m_parser.get_NPSUE()[ielem] == 3) {
-				m_lpoed = &m_lpoed3;
-			} else if (m_parser.get_NPSUE()[ielem] == 4) {
-				m_lpoed = &m_lpoed4;
-			}
+		for (uint32_t ielem = 0; ielem < m_parser.get_Nelems(); ielem++) {
+			temp = {};
+			for (uint32_t iedel = 0; iedel < m_parser.get_NPSUE()[ielem]; iedel++) {
 
-			ipoi1 = connecNodeSurrElement((*m_lpoed)[iedel][0], ielem);
-			ipoi2 = connecNodeSurrElement((*m_lpoed)[iedel][1], ielem);
-			ipmin = std::min(ipoi1, ipoi2);
-			ipmax = std::max(ipoi1, ipoi2);
+				if (m_parser.get_NPSUE()[ielem] == 3) {
+					m_lpoed = &m_lpoed3;
+				} else if (m_parser.get_NPSUE()[ielem] == 4) {
+					m_lpoed = &m_lpoed4;
+				}
 
-			for (uint32_t iedge = m_inpoe1[ipmin]; iedge < m_inpoe1[ipmin + 1]; iedge++) {
-				if (m_faceToNode[iedge][1] == ipmax) {
-					temp.push_back(iedge);
+				ipoi1 = connecNodeSurrElement((*m_lpoed)[iedel][0], ielem);
+				ipoi2 = connecNodeSurrElement((*m_lpoed)[iedel][1], ielem);
+				ipmin = std::min(ipoi1, ipoi2);
+				ipmax = std::max(ipoi1, ipoi2);
+
+				for (uint32_t iedge = m_inpoe1[ipmin]; iedge < m_inpoe1[ipmin + 1]; iedge++) {
+					if (m_faceToNode[iedge][1] == ipmax) {
+						temp.push_back(iedge);
+					}
 				}
 			}
+			m_elemToFace.push_back(temp);
 		}
-		m_elemToFace.push_back(temp);
 	}
-
 	std::cout << std::setw(40) << "Element to Face connectivity : " << std::setw(6) << " Done\n";
 }
 
