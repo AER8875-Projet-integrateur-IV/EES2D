@@ -20,10 +20,15 @@
 */
 
 #pragma once
+#include "solver/ConservativeVariables.h"
 #include "solver/ConvectiveFlux.h"
 #include <algorithm>
-namespace ees2d::solver {
+#include <cmath>
+#include <cstdlib>
+#include <iostream>
 
+
+namespace ees2d::solver {
 	class Residual {
 
 		// Residual Vector
@@ -31,24 +36,24 @@ public:
 		Residual()
 		    : m_rhoV_residual(0), m_rho_uV_residual(0), m_rho_vV_residual(0), m_rho_HV_residual(0){};
 		Residual(double rhoV_residual, double rho_uV_residual, double rho_vV_residual, double rho_HV_residual)
-		    : m_rhoV_residual(rhoV_residual), m_rho_uV_residual(rho_uV_residual), m_rho_vV_residual(rho_vV_residual), m_rho_HV_residual(rho_HV_residual) {}
+		    : m_rhoV_residual(rhoV_residual), m_rho_uV_residual(rho_uV_residual), m_rho_vV_residual(rho_vV_residual), m_rho_HV_residual(rho_HV_residual){};
 
 
-		inline Residual& operator+(ConvectiveFlux &v) {
+		inline Residual &operator+(ConvectiveFlux &v) {
 			this->m_rhoV_residual += v.m_rhoV;
 			this->m_rho_uV_residual += v.m_rho_uV;
 			this->m_rho_vV_residual += v.m_rho_vV;
 			this->m_rho_HV_residual += v.m_rho_HV;
 			return *this;
 		}
-		inline Residual& operator-(ConvectiveFlux &v) {
+		inline Residual &operator-(ConvectiveFlux &v) {
 			this->m_rhoV_residual -= v.m_rhoV;
 			this->m_rho_uV_residual -= v.m_rho_uV;
 			this->m_rho_vV_residual -= v.m_rho_vV;
 			this->m_rho_HV_residual -= v.m_rho_HV;
 			return *this;
 		}
-		inline Residual& operator+=(ConvectiveFlux &&v) {
+		inline Residual &operator+=(ConvectiveFlux &&v) {
 			this->m_rhoV_residual += v.m_rhoV;
 			this->m_rho_uV_residual += v.m_rho_uV;
 			this->m_rho_vV_residual += v.m_rho_vV;
@@ -56,7 +61,8 @@ public:
 			return *this;
 		}
 
-		inline Residual& operator-=(ConvectiveFlux &&v) {
+
+		inline Residual &operator-=(ConvectiveFlux &&v) {
 			this->m_rhoV_residual -= v.m_rhoV;
 			this->m_rho_uV_residual -= v.m_rho_uV;
 			this->m_rho_vV_residual -= v.m_rho_vV;
@@ -64,7 +70,7 @@ public:
 			return *this;
 		}
 
-		inline Residual& operator*(double &d) {
+		inline Residual &operator*(double &d) {
 			this->m_rhoV_residual *= d;
 			this->m_rho_uV_residual *= d;
 			this->m_rho_vV_residual *= d;
@@ -79,9 +85,16 @@ public:
 			this->m_rho_HV_residual = 0;
 		}
 
-		inline double findMax(){
-			double member_variables[] {std::abs(m_rhoV_residual),std::abs(m_rho_uV_residual),std::abs(m_rho_vV_residual),std::abs(m_rho_HV_residual)};
-			return *std::max_element(member_variables,member_variables+4);
+		inline double findMax() {
+			double member_variables[]{std::abs(m_rhoV_residual), std::abs(m_rho_uV_residual), std::abs(m_rho_vV_residual), std::abs(m_rho_HV_residual)};
+			for (auto &res : member_variables) {
+				if (std::isnan(res)) {
+					std::cerr << "Error : nan residual found !" << std::endl;
+					std::exit(EXIT_FAILURE);
+					;
+				}
+			}
+			return *std::max_element(member_variables, member_variables + 4);
 		}
 
 

@@ -13,14 +13,21 @@ START
 MESH_FORMAT = SU2
 
 #Path to mesh file (from executable directory)
-MESH_FILE = /home/amin/Downloads/NACA0012_65_triangles.su2
-/home/amin/Downloads/NACA0012_5deg_6814.su2
-/home/amin/Downloads/naca0012_129x129_1B_JAMESON.su2
+MESH_FILE = /home/amin/Downloads/naca0012_129x129_1B_JAMESON.su2
 /home/amin/Downloads/naca0012_euler_513x513x1_O_1B.su2
-/home/amin/Downloads/square_5x5.su2
 ../../tests/naca0012_euler_65x65x1_O_1B.su2
+../../tests/testmeshSquare.su2
+/home/amin/Downloads/NACA0012_65_triangles.su2
 
-../../tests/testmesh.su2
+
+
+
+/home/amin/Downloads/NACA0012_5deg_6814.su2
+
+
+/home/amin/Downloads/square_5x5.su2
+
+
 
 /home/amin/Downloads/square_diagonalized_5x5.su2
 
@@ -28,7 +35,6 @@ MESH_FILE = /home/amin/Downloads/NACA0012_65_triangles.su2
 ../../tests/naca0012_euler_65x65x1_O_1B.su2
 
 home/amin/Downloads/naca0012_euler_1025x1025x1_O_1B.su2
-
 
 #Type of mesh. Options : STRUCTURED | UNSTRUCTURED
 MESH_TYPE = UNSTRUCTURED
@@ -42,10 +48,10 @@ SPEED_OPTION = MACH
 # Velocity in m/s
 VELOCITY = 0
 
-MACH = 3
+MACH = 2.6
 
 angle of attack in degrees
-AOA = 0
+AOA = 0.0
 
 # Airflow pressure in Pa
 AIRFLOW_PRESSURE = 101325

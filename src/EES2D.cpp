@@ -58,7 +58,7 @@ int main() {
 
 	Connectivity connectivity(parser);
 	connectivity.solve();
-//	auto facetonode = connectivity.get_FaceToNode();
+	auto facetonode = connectivity.get_FaceToNode();
 //  for(auto& node : (*facetonode)){
 //		std::cout << node[0] <<  " " <<  node[1] << std::endl;
 //	}
@@ -76,7 +76,9 @@ int main() {
 
 
 	Mesh mesh(connectivity, metrics);
-
+//	for(uint32_t i=0; i< connectivity.get_elemToElem()->size();i++){
+//  std::cout << mesh.CvolumeCentroid(i) << std::endl;
+//  }
 
   Simulation mysim(mesh,simulationParameters);
 

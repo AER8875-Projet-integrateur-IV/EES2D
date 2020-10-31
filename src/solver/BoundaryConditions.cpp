@@ -35,7 +35,7 @@ ConvectiveFlux BC::farfieldSupersonicInflow(const uint32_t &elemID1,
   faceParams.v = sim.vInf;
   faceParams.rho = sim.rhoInf;
 
-	double V = (sim.u[elemID1]*mymesh.FaceVector(faceId).x + sim.v[elemID1]*mymesh.FaceVector(faceId).y);
+  double V = (faceParams.u*mymesh.FaceVector(faceId).x + faceParams.v*mymesh.FaceVector(faceId).y);
 
 
 	double rhoV = faceParams.rho * V ;
@@ -59,7 +59,7 @@ ConvectiveFlux BC::farfieldSupersonicOutflow(const uint32_t &elemID1,
   faceParams.v = sim.v[elemID1];
   faceParams.rho = sim.rho[elemID1];
 
-  double V = (sim.u[elemID1]*mymesh.FaceVector(faceId).x + sim.v[elemID1]*mymesh.FaceVector(faceId).y);
+  double V = (faceParams.u*mymesh.FaceVector(faceId).x + faceParams.v*mymesh.FaceVector(faceId).y);
   double rhoV = faceParams.rho * V ;
   double rho_uV = faceParams.rho * faceParams.u * V + mymesh.FaceVector(faceId).x*faceParams.p;
   double rho_vV = faceParams.rho * faceParams.v * V + mymesh.FaceVector(faceId).y*faceParams.p;
@@ -87,7 +87,7 @@ ConvectiveFlux BC::farfieldSubsonicInflow(const uint32_t &elemID1,
 	faceParams.u = sim.uInf - mymesh.FaceVector(faceId).x*(sim.pressureInf-faceParams.p)/(sim.rho[elemID1]*c_inside);
   faceParams.v = sim.vInf - mymesh.FaceVector(faceId).y*(sim.pressureInf-faceParams.p)/(sim.rho[elemID1]*c_inside);
 
-  double V = (sim.u[elemID1]*mymesh.FaceVector(faceId).x + sim.v[elemID1]*mymesh.FaceVector(faceId).y);
+  double V = (faceParams.u*mymesh.FaceVector(faceId).x + faceParams.v*mymesh.FaceVector(faceId).y);
   double rhoV = faceParams.rho * V ;
   double rho_uV = faceParams.rho * faceParams.u * V + mymesh.FaceVector(faceId).x*faceParams.p;
   double rho_vV = faceParams.rho * faceParams.v * V + mymesh.FaceVector(faceId).y*faceParams.p;
@@ -109,11 +109,11 @@ ConvectiveFlux BC::farfieldSubsonicOutflow(const uint32_t &elemID1,
   double c_inside = std::sqrt(sim.gammaInf*(sim.p[elemID1]/sim.rho[elemID1])) ; ;
 
 	faceParams.p = sim.pressureInf;
-	faceParams.rho = sim.rho[elemID1] + (faceParams.p - sim.p[elemID1])/c_inside;
-	faceParams.u = sim.u[elemID1] + mymesh.FaceVector(faceId).x*(sim.p[elemID1] - faceParams.p)/(sim.rhoInf*c_inside);
-	faceParams.v = sim.v[elemID1] + mymesh.FaceVector(faceId).y*(sim.p[elemID1] - faceParams.p)/(sim.rhoInf*c_inside);
+	faceParams.rho = sim.rho[elemID1] + (faceParams.p - sim.p[elemID1])/(c_inside*c_inside);
+	faceParams.u = sim.u[elemID1] + mymesh.FaceVector(faceId).x*(sim.p[elemID1] - faceParams.p)/(sim.rho[elemID1]*c_inside);
+	faceParams.v = sim.v[elemID1] + mymesh.FaceVector(faceId).y*(sim.p[elemID1] - faceParams.p)/(sim.rho[elemID1]*c_inside);
 
-  double V = (sim.u[elemID1]*mymesh.FaceVector(faceId).x + sim.v[elemID1]*mymesh.FaceVector(faceId).y);
+  double V = (faceParams.u*mymesh.FaceVector(faceId).x + faceParams.v*mymesh.FaceVector(faceId).y);
   double rhoV = faceParams.rho * V ;
   double rho_uV = faceParams.rho * faceParams.u * V + mymesh.FaceVector(faceId).x*faceParams.p;
   double rho_vV = faceParams.rho * faceParams.v * V + mymesh.FaceVector(faceId).y*faceParams.p;

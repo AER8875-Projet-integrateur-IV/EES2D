@@ -21,6 +21,9 @@
 #include "Solver.h"
 #include "BoundaryConditions.h"
 #include "solver/Schemes.h"
+
+
+
 using namespace ees2d::solver;
 
 Solver::Solver(ees2d::solver::Simulation &sim, ees2d::mesh::Mesh &mesh)
@@ -33,7 +36,7 @@ void Solver::run() {
 	std::cout << "Solver running ..." << std::endl;
 
 
-	double maxResidual = 1;
+	double maxResidual = 100000;
 	while (maxResidual > 1e-5) {
 
 
@@ -109,7 +112,7 @@ void Solver::run() {
 			updateLocalTimeSteps(elem, courantNumber);
 
 			// Update delta W of conservative Variables (rho, u ,v, E)
-			updatedeltaW(elem);
+			TimeIntegration::explicitEuler(elem,m_sim,m_mesh);
 
 			// update conservative and primitve variables (rho, u, v, E , p , M ,H)
 			updateVariables(elem);
@@ -176,9 +179,9 @@ void Solver::updateResidual(const uint32_t &Elem1ID, const uint32_t &Elem2ID, Co
 
 void Solver::updateSpectralRadii(const uint32_t &Elem1ID, const uint32_t &Elem2ID, Solver::faceParams &faceP, const uint32_t &iface) {
 
-	double elemSpectralRadii = (std::abs((faceP.u * m_mesh.FaceVector(iface).x + faceP.v * m_mesh.FaceVector(iface).y)) +
-	                            sqrt(m_sim.gammaInf * (faceP.p / faceP.rho)) )*
-	                           m_mesh.FaceSurface(iface);
+  double elemSpectralRadii = (std::abs((faceP.u * m_mesh.FaceVector(iface).x + faceP.v * m_mesh.FaceVector(iface).y)) +
+                              sqrt(m_sim.gammaInf * (faceP.p / faceP.rho)) )*
+                             m_mesh.FaceSurface(iface);
 
 	if (Elem2ID == uint32_t(-1) || Elem2ID == uint32_t(-3)) {
 		m_sim.spectralRadii[Elem1ID] += elemSpectralRadii;

@@ -21,6 +21,8 @@
 
 #pragma once
 #include "solver/Residual.h"
+
+
 namespace ees2d::solver {
 
 	class ConservativeVariables {
@@ -46,6 +48,14 @@ public:
 			this->m_rho_u -= v.m_rho_u;
 			this->m_rho_v -= v.m_rho_v;
 			this->m_rho_E -= v.m_rho_E;
+			return *this;
+		}
+
+		inline ConservativeVariables &operator-(Residual &v) {
+			this->m_rho -= v.m_rhoV_residual;
+			this->m_rho_u -= v.m_rho_uV_residual;
+			this->m_rho_v -= v.m_rho_vV_residual;
+			this->m_rho_E -= v.m_rho_HV_residual;
 			return *this;
 		}
 

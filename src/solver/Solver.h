@@ -24,7 +24,7 @@
 #include "solver/ConservativeVariables.h"
 #include "solver/ConvectiveFlux.h"
 #include "solver/Simulation.h"
-
+#include "solver/TimeIntegration.h"
 namespace ees2d::solver {
 
 	class Solver {
