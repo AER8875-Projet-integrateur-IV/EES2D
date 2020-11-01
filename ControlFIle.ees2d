@@ -29,6 +29,8 @@ VELOCITY = 0
 
 MACH = 0.6
 
+A0A = 0.0
+
 # Airflow pressure in Pa
 AIRFLOW_PRESURE =
 

@@ -48,6 +48,10 @@ namespace ees2d::solver {
 		std::vector<ConservativeVariables> conservativeVariables;
 		std::vector<double> spectralRadii;
 
+    double uAdim;
+		double vAdim;
+		double rhoAdim;
+		double pAdim;
 		double uInf;
 		double vInf;
 		double pressureInf;
@@ -59,6 +63,7 @@ namespace ees2d::solver {
 		double tempInf;
 		double minResidual;
 		double Einf;
+		double Eadim;
 	};
 
 }// namespace ees2d::solver

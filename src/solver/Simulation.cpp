@@ -35,14 +35,25 @@ Simulation::Simulation(ees2d::mesh::Mesh &mesh, ees2d::io::InputParser &simParam
 	minResidual = simParameters.m_minResiudal;
   gammaInf = simParameters.m_Gamma;
 	gasConstantInf = simParameters.m_gasConstant;
-	uInf  = simParameters.m_velocity * std::cos((M_PI / 180)* simParameters.m_aoa ) ;
-	vInf =  simParameters.m_velocity * std::sin((M_PI / 180) * simParameters.m_aoa) ;
+	//uInf  = simParameters.m_velocity * std::cos((M_PI / 180)* simParameters.m_aoa) ;
+
+	//vInf =  simParameters.m_velocity * std::sin((M_PI / 180) * simParameters.m_aoa) ;
 	soundSpeedInf = std::sqrt(simParameters.m_Gamma*(simParameters.m_Pressure/simParameters.m_Density));
 	MachInf = simParameters.m_velocity/(soundSpeedInf);
-	rhoInf = simParameters.m_Density;
+
+
+
+  rhoInf = simParameters.m_Density;
 	pressureInf = simParameters.m_Pressure;
 	tempInf = simParameters.m_Temp;
   Einf = pressureInf/((gammaInf-1)*rhoInf)+((uInf*uInf + vInf*vInf)/2);
+
+  uInf = MachInf*sqrt(gammaInf)*std::cos((M_PI / 180)* simParameters.m_aoa);
+  vInf = MachInf*sqrt(gammaInf)*std::sin((M_PI / 180)* simParameters.m_aoa);
+  rhoInf = 1.0;
+  pressureInf = 1.0;
+	Einf =pressureInf/((gammaInf-1)*rhoInf)+((uInf*uInf + vInf*vInf)/2);
+
 
 
 	// Initialize solution vectors
