@@ -35,28 +35,50 @@ public:
 		    : m_rho(rho), m_rho_u(rho_u), m_rho_v(rho_v), m_rho_E(rho_E) {}
 
 
-		inline ConservativeVariables &operator+(ConservativeVariables &v) {
-			this->m_rho += v.m_rho;
-			this->m_rho_u += v.m_rho_u;
-			this->m_rho_v += v.m_rho_v;
-			this->m_rho_E += v.m_rho_E;
-			return *this;
+		inline ConservativeVariables operator+(ConservativeVariables &v) {
+			return ConservativeVariables(m_rho + v.m_rho,
+			                             m_rho_u + v.m_rho_u,
+			                             m_rho_v + v.m_rho_v,
+			                             m_rho_E + v.m_rho_E);
+		}
+		inline ConservativeVariables operator+(ConservativeVariables &&v) {
+			return ConservativeVariables(m_rho + v.m_rho,
+			                             m_rho_u + v.m_rho_u,
+			                             m_rho_v + v.m_rho_v,
+			                             m_rho_E + v.m_rho_E);
 		}
 
-		inline ConservativeVariables &operator-(ConservativeVariables &v) {
-			this->m_rho -= v.m_rho;
-			this->m_rho_u -= v.m_rho_u;
-			this->m_rho_v -= v.m_rho_v;
-			this->m_rho_E -= v.m_rho_E;
-			return *this;
+		inline ConservativeVariables operator-(ConservativeVariables &&v) {
+			return ConservativeVariables(m_rho - v.m_rho,
+			                             m_rho_u - v.m_rho_u,
+			                             m_rho_v - v.m_rho_v,
+			                             m_rho_E - v.m_rho_E);
+		}
+		inline ConservativeVariables operator-(ConservativeVariables &v) {
+			return ConservativeVariables(m_rho - v.m_rho,
+			                             m_rho_u - v.m_rho_u,
+			                             m_rho_v - v.m_rho_v,
+			                             m_rho_E - v.m_rho_E);
 		}
 
-		inline ConservativeVariables &operator-(Residual &v) {
-			this->m_rho -= v.m_rhoV_residual;
-			this->m_rho_u -= v.m_rho_uV_residual;
-			this->m_rho_v -= v.m_rho_vV_residual;
-			this->m_rho_E -= v.m_rho_HV_residual;
-			return *this;
+		inline ConservativeVariables operator*(double &d) {
+
+			return ConservativeVariables(m_rho * d, m_rho_u * d, m_rho_v * d, m_rho_E * d);
+		}
+
+		inline ConservativeVariables operator-(Residual &v) {
+			return ConservativeVariables(m_rho - v.m_rhoV_residual,
+			                             m_rho_u - v.m_rho_uV_residual,
+			                             m_rho_v - v.m_rho_vV_residual,
+			                             m_rho_E - v.m_rho_HV_residual);
+		}
+
+		inline ConservativeVariables operator*(Residual &v) {
+
+			return ConservativeVariables(m_rho * v.m_rhoV_residual,
+			                             m_rho_u * v.m_rho_uV_residual,
+			                             m_rho_v * v.m_rho_vV_residual,
+			                             m_rho_E * v.m_rho_HV_residual);
 		}
 
 		inline ConservativeVariables &operator+=(Residual &&v) {

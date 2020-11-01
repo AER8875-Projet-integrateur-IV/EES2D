@@ -39,19 +39,17 @@ public:
 		    : m_rhoV_residual(rhoV_residual), m_rho_uV_residual(rho_uV_residual), m_rho_vV_residual(rho_vV_residual), m_rho_HV_residual(rho_HV_residual){};
 
 
-		inline Residual &operator+(ConvectiveFlux &v) {
-			this->m_rhoV_residual += v.m_rhoV;
-			this->m_rho_uV_residual += v.m_rho_uV;
-			this->m_rho_vV_residual += v.m_rho_vV;
-			this->m_rho_HV_residual += v.m_rho_HV;
-			return *this;
+		inline Residual operator+(ConvectiveFlux &v) {
+			return Residual(m_rhoV_residual + v.m_rhoV,
+			                m_rho_uV_residual + v.m_rho_uV,
+			                m_rho_vV_residual + v.m_rho_vV,
+			                m_rho_HV_residual + v.m_rho_HV);
 		}
-		inline Residual &operator-(ConvectiveFlux &v) {
-			this->m_rhoV_residual -= v.m_rhoV;
-			this->m_rho_uV_residual -= v.m_rho_uV;
-			this->m_rho_vV_residual -= v.m_rho_vV;
-			this->m_rho_HV_residual -= v.m_rho_HV;
-			return *this;
+		inline Residual operator-(ConvectiveFlux &v) {
+			return Residual(m_rhoV_residual - v.m_rhoV,
+			                m_rho_uV_residual - v.m_rho_uV,
+			                m_rho_vV_residual - v.m_rho_vV,
+			                m_rho_HV_residual - v.m_rho_HV);
 		}
 		inline Residual &operator+=(ConvectiveFlux &&v) {
 			this->m_rhoV_residual += v.m_rhoV;
@@ -70,12 +68,11 @@ public:
 			return *this;
 		}
 
-		inline Residual &operator*(double &d) {
-			this->m_rhoV_residual *= d;
-			this->m_rho_uV_residual *= d;
-			this->m_rho_vV_residual *= d;
-			this->m_rho_HV_residual *= d;
-			return *this;
+		inline Residual operator*(double &d) {
+			return Residual(m_rhoV_residual * d,
+			                m_rho_uV_residual * d,
+			                m_rho_vV_residual * d,
+			                m_rho_HV_residual * d);
 		}
 
 		inline void reset() {
@@ -91,7 +88,7 @@ public:
 				if (std::isnan(res)) {
 					std::cerr << "Error : nan residual found !" << std::endl;
 					std::exit(EXIT_FAILURE);
-					;
+
 				}
 			}
 			return *std::max_element(member_variables, member_variables + 4);
