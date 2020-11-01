@@ -40,7 +40,7 @@ void TimeIntegration::explicitEuler(const uint32_t &elem, Simulation &sim, Mesh 
 	sim.conservativeVariables[elem].m_rho_E += deltaW.m_rho_E;
 }
 // -------------------------------------
-void TimeIntegration::RK45(const uint32_t &elem, Simulation &sim, Mesh &mesh) {
+void TimeIntegration::RK5(const uint32_t &elem, Simulation &sim, Mesh &mesh) {
 
   ConservativeVariables W0 = sim.conservativeVariables[elem];
 	Residual Q(sim.residuals[elem].m_rhoV_residual/W0.m_rho,
@@ -48,15 +48,34 @@ void TimeIntegration::RK45(const uint32_t &elem, Simulation &sim, Mesh &mesh) {
              sim.residuals[elem].m_rho_vV_residual/W0.m_rho_v,
              sim.residuals[elem].m_rho_HV_residual/W0.m_rho_E);
 
+	if (std::isinf(Q.m_rho_uV_residual) || std::isnan(Q.m_rho_uV_residual)){
+		Q.m_rho_uV_residual = 0;
+	}
+	else if(std::isinf(Q.m_rho_vV_residual) || std::isnan(Q.m_rho_vV_residual)){
+    Q.m_rho_vV_residual = 0;
+  }
 
-	double StageOneCoeff = 0.0533*(sim.dt[elem]/mesh.CvolumeArea(elem));
-  ConservativeVariables W1 = W0 - sim.residuals[elem]*StageOneCoeff;
+	double commonCoeff = sim.dt[elem]/mesh.CvolumeArea(elem);
 
-//	Residual R1 = W1-W0;
-//	double StageTwoCoeff = 0.1263*;
-//	double StageThreeCoeff =;
-//	double StageFourCoeff;
-//	double StageFiveCoeff;
+	double stageOneCoeff = 0.0533*commonCoeff;
+  ConservativeVariables W1 = W0 - (W0*Q)*stageOneCoeff;
+
+	double stageTwoCoeff = 0.1263*commonCoeff;
+	ConservativeVariables W2 = W0 - (W1*Q)*stageTwoCoeff;
+
+	double stageThreeCoeff = 0.2375*commonCoeff;
+  ConservativeVariables W3 = W0 - (W2*Q)*stageThreeCoeff;
+
+  double stageFourCoeff = 0.4414*commonCoeff;
+  ConservativeVariables W4 = W0 - (W3*Q)*stageFourCoeff;
+
+  ConservativeVariables W5 = W0 - (W4*Q)*commonCoeff;
+
+	sim.conservativeVariables[elem].m_rho = W5.m_rho;
+  sim.conservativeVariables[elem].m_rho_u = W5.m_rho_u;
+  sim.conservativeVariables[elem].m_rho_v = W5.m_rho_v;
+  sim.conservativeVariables[elem].m_rho_E = W5.m_rho_E;
+
 
 
 
