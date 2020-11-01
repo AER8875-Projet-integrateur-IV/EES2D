@@ -64,10 +64,10 @@ TEST(test_Simulation, SimulationConstructor) {
 	std::vector<double> *rho = &mysim.rho;
 	std::vector<double> *p = &mysim.p;
 
-	std::vector<double> exact_u = {203.983885, 203.983885, 203.983885, 203.983885,
-	                              203.983885, 203.983885, 203.983885, 203.983885};
-	std::vector<double> exact_v = {8.90613, 8.90613, 8.90613, 8.90613, 8.90613,
-	                              8.90613, 8.90613, 8.90613};
+	std::vector<double> exact_u = {198.8845111, 198.8845111, 198.8845111, 198.8845111,
+	                              198.8845111, 198.8845111, 198.8845111, 198.8845111};
+	std::vector<double> exact_v = {8.683485, 8.683485, 8.683485, 8.683485, 8.683485,
+	                              8.683485, 8.683485, 8.683485};
 	std::vector<double> exact_rho = {1.2886,1.2886,1.2886,1.2886,
                                   1.2886,1.2886,1.2886,1.2886};
 	std::vector<double> exact_p = {101325,101325,101325,101325,
