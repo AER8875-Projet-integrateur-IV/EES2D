@@ -25,7 +25,7 @@
 
 namespace ees2d::solver::TimeIntegration {
 
-	void explicitEuler(const uint32_t  & elem, ees2d::solver::Simulation& sim, ees2d::mesh::Mesh& mesh);
-  void RK5(const uint32_t &elem, ees2d::solver::Simulation& sim, ees2d::mesh::Mesh& mesh);
+	void explicitEuler(ees2d::solver::Simulation& sim, ees2d::mesh::Mesh& mesh);
+  void RK5(ees2d::solver::Simulation& sim, ees2d::mesh::Mesh& mesh, const double& coeff);
 
 }
