@@ -25,6 +25,7 @@
 #include "solver/ConvectiveFlux.h"
 #include "solver/Simulation.h"
 #include "solver/TimeIntegration.h"
+
 namespace ees2d::solver {
 
 	class Solver {
@@ -42,10 +43,15 @@ public:
 		ConvectiveFlux computeBCFlux(const uint32_t &, const uint32_t &, Solver::faceParams &, const uint32_t &);
 		void updateResidual(const uint32_t &Elem1ID, const uint32_t &Elem2ID, ConvectiveFlux &Fc, const uint32_t &iface);
 		void updateSpectralRadii(const uint32_t &Elem1ID, const uint32_t &Elem2ID, Solver::faceParams &faceP, const uint32_t &iface);
-		void updateLocalTimeSteps(const uint32_t &ielem, double &courantNumber);
-		void updatedeltaW(const uint32_t& elem);
-		void updateVariables(const uint32_t& elem);
-		double findMaxResidual();
+		void updateLocalTimeSteps(double &courantNumber);
+		void computeNormalOrientation(const uint32_t & Elem1ID, const uint32_t& iface);
+		void RK5(const double &coeff,double courantNumber);
+		void eulerExplicit(double courantNumber);
+		void updateVariables();
+		double findMaxRhoResidual();
+		double findMaxRhoUResidual();
+		double findMaxRhoVResidual();
+		double findMaxRhoHResidual();
 
 
 private:

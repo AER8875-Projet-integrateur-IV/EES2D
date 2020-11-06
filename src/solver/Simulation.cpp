@@ -66,7 +66,9 @@ Simulation::Simulation(ees2d::mesh::Mesh &mesh, ees2d::io::InputParser &simParam
 	dt.resize(mesh.N_elems);
 	residuals.resize(mesh.N_elems);
 	Mach.resize(mesh.N_elems);
-	spectralRadii.resize(mesh.N_elems);
+	//spectralRadiiX.resize(mesh.N_elems);
+  //spectralRadiiY.resize(mesh.N_elems);
+  spectralRadii.resize(mesh.N_elems);
 
 
 	convectiveFluxes.resize(mesh.N_elems);

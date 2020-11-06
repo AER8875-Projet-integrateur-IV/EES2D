@@ -32,6 +32,7 @@
 #include <iostream>
 #include "solver/Simulation.h"
 #include "solver/Solver.h"
+#include "post/postProcess.h"
 using ees2d::io::InputParser;
 using ees2d::io::Su2Parser;
 using ees2d::mesh::Connectivity;
@@ -41,6 +42,7 @@ using ees2d::utils::Timer;
 using ees2d::io::VtuWriter;
 using ees2d::solver::Simulation;
 using ees2d::solver::Solver;
+using ees2d::post::PostProcess;
 //using namespace ees2d::Utils;
 
 
@@ -82,13 +84,19 @@ int main() {
 
   Simulation mysim(mesh,simulationParameters);
 
+
   Solver solver(mysim,mesh);
   solver.run();
+
+
+  PostProcess mypost(mesh , mysim);
+  mypost.writeCP();
 
 	if (simulationParameters.m_outputFormat == "VTK"){
 		VtuWriter vtufile(simulationParameters.m_outputFile, connectivity, mesh,mysim);
 		vtufile.writeSolution();
 	}
+
 
 
 

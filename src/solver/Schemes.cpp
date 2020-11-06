@@ -31,9 +31,10 @@ ConvectiveFlux scheme::RoeScheme(const uint32_t &elemID1,
 
 	// Computing Roe averages
 	double rhoHat = std::sqrt(sim.rho[elemID1] * sim.rho[elemID2]);
-	double uHat = (sim.u[elemID1] * sqrt(sim.rho[elemID1]) + sim.u[elemID2] * sqrt(sim.rho[elemID2])) / (sqrt(sim.rho[elemID1]) + sqrt(sim.rho[elemID2]));
-	double vHat = (sim.v[elemID1] * sqrt(sim.rho[elemID1]) + sim.v[elemID2] * sqrt(sim.rho[elemID2])) / (sqrt(sim.rho[elemID1]) + sqrt(sim.rho[elemID2]));
-	double HHat = (sim.H[elemID1] * sqrt(sim.rho[elemID1]) + sim.H[elemID2] * sqrt(sim.rho[elemID2])) / (sqrt(sim.rho[elemID1]) + sqrt(sim.rho[elemID2]));
+	double common_denom = (sqrt(sim.rho[elemID1]) + sqrt(sim.rho[elemID2]));
+	double uHat = (sim.u[elemID1] * sqrt(sim.rho[elemID1]) + sim.u[elemID2] * sqrt(sim.rho[elemID2])) / common_denom;
+	double vHat = (sim.v[elemID1] * sqrt(sim.rho[elemID1]) + sim.v[elemID2] * sqrt(sim.rho[elemID2])) / common_denom;
+	double HHat = (sim.H[elemID1] * sqrt(sim.rho[elemID1]) + sim.H[elemID2] * sqrt(sim.rho[elemID2])) / common_denom;
 	double qHatSquared = uHat * uHat + vHat * vHat;
 	double cHat = sqrt((sim.gammaInf - 1) * (HHat - (qHatSquared) / 2));
 	double VHat = uHat * mymesh.FaceVector(faceid).x + uHat * mymesh.FaceVector(faceid).y;
@@ -41,11 +42,11 @@ ConvectiveFlux scheme::RoeScheme(const uint32_t &elemID1,
 	faceParams.u = uHat;
 	faceParams.v = vHat;
 	faceParams.rho = rhoHat;
-//	faceParams.u = (sim.u[elemID2] + sim.u[elemID1]) / 2;
-//	faceParams.v = (sim.v[elemID2] + sim.v[elemID1]) / 2;
-//	faceParams.rho = (sim.rho[elemID2] + sim.rho[elemID1]) / 2;
-	faceParams.p = (sim.p[elemID2] + sim.p[elemID1]) / 2;
-	//faceParams.p = (sim.p[elemID1] * sqrt(sim.rho[elemID1]) + sim.p[elemID2] * sqrt(sim.rho[elemID2])) / (sqrt(sim.rho[elemID1]) + sqrt(sim.rho[elemID2]));
+//  faceParams.u = (sim.u[elemID2] + sim.u[elemID1]) / 2;
+//  faceParams.v = (sim.v[elemID2] + sim.v[elemID1]) / 2;
+//  faceParams.rho = (sim.rho[elemID2] + sim.rho[elemID1]) / 2;
+//faceParams.p = (sim.p[elemID2] + sim.p[elemID1]) / 2;
+faceParams.p = (sim.p[elemID1] * sqrt(sim.rho[elemID1]) + sim.p[elemID2] * sqrt(sim.rho[elemID2])) / (sqrt(sim.rho[elemID1]) + sqrt(sim.rho[elemID2]));
 
 
 	// Computing deltas (jump condition)
@@ -59,8 +60,8 @@ ConvectiveFlux scheme::RoeScheme(const uint32_t &elemID1,
 	// Hartens entropy correction
 	double F1HartensCorrection;
 	double F5HartensCorrection;
-	//double hartensCriterion = (1 /15) * std::sqrt(sim.gammaInf * (sim.p[elemID1] / sim.rho[elemID1]));
-	double hartensCriterion = 0.15;
+	double hartensCriterion = (1 /15) * std::sqrt(sim.gammaInf * (sim.p[elemID1] / sim.rho[elemID1]));
+	//double hartensCriterion = 0.2;
 	if (std::abs(VHat - cHat) > hartensCriterion) {
 		F1HartensCorrection = std::abs(VHat - cHat);
 	} else {

@@ -46,8 +46,9 @@ namespace ees2d::solver {
 		std::vector<double> Mach;
 		std::vector<ConvectiveFlux> convectiveFluxes;
 		std::vector<ConservativeVariables> conservativeVariables;
+		std::vector<double> spectralRadiiX;
+    std::vector<double> spectralRadiiY;
 		std::vector<double> spectralRadii;
-
     double uAdim;
 		double vAdim;
 		double rhoAdim;
