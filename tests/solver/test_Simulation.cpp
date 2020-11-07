@@ -64,14 +64,11 @@ TEST(test_Simulation, SimulationConstructor) {
 	std::vector<double> *rho = &mysim.rho;
 	std::vector<double> *p = &mysim.p;
 
-	std::vector<double> exact_u = {198.8845111, 198.8845111, 198.8845111, 198.8845111,
-	                              198.8845111, 198.8845111, 198.8845111, 198.8845111};
-	std::vector<double> exact_v = {8.683485, 8.683485, 8.683485, 8.683485, 8.683485,
-	                              8.683485, 8.683485, 8.683485};
-	std::vector<double> exact_rho = {1.2886,1.2886,1.2886,1.2886,
-                                  1.2886,1.2886,1.2886,1.2886};
-	std::vector<double> exact_p = {101325,101325,101325,101325,
-                                101325,101325,101325,101325};
+	std::vector<double> exact_u = {0.70992957, 0.70992957, 0.70992957, 0.70992957,
+                                 0.70992957, 0.70992957, 0.70992957, 0.70992957};
+	std::vector<double> exact_v = {0,0,0,0,0,0,0,0};
+	std::vector<double> exact_rho = {1,1,1,1,1,1,1,1};
+	std::vector<double> exact_p = {1,1,1,1,1,1,1,1};
 
 	//Assert
   ASSERT_EQ(u->size(), exact_u.size()) << "vectors u are of unequal length";

@@ -30,7 +30,7 @@ VELOCITY = 0
 MACH = 0.6
 
 angle of attack in degrees
-AOA = 2.5
+AOA = 0
 
 # Airflow pressure in Pa
 AIRFLOW_PRESSURE = 101325.0
