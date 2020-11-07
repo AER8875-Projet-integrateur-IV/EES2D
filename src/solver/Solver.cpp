@@ -34,6 +34,7 @@ Solver::Solver(ees2d::solver::Simulation &sim, ees2d::mesh::Mesh &mesh)
 
 // ---------------------------------------
 void Solver::run() {
+	// Initialize residual file
 
 	std::ofstream residualStream("../../../Documents/Residual.dat");
 
@@ -46,15 +47,21 @@ void Solver::run() {
 	               << "rhoH"
 	               << "\n";
 
-
+	// Initialize iteration number
 	uint32_t iteration = 0;
+
 	std::cout << "Solver running ..." << std::endl;
 
+	// RK5 coefficients
 	std::vector<double> RK5_coeffs = {0.0533, 0.1263, 0.2375, 0.4414, 1};
-	double maxResidual = 100000;
+
+	// Initialize Residual
+
+	ResidualRMS rms(1,1,1,1);
 	//double courant_number = 1 / m_sim.MachInf;
-	double courant_number = 0.8;
-	while (iteration < 6000) {
+	double courant_number = m_sim.cfl;
+
+	while (rms.rho > m_sim.minResidual) {
 
 
 		// ID of Elements on both sides of each face
@@ -74,10 +81,6 @@ void Solver::run() {
 		// variables at face MidPoint
 		for (uint32_t iface = 0; iface < m_mesh.N_faces; iface++) {
 
-
-			//      if(Elem1ID == 240){
-			//        std::cout << "here" <<  std::endl;
-			//      }
 
 			faceParams faceP;
 			// Get the elements IDs connected to the face
@@ -128,39 +131,42 @@ void Solver::run() {
 		}
 
 
-		// Update delta W of conservative Variables (rho, u ,v, E)
+		//Update delta W of conservative Variables (rho, u ,v, E)
+		if (m_sim.timeIntegration == "RK5") {
+			const std::vector<ConservativeVariables> W0 = m_sim.conservativeVariables;
+			for (auto &coeff : RK5_coeffs) {
+				RK5(coeff, courant_number, W0);
+			}
+		} else if (m_sim.timeIntegration == "EXPLICIT_EULER") {
+			eulerExplicit(courant_number);
+		}
 
-		//				for (auto &coeff : RK5_coeffs) {
-		//					RK5(coeff,1.5);
-		//				}
+		//		double maxrhoResidual = findMaxRhoResidual();
+		//		double maxUResidual = findMaxRhoUResidual();
+		//		double maxVResidual = findMaxRhoVResidual();
+		//		double maxHResiudal = findMaxRhoHResidual();
+		//
+		//		std::vector<double> maxResiduals = {maxrhoResidual, maxUResidual, maxVResidual, maxHResiudal};
+		//
+		//		std::sort(maxResiduals.begin(), maxResiduals.end());
+		//		maxResidual = maxResiduals.back();
 
-		eulerExplicit(courant_number);
-
-
-		double maxrhoResidual = findMaxRhoResidual();
-		double maxUResidual = findMaxRhoUResidual();
-		double maxVResidual = findMaxRhoVResidual();
-		double maxHResiudal = findMaxRhoHResidual();
-
-		std::vector<double> maxResiduals = {maxrhoResidual, maxUResidual, maxVResidual, maxHResiudal};
-
-		std::sort(maxResiduals.begin(), maxResiduals.end());
-		maxResidual = maxResiduals.back();
-		//maxResidual = maxrhoResidual;
 
 		iteration += 1;
-		if (iteration % 100 == 0) {
 
-			std::cout << "Iteration :" << iteration << std::endl;
-			std::cout << " rho : " << maxrhoResidual << " u : " << maxUResidual << " v : " << maxVResidual << " H : " << maxHResiudal << std::endl;
-			std::cout << maxResidual << std::endl;
+    findRms(rms);
+
+
+		if (iteration % 50 == 0) {
+      std::cout << "Iteration :" << iteration << std::endl;
+      std::cout << " RMS_rho : " << rms.rho << " | RMS_rho_u : " << rms.rhoU << " | RMS_rho_v : " << rms.rhoV << " | RMS_rho_H : " << rms.rhoH << std::endl;
 		}
 
 
-		residualStream << maxrhoResidual << std::setw(15)
-		               << maxUResidual << std::setw(15)
-		               << maxVResidual << std::setw(15)
-		               << maxHResiudal << "\n";
+		residualStream << rms.rho << std::setw(15)
+		               << rms.rhoU << std::setw(15)
+		               << rms.rhoV << std::setw(15)
+		               << rms.rhoH << "\n";
 	}
 	residualStream.close();
 }
@@ -219,26 +225,20 @@ void Solver::updateResidual(const uint32_t &Elem1ID, const uint32_t &Elem2ID, Co
 
 // --------------------------------------
 void Solver::updateSpectralRadii(const uint32_t &Elem1ID, const uint32_t &Elem2ID, Solver::faceParams &faceP, const uint32_t &iface) {
-  //double c = sqrt(m_sim.gammaInf * (faceP.p / faceP.rho));
+	//double c = sqrt(m_sim.gammaInf * (faceP.p / faceP.rho));
 	//double elemSpectralRadiiX = 0.5 * (std::abs(faceP.u) + c ) * std::abs(m_mesh.FaceVector(iface).x * m_mesh.FaceSurface(iface));
 	//double elemSpectralRadiiY = 0.5 * (std::abs(faceP.v) + c ) *std::abs(m_mesh.FaceVector(iface).y * m_mesh.FaceSurface(iface));
-  double elemSpectralRadii = (std::abs((faceP.u * m_mesh.FaceVector(iface).x + faceP.v * m_mesh.FaceVector(iface).y)) +
-                              sqrt(m_sim.gammaInf * (faceP.p / faceP.rho)) )*
-                             m_mesh.FaceSurface(iface);
+	double elemSpectralRadii = (std::abs((faceP.u * m_mesh.FaceVector(iface).x + faceP.v * m_mesh.FaceVector(iface).y)) +
+	                            sqrt(m_sim.gammaInf * (faceP.p / faceP.rho))) *
+	                           m_mesh.FaceSurface(iface);
 
 
 	if (Elem2ID == uint32_t(-1) || Elem2ID == uint32_t(-3)) {
 
-		//m_sim.spectralRadiiX[Elem1ID] += elemSpectralRadiiX;
-		//m_sim.spectralRadiiY[Elem1ID] += elemSpectralRadiiY;
 		m_sim.spectralRadii[Elem1ID] += elemSpectralRadii;
 	} else {
-    m_sim.spectralRadii[Elem1ID] += elemSpectralRadii;
-    m_sim.spectralRadii[Elem2ID] += elemSpectralRadii;
-		//m_sim.spectralRadiiX[Elem1ID] += elemSpectralRadiiX;
-		//m_sim.spectralRadiiY[Elem1ID] += elemSpectralRadiiY;
-		//m_sim.spectralRadiiX[Elem2ID] += elemSpectralRadiiX;
-		//m_sim.spectralRadiiY[Elem2ID] += elemSpectralRadiiY;
+		m_sim.spectralRadii[Elem1ID] += elemSpectralRadii;
+		m_sim.spectralRadii[Elem2ID] += elemSpectralRadii;
 	}
 }
 //----------------------------------------------------------------
@@ -250,12 +250,14 @@ void Solver::eulerExplicit(double courantNumber) {
 	Solver::updateVariables();
 }
 // ----------------------------------------------------------------
-void Solver::RK5(const double &coeff, double courantNumber) {
+void Solver::RK5(const double &coeff, double courantNumber, const std::vector<ConservativeVariables> &W0) {
 	// Update time
 	updateLocalTimeSteps(courantNumber);
 
-	TimeIntegration::RK5(m_sim, m_mesh, coeff);
+	TimeIntegration::RK5(m_sim, m_mesh, coeff, W0);
+
 	Solver::updateVariables();
+
 	if (coeff != 1) {
 		uint32_t Elem1ID;
 		uint32_t Elem2ID;
@@ -263,10 +265,7 @@ void Solver::RK5(const double &coeff, double courantNumber) {
 		for (auto &residual : m_sim.residuals) {
 			residual.reset();
 		}
-		for (auto &spec : m_sim.spectralRadiiX) {
-			spec = 0;
-		}
-		for (auto &spec : m_sim.spectralRadiiY) {
+		for (auto &spec : m_sim.spectralRadii) {
 			spec = 0;
 		}
 
@@ -316,10 +315,10 @@ void Solver::RK5(const double &coeff, double courantNumber) {
 
 void Solver::updateLocalTimeSteps(double &courantNumber) {
 	for (uint32_t ielem = 0; ielem < m_sim.dt.size(); ielem++) {
-    m_sim.dt[ielem] = courantNumber * m_mesh.CvolumeArea(ielem) / (m_sim.spectralRadii[ielem]);
+		m_sim.dt[ielem] = courantNumber * m_mesh.CvolumeArea(ielem) / (m_sim.spectralRadii[ielem]);
 
-//		m_sim.dt[ielem] =   (courantNumber * m_mesh.CvolumeArea(ielem) /
-//            ( (m_sim.spectralRadiiX[ielem]) + m_sim.spectralRadiiY[ielem] ) );
+		//		m_sim.dt[ielem] =   (courantNumber * m_mesh.CvolumeArea(ielem) /
+		//            ( (m_sim.spectralRadiiX[ielem]) + m_sim.spectralRadiiY[ielem] ) );
 	}
 }
 
@@ -431,4 +430,24 @@ double Solver::findMaxRhoHResidual() {
 		}
 	}
 	return maxResidual;
+}
+// ---------------------------------------------------
+void Solver::findRms(Solver::ResidualRMS& RMS) {
+	double sumRhoResidual = 0;
+	double sumRhoUResidual = 0;
+	double sumRhoVResidual = 0;
+	double sumRhoHResidual = 0;
+
+
+	for (auto &ResidualinElement : m_sim.residuals) {
+		sumRhoResidual += (ResidualinElement.m_rhoV_residual * ResidualinElement.m_rhoV_residual);
+		sumRhoUResidual += (ResidualinElement.m_rho_uV_residual * ResidualinElement.m_rho_uV_residual);
+		sumRhoVResidual += (ResidualinElement.m_rho_vV_residual * ResidualinElement.m_rho_vV_residual);
+		sumRhoHResidual += (ResidualinElement.m_rho_HV_residual * ResidualinElement.m_rho_HV_residual);
+	}
+
+	RMS.rho = sqrt((1.0 / m_mesh.N_elems) * sumRhoResidual);
+	RMS.rhoU = sqrt((1.0 / m_mesh.N_elems) * sumRhoUResidual);
+	RMS.rhoV = sqrt((1.0 / m_mesh.N_elems) * sumRhoVResidual);
+	RMS.rhoH = sqrt((1.0 / m_mesh.N_elems) * sumRhoHResidual);
 }

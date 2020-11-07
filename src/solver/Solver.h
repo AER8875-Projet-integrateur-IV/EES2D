@@ -39,24 +39,43 @@ public:
 			double v = 0;
 		};
 
+		struct ResidualRMS {
+			ResidualRMS(double init_rho,double init_rhoU,double init_rhoV,double init_rhoH)
+			    :rho(init_rho),rhoU(init_rhoU),rhoV(init_rhoV),rhoH(init_rhoH) {};
+			double rho;
+			double rhoU;
+			double rhoV;
+			double rhoH;
+		};
+
 		void run();
 		ConvectiveFlux computeBCFlux(const uint32_t &, const uint32_t &, Solver::faceParams &, const uint32_t &);
 		void updateResidual(const uint32_t &Elem1ID, const uint32_t &Elem2ID, ConvectiveFlux &Fc, const uint32_t &iface);
 		void updateSpectralRadii(const uint32_t &Elem1ID, const uint32_t &Elem2ID, Solver::faceParams &faceP, const uint32_t &iface);
 		void updateLocalTimeSteps(double &courantNumber);
-		void computeNormalOrientation(const uint32_t & Elem1ID, const uint32_t& iface);
-		void RK5(const double &coeff,double courantNumber);
+		void computeNormalOrientation(const uint32_t &Elem1ID, const uint32_t &iface);
+		void RK5(const double &coeff, double courantNumber, const std::vector<ConservativeVariables> &W0);
 		void eulerExplicit(double courantNumber);
 		void updateVariables();
+
+
+		// ------------------------
 		double findMaxRhoResidual();
 		double findMaxRhoUResidual();
 		double findMaxRhoVResidual();
 		double findMaxRhoHResidual();
 
+		//
+		//---------------------------------
+		// compute residual with Root mean squared
+		void findRms(ResidualRMS &Rms);
+
 
 private:
 		ees2d::solver::Simulation &m_sim;
 		ees2d::mesh::Mesh &m_mesh;
+
+
 	};
 
 }// namespace ees2d::solver
