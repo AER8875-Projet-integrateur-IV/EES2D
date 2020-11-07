@@ -35,16 +35,12 @@ Simulation::Simulation(ees2d::mesh::Mesh &mesh, ees2d::io::InputParser &simParam
 	minResidual = simParameters.m_minResiudal;
   gammaInf = simParameters.m_Gamma;
 	gasConstantInf = simParameters.m_gasConstant;
-	//uInf  = simParameters.m_velocity * std::cos((M_PI / 180)* simParameters.m_aoa) ;
-
-	//vInf =  simParameters.m_velocity * std::sin((M_PI / 180) * simParameters.m_aoa) ;
 	soundSpeedInf = std::sqrt(simParameters.m_Gamma*(simParameters.m_Pressure/simParameters.m_Density));
+	cfl = simParameters.m_cfl;
+	timeIntegration = simParameters.m_timeIntegration;
 	MachInf = simParameters.m_velocity/(soundSpeedInf);
 
 
-
-  rhoInf = simParameters.m_Density;
-	pressureInf = simParameters.m_Pressure;
 	tempInf = simParameters.m_Temp;
   Einf = pressureInf/((gammaInf-1)*rhoInf)+((uInf*uInf + vInf*vInf)/2);
 
@@ -66,8 +62,6 @@ Simulation::Simulation(ees2d::mesh::Mesh &mesh, ees2d::io::InputParser &simParam
 	dt.resize(mesh.N_elems);
 	residuals.resize(mesh.N_elems);
 	Mach.resize(mesh.N_elems);
-	//spectralRadiiX.resize(mesh.N_elems);
-  //spectralRadiiY.resize(mesh.N_elems);
   spectralRadii.resize(mesh.N_elems);
 
 

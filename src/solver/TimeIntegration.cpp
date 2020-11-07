@@ -36,16 +36,16 @@ void TimeIntegration::explicitEuler(Simulation &sim, Mesh &mesh) {
 	}
 }
 // -------------------------------------
-void TimeIntegration::RK5(Simulation &sim, Mesh &mesh, const double &coeff) {
+void TimeIntegration::RK5(Simulation &sim, Mesh &mesh, const double &coeff,const std::vector<ConservativeVariables>& W0) {
 
 
 	for (uint32_t elem = 0; elem < sim.dt.size(); elem++) {
 		double commonCoeff = sim.dt[elem] / mesh.CvolumeArea(elem);
 
 		double stageCoeff = coeff * commonCoeff;
-		sim.conservativeVariables[elem].m_rho -= (sim.residuals[elem].m_rhoV_residual) * stageCoeff;
-		sim.conservativeVariables[elem].m_rho_u -= (sim.residuals[elem].m_rho_uV_residual) * stageCoeff;
-		sim.conservativeVariables[elem].m_rho_v -= (sim.residuals[elem].m_rho_vV_residual) * stageCoeff;
-		sim.conservativeVariables[elem].m_rho_E -= (sim.residuals[elem].m_rho_HV_residual) * stageCoeff;
+		sim.conservativeVariables[elem].m_rho   = W0[elem].m_rho   - sim.residuals[elem].m_rhoV_residual   * stageCoeff;
+		sim.conservativeVariables[elem].m_rho_u = W0[elem].m_rho_u - sim.residuals[elem].m_rho_uV_residual * stageCoeff;
+		sim.conservativeVariables[elem].m_rho_v = W0[elem].m_rho_v - sim.residuals[elem].m_rho_vV_residual * stageCoeff;
+		sim.conservativeVariables[elem].m_rho_E = W0[elem].m_rho_E - sim.residuals[elem].m_rho_HV_residual * stageCoeff;
 	}
 }

@@ -60,11 +60,14 @@ ConvectiveFlux BC::farfieldSupersonicOutflow(const uint32_t &elemID1,
   faceParams.v = sim.v[elemID1];
   faceParams.rho = sim.rho[elemID1];
 
+  double E = faceParams.p/((sim.gammaInf-1)*faceParams.rho)+((faceParams.u*faceParams.u + faceParams.v*faceParams.v)/2);
+  double H  = E + faceParams.p/faceParams.rho;
+
   double V = (faceParams.u*mymesh.FaceVector(faceId).x + faceParams.v*mymesh.FaceVector(faceId).y);
   double rhoV = faceParams.rho * V ;
   double rho_uV = faceParams.rho * faceParams.u * V + mymesh.FaceVector(faceId).x*faceParams.p;
   double rho_vV = faceParams.rho * faceParams.v * V + mymesh.FaceVector(faceId).y*faceParams.p;
-  double rho_HV = sim.H[elemID1]*faceParams.rho*V;
+  double rho_HV = H*faceParams.rho*V;
 
 
   ConvectiveFlux Fc(rhoV,rho_uV,rho_vV,rho_HV);

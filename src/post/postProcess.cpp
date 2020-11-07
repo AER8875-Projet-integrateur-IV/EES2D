@@ -40,13 +40,13 @@ void PostProcess::writeCP() {
 		uint32_t Elem1ID = m_mesh.FaceToElem(iface, 0);
 		uint32_t Elem2ID = m_mesh.FaceToElem(iface, 1);
 		if (Elem2ID == uint32_t(-1)) {
+
 			double pinf = 1.0;
 			double p = m_sim.p[Elem1ID];
-			double uinf = 1.0;
 			double u_sqrd =  m_sim.uInf*m_sim.uInf + m_sim.vInf*m_sim.vInf;
 			double Mach = m_sim.Mach[Elem1ID];
 
-			double Cp = (p-pinf)/(0.5*u_sqrd);
+			double Cp = (p-pinf)/(0.5*1*u_sqrd);
 
 			// COmpressibility correction (between M 0 and 0.7)
 			if(Mach < 0.7){

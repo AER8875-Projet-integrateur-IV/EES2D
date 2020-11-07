@@ -46,15 +46,13 @@ namespace ees2d::solver {
 		std::vector<double> Mach;
 		std::vector<ConvectiveFlux> convectiveFluxes;
 		std::vector<ConservativeVariables> conservativeVariables;
-		std::vector<double> spectralRadiiX;
-    std::vector<double> spectralRadiiY;
 		std::vector<double> spectralRadii;
-    double uAdim;
-		double vAdim;
-		double rhoAdim;
-		double pAdim;
+
+
 		double uInf;
 		double vInf;
+		double cfl;
+		std::string timeIntegration;
 		double pressureInf;
 		double rhoInf;
 		double MachInf;
@@ -64,7 +62,7 @@ namespace ees2d::solver {
 		double tempInf;
 		double minResidual;
 		double Einf;
-		double Eadim;
+
 	};
 
 }// namespace ees2d::solver

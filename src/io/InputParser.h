@@ -56,6 +56,8 @@ public:
 
 		//Solver variables
 		std::string m_scheme;
+		std::string m_timeIntegration;
+		double m_cfl;
 		double m_minResiudal = 0;
 		uint32_t m_maxIter = 0;
 		uint32_t m_threadsNum = 0;

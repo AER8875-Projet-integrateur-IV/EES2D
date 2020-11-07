@@ -26,6 +26,6 @@
 namespace ees2d::solver::TimeIntegration {
 
 	void explicitEuler(ees2d::solver::Simulation& sim, ees2d::mesh::Mesh& mesh);
-  void RK5(ees2d::solver::Simulation& sim, ees2d::mesh::Mesh& mesh, const double& coeff);
+  void RK5(ees2d::solver::Simulation& sim, ees2d::mesh::Mesh& mesh, const double& coeff,const std::vector<ConservativeVariables>& W0);
 
 }

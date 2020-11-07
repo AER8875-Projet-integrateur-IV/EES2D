@@ -13,14 +13,14 @@ START
 MESH_FORMAT = SU2
 
 #Path to mesh file (from executable directory)
-MESH_FILE = /home/amin/Downloads/F16.su2
-
-
-/home/amin/Downloads/naca0012_euler_33x33x1_O_1B.su2
-
-../../tests/naca0012_euler_65x65x1_O_1B.su2
+MESH_FILE = /home/amin/Downloads/naca0012_euler_129x129x1_O_1B.su2
 
 /home/amin/Downloads/naca0012_euler_129x129x1_O_1B.su2
+../../tests/naca0012_euler_65x65x1_O_1B.su2
+
+/home/amin/Downloads/F16.su2
+
+/home/amin/Downloads/naca0012_euler_33x33x1_O_1B.su2
 
 /home/amin/Downloads/naca0012_euler_257x257x1_O_1B.su2
 
@@ -39,7 +39,7 @@ SPEED_OPTION = MACH
 # Velocity in m/s
 VELOCITY = 0
 
-MACH = 1.2
+MACH = 15
 
 angle of attack in degrees
 AOA = 0
@@ -70,8 +70,14 @@ SPECIFIC_HEAT = 1004.7
 # Discretization of the Convective Fluxes . Options : ROE | AUSM (not implement yet)
 SCHEME = ROE
 
+# Time integration . Options : EXPLICIT_EULER / RK5
+TIME_INTEGRATION = RK5
+
+# Courant_Friedrichs-Lewy Number (CFL)
+CFL = 2.5
+
 # Minimum residual to stop solver
-MIN_RESIDUAL = 1e-4
+MIN_RESIDUAL = 1e-12
 
 # Number of maximum iterations to stop solver
 MAX_ITER = 200

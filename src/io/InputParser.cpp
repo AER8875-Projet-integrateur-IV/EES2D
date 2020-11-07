@@ -25,7 +25,6 @@
 #include "io/InputParser.h"
 #include <fstream>
 #include <iostream>
-#include <sstream>
 #include <iomanip>
 #include <cmath>
 
@@ -110,6 +109,12 @@ void InputParser::parse() {
         }
         else if (line.find("SCHEME") != std::string::npos){
           ss1.seekg(8) >> m_scheme;
+        }
+        else if (line.find("TIME_INTEGRATION") != std::string::npos){
+          ss1.seekg(18) >> m_timeIntegration;
+        }
+        else if (line.find("CFL") != std::string::npos){
+          ss1.seekg(5) >> m_cfl;
         }
         else if (line.find("MIN_RESIDUAL") != std::string::npos){
           ss1.seekg(14) >> m_minResiudal;
