@@ -13,7 +13,7 @@ START
 MESH_FORMAT = SU2
 
 #Path to mesh file (from executable directory)
-MESH_FILE = /home/amin/Downloads/naca0012_euler_129x129x1_O_1B.su2
+MESH_FILE = /home/amin/Downloads/naca0012_euler_257x257x1_O_1B.su2
 
 /home/amin/Downloads/naca0012_euler_129x129x1_O_1B.su2
 ../../tests/naca0012_euler_65x65x1_O_1B.su2
@@ -39,7 +39,7 @@ SPEED_OPTION = MACH
 # Velocity in m/s
 VELOCITY = 0
 
-MACH = 15
+MACH = 0.5
 
 angle of attack in degrees
 AOA = 0
@@ -74,10 +74,10 @@ SCHEME = ROE
 TIME_INTEGRATION = RK5
 
 # Courant_Friedrichs-Lewy Number (CFL)
-CFL = 2.5
+CFL = 7
 
 # Minimum residual to stop solver
-MIN_RESIDUAL = 1e-12
+MIN_RESIDUAL = 1e-9
 
 # Number of maximum iterations to stop solver
 MAX_ITER = 200

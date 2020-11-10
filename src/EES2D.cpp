@@ -90,7 +90,7 @@ int main() {
 
 
   PostProcess mypost(mesh , mysim);
-  mypost.writeCP();
+  mypost.solveCoefficients();
 
 	if (simulationParameters.m_outputFormat == "VTK"){
 		VtuWriter vtufile(simulationParameters.m_outputFile, connectivity, mesh,mysim);

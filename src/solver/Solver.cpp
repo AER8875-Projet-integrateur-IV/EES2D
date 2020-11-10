@@ -57,12 +57,11 @@ void Solver::run() {
 
 	// Initialize Residual
 
-	ResidualRMS rms(1,1,1,1);
+	ResidualRMS rms(1, 1, 1, 1);
 	//double courant_number = 1 / m_sim.MachInf;
 	double courant_number = m_sim.cfl;
 
 	while (rms.rho > m_sim.minResidual) {
-
 
 		// ID of Elements on both sides of each face
 		uint32_t Elem1ID;
@@ -80,6 +79,7 @@ void Solver::run() {
 
 		// variables at face MidPoint
 		for (uint32_t iface = 0; iface < m_mesh.N_faces; iface++) {
+
 
 
 			faceParams faceP;
@@ -154,12 +154,12 @@ void Solver::run() {
 
 		iteration += 1;
 
-    findRms(rms);
+		findRms(rms);
 
 
 		if (iteration % 50 == 0) {
-      std::cout << "Iteration :" << iteration << std::endl;
-      std::cout << " RMS_rho : " << rms.rho << " | RMS_rho_u : " << rms.rhoU << " | RMS_rho_v : " << rms.rhoV << " | RMS_rho_H : " << rms.rhoH << std::endl;
+			std::cout << "Iteration :" << iteration << std::endl;
+			std::cout << " RMS_rho : " << rms.rho << " | RMS_rho_u : " << rms.rhoU << " | RMS_rho_v : " << rms.rhoV << " | RMS_rho_H : " << rms.rhoH << std::endl;
 		}
 
 
@@ -328,7 +328,10 @@ void Solver::updateLocalTimeSteps(double &courantNumber) {
 void Solver::updateVariables() {
 	for (uint32_t elem = 0; elem < m_sim.dt.size(); elem++) {
 		m_sim.rho[elem] = m_sim.conservativeVariables[elem].m_rho;
-
+    if(std::isnan(m_sim.rho[elem])){
+      std::cerr << "Error : nan flux found at elem : " << elem << std::endl;
+      std::exit(EXIT_FAILURE);
+		}
 		m_sim.u[elem] = m_sim.conservativeVariables[elem].m_rho_u / m_sim.rho[elem];
 		m_sim.v[elem] = m_sim.conservativeVariables[elem].m_rho_v / m_sim.rho[elem];
 		m_sim.E[elem] = m_sim.conservativeVariables[elem].m_rho_E / m_sim.rho[elem];
@@ -432,7 +435,7 @@ double Solver::findMaxRhoHResidual() {
 	return maxResidual;
 }
 // ---------------------------------------------------
-void Solver::findRms(Solver::ResidualRMS& RMS) {
+void Solver::findRms(Solver::ResidualRMS &RMS) {
 	double sumRhoResidual = 0;
 	double sumRhoUResidual = 0;
 	double sumRhoVResidual = 0;

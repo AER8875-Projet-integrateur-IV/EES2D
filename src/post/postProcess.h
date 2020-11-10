@@ -27,7 +27,10 @@ namespace ees2d::post {
 
 public:
 		PostProcess(ees2d::mesh::Mesh&, ees2d::solver::Simulation&);
-		void writeCP();
+		void solveCoefficients();
+		void outwardNormal(const uint32_t &Elem1ID, const uint32_t &iface);
+
+		std::vector<double> Cps;
 
 private:
 		ees2d::mesh::Mesh &m_mesh;

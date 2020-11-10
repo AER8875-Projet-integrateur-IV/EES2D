@@ -62,6 +62,7 @@ namespace ees2d::solver {
 		double tempInf;
 		double minResidual;
 		double Einf;
+		double aoa;
 
 	};
 
