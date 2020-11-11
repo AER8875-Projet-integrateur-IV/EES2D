@@ -121,17 +121,22 @@ void MetricsData::computeFaceMetrics(const Connectivity &ConnectivityObject) {
 
 	const uint32_t nfaces = ConnectivityObject.get_FaceToElem()->size();
 
+
 	facesSurface.reserve(nfaces);
 	facesMidPoint.reserve(nfaces);
 	facesVector.reserve(nfaces);
 
 	uint32_t Node1ID;
   uint32_t Node2ID;
+	uint32_t elem1;
+	uint32_t elem2;
 	double length=0;
 
 
 	for (uint32_t iface=0;iface<nfaces;iface++){
 
+		elem1 = (*ConnectivityObject.get_FaceToElem())[iface][0];
+		elem2 = (*ConnectivityObject.get_FaceToElem())[iface][1];
 		Node1ID = (*ConnectivityObject.get_FaceToNode())[iface][0];
     Node2ID = (*ConnectivityObject.get_FaceToNode())[iface][1];
 
@@ -141,6 +146,18 @@ void MetricsData::computeFaceMetrics(const Connectivity &ConnectivityObject) {
 		facesSurface.push_back(length);
 		facesMidPoint.emplace_back(Vector2<double>((x2+x1)/2,(y2+y1)/2));
 		facesVector.emplace_back(Vector2<double>((y2-y1)/length,(x1-x2)/length));
+    if (elem2 < elem1) {
+      std::swap(elem2, elem1);
+    }
+    std::vector<double> midFaceToElem1{CvolumesCentroid[elem1].x - facesMidPoint[iface].x,
+                                       CvolumesCentroid[elem1].y - facesMidPoint[iface].y};
+    double midFaceToElemNorm = std::sqrt(midFaceToElem1[0] * midFaceToElem1[0] + midFaceToElem1[1] * midFaceToElem1[1]);
+    double DotProduct = midFaceToElem1[0] * facesVector[iface].x + midFaceToElem1[1] * facesVector[iface].y;
+    double angle = std::acos(DotProduct / (midFaceToElemNorm * 1)) * (180 / M_PI);
+    if (angle < 90) {
+      facesVector[iface].x *= -1;
+      facesVector[iface].y *= -1;
+    }
 
 	}
 

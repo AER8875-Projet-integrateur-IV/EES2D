@@ -13,7 +13,8 @@ START
 MESH_FORMAT = SU2
 
 #Path to mesh file (from executable directory)
-MESH_FILE = /home/amin/Downloads/naca0012_euler_257x257x1_O_1B.su2
+MESH_FILE = ../../tests/naca0012_euler_65x65x1_O_1B.su2
+../../tests/testmeshSquare.su2
 
 /home/amin/Downloads/naca0012_euler_129x129x1_O_1B.su2
 ../../tests/naca0012_euler_65x65x1_O_1B.su2
@@ -76,20 +77,26 @@ TIME_INTEGRATION = RK5
 # Courant_Friedrichs-Lewy Number (CFL)
 CFL = 7
 
-# Minimum residual to stop solver
+# Minimum residual to stop solver (RMS of density)
 MIN_RESIDUAL = 1e-9
 
 # Number of maximum iterations to stop solver
-MAX_ITER = 200
+MAX_ITER = 99999
 
 # Number of opemmp threads used by the solver
 OPEMMP_THREADS_NUM = 4
 
 -------------------- POST-PROCESSING CONTROL ----------------
+#Path to residual output file, from executable directory (without file extension)
+RESIDUAL_FILE = residual.dat
+
+#Path to pressure output file, from executable directory (without file extension)
+PRESSURE_FILE = pressure.dat
+
 # Post processng file format . Options : TECPLOT | VTK
 OUTPUT_FORMAT = VTK
 
-# Path to file output, from executable directory (without file extension)
+# Path to file output, from executable directory
 OUTPUT_FILE = ../../../Documents/bla.vtu
 
 # generate log file . Options : TRUE | FALSE

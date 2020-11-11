@@ -53,6 +53,7 @@ public:
 		double m_Gamma = 0;
 		double m_gasConstant = 0;
 		double m_SpecificHeat = 0;
+		uint32_t m_threads = 1;
 
 		//Solver variables
 		std::string m_scheme;
@@ -66,6 +67,8 @@ public:
 		std::string m_outputFormat;
 		std::string m_outputFile;
 		std::string m_generateLog;
+		std::string m_outputPressure;
+		std::string m_outputResidual;
 
 private:
 		std::string m_inputPath;

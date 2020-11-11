@@ -35,17 +35,19 @@ void PostProcess::solveCoefficients() {
 	 */
 
   // Initialize variables for summation
-	double cx =0;
-	double cy =0;
-	double sumSurface = 0;
+	double CL =0;
+	double CD =0;
   double u_sqrd = m_sim.uInf * m_sim.uInf + m_sim.vInf * m_sim.vInf;
 	double minimumYcoord = 0;
 	double maximumYcoord = 0;
 
 	// Initialize file
-	std::ofstream fileStream("../../../Documents/pressure.dat");
+	std::ofstream fileStream(m_sim.pressurePath);
 	fileStream << "--------------------------"
 	           << " PRESSURE ---------------------------\n";
+  fileStream << "Mesh file : " << m_sim.meshPath << "\n";
+  fileStream << "Mach : " << m_sim.MachInf << "\n";
+  fileStream << "AOA : " << m_sim.aoa << "\n";
 
 	// Writing CP
 	for (uint32_t iface = 0; iface < m_mesh.N_faces; iface++) {
@@ -77,9 +79,8 @@ void PostProcess::solveCoefficients() {
         minimumYcoord = m_mesh.FaceMidPoint(iface).y;
 			}
 
-      cx += p*m_mesh.FaceSurface(iface)*m_mesh.FaceVector(iface).y;
-			cy += p*m_mesh.FaceSurface(iface)*m_mesh.FaceVector(iface).x;
-			//sumSurface += m_mesh.FaceSurface(iface);
+      CL += Cp*m_mesh.FaceSurface(iface)*(m_mesh.FaceVector(iface).y);
+			CD += Cp*m_mesh.FaceSurface(iface)*std::abs(m_mesh.FaceVector(iface).x);
 
 			fileStream << m_mesh.FaceMidPoint(iface).x
 			           << std::setw(18)
@@ -87,11 +88,8 @@ void PostProcess::solveCoefficients() {
 			           << "\n";
 		}
 	}
-	sumSurface = maximumYcoord - minimumYcoord;
-	double Cl = cx / (maximumYcoord - minimumYcoord);
-	double Cd = cy / (maximumYcoord - minimumYcoord);
 
-	std::cout << "Cl " << Cl << " | Cd : " << Cd << std::endl;
+	std::cout << "Cl " << CL << " | Cd : " << CD << std::endl;
 	fileStream.close();
 }
 

@@ -63,6 +63,11 @@ namespace ees2d::solver {
 		double minResidual;
 		double Einf;
 		double aoa;
+		uint32_t maxIter;
+
+		std::string residualPath;
+		std::string pressurePath;
+    std::string meshPath;
 
 	};
 

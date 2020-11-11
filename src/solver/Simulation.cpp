@@ -26,17 +26,22 @@
 #include "solver/ConvectiveFlux.h"
 
 
-
 using namespace ees2d::solver;
 
 Simulation::Simulation(ees2d::mesh::Mesh &mesh, ees2d::io::InputParser &simParameters) {
 
-	//Initialize freestream values
+	// Output paths
+	residualPath = simParameters.m_outputResidual;
+	pressurePath = simParameters.m_outputPressure;
+	meshPath = simParameters.m_meshFile;
+
+	//Initialize freestream values and simulation parameters
 	minResidual = simParameters.m_minResiudal;
   gammaInf = simParameters.m_Gamma;
 	gasConstantInf = simParameters.m_gasConstant;
 	soundSpeedInf = std::sqrt(simParameters.m_Gamma*(simParameters.m_Pressure/simParameters.m_Density));
 	cfl = simParameters.m_cfl;
+	maxIter = simParameters.m_maxIter;
 	timeIntegration = simParameters.m_timeIntegration;
 	MachInf = simParameters.m_velocity/(soundSpeedInf);
 	aoa = simParameters.m_aoa;
@@ -45,8 +50,8 @@ Simulation::Simulation(ees2d::mesh::Mesh &mesh, ees2d::io::InputParser &simParam
 	tempInf = simParameters.m_Temp;
   Einf = pressureInf/((gammaInf-1)*rhoInf)+((uInf*uInf + vInf*vInf)/2);
 
-  uInf = MachInf*sqrt(gammaInf)*std::cos((M_PI / 180)* simParameters.m_aoa);
-  vInf = MachInf*sqrt(gammaInf)*std::sin((M_PI / 180)* simParameters.m_aoa);
+  uInf = MachInf*sqrt(gammaInf)*std::cos((3.14159265358979 / 180)* simParameters.m_aoa);
+  vInf = MachInf*sqrt(gammaInf)*std::sin((3.14159265358979 / 180)* simParameters.m_aoa);
   rhoInf = 1.0;
   pressureInf = 1.0;
 	Einf =pressureInf/((gammaInf-1)*rhoInf)+((uInf*uInf + vInf*vInf)/2);

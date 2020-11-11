@@ -46,11 +46,12 @@ using ees2d::post::PostProcess;
 //using namespace ees2d::Utils;
 
 
-int main() {
+int main(int argc, char *argv[]) {
 	Timer Timeit("software runtime");
 	std::cout << "Euler2D Software" << std::endl;
 
-	std::string inputFilePath = "../../tests/ControlFile.ees2d";
+	std::string inputFilePath = argv[1];
+  std::cout << inputFilePath << std::endl;
 	InputParser simulationParameters{inputFilePath};
 	simulationParameters.parse();
 
@@ -60,16 +61,6 @@ int main() {
 
 	Connectivity connectivity(parser);
 	connectivity.solve();
-	auto facetonode = connectivity.get_FaceToNode();
-//  for(auto& node : (*facetonode)){
-//		std::cout << node[0] <<  " " <<  node[1] << std::endl;
-//	}
-//
-//	auto facetoelement = connectivity.get_FaceToElem();
-//	for(auto& elem : (*facetoelement)){
-//    std::cout << elem[0] <<  " " <<  elem[1] << std::endl;
-//
-//	}
 
 
 	MetricsData metrics;
@@ -78,9 +69,7 @@ int main() {
 
 
 	Mesh mesh(connectivity, metrics);
-//	for(uint32_t i=0; i< connectivity.get_elemToElem()->size();i++){
-//  std::cout << mesh.CvolumeCentroid(i) << std::endl;
-//  }
+
 
   Simulation mysim(mesh,simulationParameters);
 
@@ -96,8 +85,6 @@ int main() {
 		VtuWriter vtufile(simulationParameters.m_outputFile, connectivity, mesh,mysim);
 		vtufile.writeSolution();
 	}
-
-
 
 
 	return 0;
