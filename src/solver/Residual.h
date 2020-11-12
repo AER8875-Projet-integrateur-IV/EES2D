@@ -59,6 +59,14 @@ public:
 			return *this;
 		}
 
+		inline Residual &operator+=(Residual v) {
+			this->m_rhoV_residual += v.m_rhoV_residual;
+			this->m_rho_uV_residual += v.m_rho_uV_residual;
+			this->m_rho_vV_residual += v.m_rho_vV_residual;
+			this->m_rho_HV_residual += v.m_rho_HV_residual;
+			return *this;
+		}
+
 
 		inline Residual &operator-=(ConvectiveFlux &&v) {
 			this->m_rhoV_residual -= v.m_rhoV;

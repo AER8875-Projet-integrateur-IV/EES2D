@@ -24,6 +24,7 @@
 #include "solver/Schemes.h"
 #include <cstdlib>
 #include <iomanip>
+#include <omp.h>
 
 
 using namespace ees2d::solver;
@@ -65,15 +66,34 @@ void Solver::run() {
 	//double courant_number = 1 / m_sim.MachInf;
 	double courant_number = m_sim.cfl;
 	uint32_t maxIterations = m_sim.maxIter;
+
+	// Setup parallelization variables
+
+	const int numTotalFaces = m_mesh.N_faces;
+	uint32_t numThreads = m_sim.threadNum;
+	uint32_t rest = m_mesh.N_faces % numThreads;
+	std::vector<double> faceChunks;
+
+	faceChunks.push_back(0);
+	for (uint32_t i = 1; i < numThreads + 1; i++) {
+		faceChunks.push_back(((numTotalFaces - rest) / numThreads) * i);
+	}
+	if (rest != 0) {
+		faceChunks.push_back(faceChunks.back() + rest);
+	}
+	for(auto& chunk : faceChunks){
+		std::cout << chunk << std::endl;
+	}
+
 	while (rms.rho > m_sim.minResidual && iteration < maxIterations) {
 
-		computeResidual(iteration);
+		computeResidual(iteration, numThreads, faceChunks);
 
 		//Update delta W of conservative Variables (rho, u ,v, E)
 		if (m_sim.timeIntegration == "RK5") {
 			const std::vector<ConservativeVariables> W0 = m_sim.conservativeVariables;
 			for (auto &coeff : RK5_coeffs) {
-				RK5(iteration, coeff, courant_number, W0);
+				RK5(iteration, coeff, courant_number, W0, numThreads, faceChunks);
 			}
 		} else if (m_sim.timeIntegration == "EXPLICIT_EULER") {
 			eulerExplicit(courant_number);
@@ -98,11 +118,9 @@ void Solver::run() {
 }
 
 // -------------------------------------------------------------
-void Solver::computeResidual(uint32_t &iteration) {
+void Solver::computeResidual(uint32_t &iteration, uint32_t &numThreads, const std::vector<double> &faceChunks) {
 
 	// ID of Elements on both sides of each face
-	uint32_t Elem1ID;
-	uint32_t Elem2ID;
 
 
 	for (auto &residual : m_sim.residuals) {
@@ -114,56 +132,60 @@ void Solver::computeResidual(uint32_t &iteration) {
 		spec = 0;
 	}
 
-	for (uint32_t iface = 0; iface < m_mesh.N_faces; iface++) {
+#pragma omp parallel for num_threads(numThreads) schedule(dynamic)
+	for (uint32_t task = 0; task < faceChunks.size() - 1; task++) {
+
+		for (uint32_t iface = faceChunks[task]; iface < faceChunks[task + 1]; iface++) {
+
+			uint32_t Elem1ID = m_mesh.FaceToElem(iface, 0);
+			uint32_t Elem2ID = m_mesh.FaceToElem(iface, 1);
+
+			faceParams faceP;
+			// Get the elements IDs connected to the face
+
+			if (Elem2ID < Elem1ID) {
+				std::swap(Elem2ID, Elem1ID);
+			}
+
+			// Elem 1ID is the looped node
+
+			//Initialize Convective Flux
+			ConvectiveFlux Fc;
 
 
-		faceParams faceP;
-		// Get the elements IDs connected to the face
-		Elem1ID = m_mesh.FaceToElem(iface, 0);
-		Elem2ID = m_mesh.FaceToElem(iface, 1);
+			// if boundary cells connected to the face
+			if (Elem2ID == uint32_t(-1) || Elem2ID == uint32_t(-3)) {
 
-		if (Elem2ID < Elem1ID) {
-			std::swap(Elem2ID, Elem1ID);
+				Fc = computeBCFlux(Elem1ID, Elem2ID, faceP, iface);
+
+			}
+
+
+			// if internal face
+			else {
+				Fc = scheme::RoeScheme(Elem1ID,
+				                       Elem2ID,
+				                       iface,
+				                       faceP,
+				                       m_sim,
+				                       m_mesh);
+			}
+
+			if (std::isnan(Fc.m_rhoV)) {
+				std::cerr << "Error : nan flux found at iteration " << iteration << " and elem : " << Elem1ID << std::endl;
+				std::exit(EXIT_FAILURE);
+			}
+
+			// Update spectral radiation for timestep calculation
+			updateSpectralRadii(Elem1ID, Elem2ID, faceP, iface);
+			//std::cout << faceP.rho << "/" << faceP.u << "/" << faceP.v << "/" << faceP.p << std::endl;
+
+			// Update residual of elements connected to face
+			updateResidual(Elem1ID, Elem2ID, Fc, iface);
 		}
-
-		// Elem 1ID is the looped node
-
-		//Initialize Convective Flux
-		ConvectiveFlux Fc;
-
-
-		// if boundary cells connected to the face
-		if (Elem2ID == uint32_t(-1) || Elem2ID == uint32_t(-3)) {
-
-			Fc = computeBCFlux(Elem1ID, Elem2ID, faceP, iface);
-
-		}
-
-
-		// if internal face
-		else {
-			Fc = scheme::RoeScheme(Elem1ID,
-			                       Elem2ID,
-			                       iface,
-			                       faceP,
-			                       m_sim,
-			                       m_mesh);
-		}
-
-		if (std::isnan(Fc.m_rhoV)) {
-			std::cerr << "Error : nan flux found at iteration " << iteration << " and elem : " << Elem1ID << std::endl;
-			std::exit(EXIT_FAILURE);
-		}
-
-		// Update residual of elements connected to face
-		updateResidual(Elem1ID, Elem2ID, Fc, iface);
-
-		// Update spectral radiation for timestep calculation
-		updateSpectralRadii(Elem1ID, Elem2ID, faceP, iface);
-
-		//std::cout << faceP.rho << "/" << faceP.u << "/" << faceP.v << "/" << faceP.p << std::endl;
 	}
 }
+
 
 //----------------------------------------------------------------
 
@@ -207,15 +229,41 @@ ConvectiveFlux Solver::computeBCFlux(const uint32_t &Elem1ID, const uint32_t &El
 
 void Solver::updateResidual(const uint32_t &Elem1ID, const uint32_t &Elem2ID, ConvectiveFlux &Fc, const uint32_t &iface) {
 	// Calculating Residual if BC
+
 	if (Elem2ID == uint32_t(-1) || Elem2ID == uint32_t(-3)) {
-		m_sim.residuals[Elem1ID] += (Fc * m_mesh.FaceSurface(iface));
+#pragma omp atomic
+		m_sim.residuals[Elem1ID].m_rhoV_residual += (Fc.m_rhoV * m_mesh.FaceSurface(iface));
+#pragma omp atomic
+    m_sim.residuals[Elem1ID].m_rho_uV_residual += (Fc.m_rho_uV * m_mesh.FaceSurface(iface));
+#pragma omp atomic
+    m_sim.residuals[Elem1ID].m_rho_vV_residual += (Fc.m_rho_vV * m_mesh.FaceSurface(iface));
+#pragma omp atomic
+    m_sim.residuals[Elem1ID].m_rho_HV_residual += (Fc.m_rho_HV * m_mesh.FaceSurface(iface));
 		// Calculating Residual if internal face
 	} else {
 
-		m_sim.residuals[Elem1ID] += (Fc * m_mesh.FaceSurface(iface));
-		m_sim.residuals[Elem2ID] -= (Fc * m_mesh.FaceSurface(iface));
+#pragma omp atomic
+    m_sim.residuals[Elem1ID].m_rhoV_residual += (Fc.m_rhoV * m_mesh.FaceSurface(iface));
+#pragma omp atomic
+    m_sim.residuals[Elem1ID].m_rho_uV_residual += (Fc.m_rho_uV * m_mesh.FaceSurface(iface));
+#pragma omp atomic
+    m_sim.residuals[Elem1ID].m_rho_vV_residual += (Fc.m_rho_vV * m_mesh.FaceSurface(iface));
+#pragma omp atomic
+    m_sim.residuals[Elem1ID].m_rho_HV_residual += (Fc.m_rho_HV * m_mesh.FaceSurface(iface));
+
+
+#pragma omp atomic
+    m_sim.residuals[Elem2ID].m_rhoV_residual -= (Fc.m_rhoV * m_mesh.FaceSurface(iface));
+#pragma omp atomic
+    m_sim.residuals[Elem2ID].m_rho_uV_residual -= (Fc.m_rho_uV * m_mesh.FaceSurface(iface));
+#pragma omp atomic
+    m_sim.residuals[Elem2ID].m_rho_vV_residual -= (Fc.m_rho_vV * m_mesh.FaceSurface(iface));
+#pragma omp atomic
+    m_sim.residuals[Elem2ID].m_rho_HV_residual -= (Fc.m_rho_HV * m_mesh.FaceSurface(iface));
+
 	}
 }
+
 
 // --------------------------------------
 void Solver::updateSpectralRadii(const uint32_t &Elem1ID, const uint32_t &Elem2ID, Solver::faceParams &faceP, const uint32_t &iface) {
@@ -228,13 +276,15 @@ void Solver::updateSpectralRadii(const uint32_t &Elem1ID, const uint32_t &Elem2I
 
 
 	if (Elem2ID == uint32_t(-1) || Elem2ID == uint32_t(-3)) {
-
 		m_sim.spectralRadii[Elem1ID] += elemSpectralRadii;
+
 	} else {
+
 		m_sim.spectralRadii[Elem1ID] += elemSpectralRadii;
 		m_sim.spectralRadii[Elem2ID] += elemSpectralRadii;
 	}
 }
+
 //----------------------------------------------------------------
 void Solver::eulerExplicit(double courantNumber) {
 	// Update time
@@ -244,7 +294,7 @@ void Solver::eulerExplicit(double courantNumber) {
 	Solver::updateVariables();
 }
 // ----------------------------------------------------------------
-void Solver::RK5(uint32_t &iteration, const double &coeff, double courantNumber, const std::vector<ConservativeVariables> &W0) {
+void Solver::RK5(uint32_t &iteration, const double &coeff, double courantNumber, const std::vector<ConservativeVariables> &W0, uint32_t &numThreads, const std::vector<double> &faceChunks) {
 	// Update time
 	updateLocalTimeSteps(courantNumber);
 
@@ -253,7 +303,7 @@ void Solver::RK5(uint32_t &iteration, const double &coeff, double courantNumber,
 	Solver::updateVariables();
 
 	if (coeff != 1) {
-		computeResidual(iteration);
+		computeResidual(iteration, numThreads, faceChunks);
 	}
 }
 //----------------------------------------------------------------

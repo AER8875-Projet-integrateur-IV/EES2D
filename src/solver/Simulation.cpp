@@ -45,6 +45,7 @@ Simulation::Simulation(ees2d::mesh::Mesh &mesh, ees2d::io::InputParser &simParam
 	timeIntegration = simParameters.m_timeIntegration;
 	MachInf = simParameters.m_velocity/(soundSpeedInf);
 	aoa = simParameters.m_aoa;
+	threadNum = simParameters.m_threads;
 
 
 	tempInf = simParameters.m_Temp;

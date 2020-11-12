@@ -64,6 +64,7 @@ namespace ees2d::solver {
 		double Einf;
 		double aoa;
 		uint32_t maxIter;
+		uint32_t threadNum;
 
 		std::string residualPath;
 		std::string pressurePath;
