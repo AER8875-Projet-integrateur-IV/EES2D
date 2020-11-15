@@ -72,15 +72,26 @@ void Solver::run() {
 	// Setup parallelization variables
 
 	const int numTotalFaces = m_mesh.N_faces;
+	const int numTotalElems = m_mesh.N_elems;
 	uint32_t numThreads = m_sim.threadNum;
-	uint32_t rest = m_mesh.N_faces % numThreads;
+	uint32_t restFaces = m_mesh.N_faces % numThreads;
+	uint32_t restElems = m_mesh.N_elems % numThreads;
 	std::vector<double> faceChunks;
+	std::vector<double> elemChunks;
 
 	faceChunks.push_back(0);
 	for (uint32_t i = 1; i < numThreads + 1; i++) {
-		faceChunks.push_back(((numTotalFaces - rest) / numThreads) * i);
+		faceChunks.push_back(((numTotalFaces - restFaces) / numThreads) * i);
 	}
-	faceChunks.back() += rest;
+	faceChunks.back() += restFaces;
+
+	elemChunks.push_back(0);
+	for (uint32_t i = 1; i < numThreads + 1; i++) {
+		elemChunks.push_back(((numTotalElems - restElems) / numThreads) * i);
+	}
+	elemChunks.back() += restElems;
+
+
 
 	// Local Fc for faces (temporary residual vector for parallelization)
 	std::shared_ptr<ConvectiveFlux[]> localFc = std::make_unique<ConvectiveFlux[]>(m_mesh.N_faces);
@@ -112,10 +123,10 @@ void Solver::run() {
 		if (m_sim.timeIntegration == "RK5") {
 			const std::vector<ConservativeVariables> W0 = m_sim.conservativeVariables;
 			for (auto &coeff : RK5_coeffs) {
-				RK5(iteration, coeff, courant_number, W0, numThreads, faceChunks,localFc,BoundaryFaces);
+				RK5(iteration, coeff, courant_number, W0, numThreads, faceChunks,elemChunks,localFc,BoundaryFaces);
 			}
 		} else if (m_sim.timeIntegration == "EXPLICIT_EULER") {
-			eulerExplicit(courant_number);
+			eulerExplicit(courant_number,numThreads,elemChunks);
 		}
 
 		iteration += 1;
@@ -292,12 +303,12 @@ void Solver::updateSpectralRadii(const uint32_t &Elem1ID, const uint32_t &Elem2I
 }
 
 //----------------------------------------------------------------
-void Solver::eulerExplicit(double courantNumber) {
+void Solver::eulerExplicit(double courantNumber, uint32_t &numThreads,const std::vector<double> &elemChunks ) {
 	// Update time
 	updateLocalTimeSteps(courantNumber);
 
 	TimeIntegration::explicitEuler(m_sim, m_mesh);
-	Solver::updateVariables();
+	Solver::updateVariables(numThreads, elemChunks);
 }
 // ----------------------------------------------------------------
 void Solver::RK5(uint32_t &iteration, 
@@ -305,6 +316,7 @@ void Solver::RK5(uint32_t &iteration,
  				const std::vector<ConservativeVariables> &W0,
   				uint32_t &numThreads, 
   				const std::vector<double> &faceChunks,
+				const std::vector<double> &elemChunks,
 				std::shared_ptr<ConvectiveFlux[]> localFc,
 				std::shared_ptr<bool[]> BoundaryFaces) {
 	// Update time
@@ -312,7 +324,7 @@ void Solver::RK5(uint32_t &iteration,
 
 	TimeIntegration::RK5(m_sim, m_mesh, coeff, W0);
 
-	Solver::updateVariables();
+	Solver::updateVariables(numThreads,elemChunks);
 
 	if (coeff != 1) {
 		computeResidual(iteration, numThreads, faceChunks,localFc,BoundaryFaces);
@@ -332,8 +344,13 @@ void Solver::updateLocalTimeSteps(double &courantNumber) {
 // ----------------------------------------------------
 
 
-void Solver::updateVariables() {
-	for (uint32_t elem = 0; elem < m_sim.dt.size(); elem++) {
+void Solver::updateVariables(uint32_t &numThreads, 
+							const std::vector<double> &elemChunks) {
+#pragma omp parallel for num_threads(numThreads) default(none) shared(elemChunks,std::cerr)
+	for (uint32_t task = 0; task < elemChunks.size() - 1; task++) {
+
+
+		for (uint32_t elem = elemChunks[task]; elem < elemChunks[task + 1]; elem++) {
 		m_sim.rho[elem] = m_sim.conservativeVariables[elem].m_rho;
 		if (std::isnan(m_sim.rho[elem])) {
 			std::cerr << "Error : nan rho variable found at elem : " << elem << std::endl;
@@ -346,6 +363,7 @@ void Solver::updateVariables() {
 
 		m_sim.H[elem] = m_sim.E[elem] + (m_sim.p[elem] / m_sim.rho[elem]);
 		m_sim.Mach[elem] = std::sqrt(m_sim.u[elem] * m_sim.u[elem] + m_sim.v[elem] * m_sim.v[elem]) / std::sqrt(m_sim.gammaInf * (m_sim.p[elem] / m_sim.rho[elem]));
+		}
 	}
 }
 

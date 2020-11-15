@@ -61,11 +61,13 @@ public:
 				const std::vector<ConservativeVariables> &W0,
 				uint32_t &numThreads,
 				const std::vector<double> &faceChunks,
+				const std::vector<double> &elemChunks,
 				std::shared_ptr<ConvectiveFlux[]> localFc,
 				std::shared_ptr<bool[]> BoundaryFaces);
 
-		void eulerExplicit(double courantNumber);
-		void updateVariables();
+		void eulerExplicit(double courantNumber,uint32_t &numThreads,const std::vector<double> &elemChunks);
+		void updateVariables(uint32_t &numThreads, 
+							const std::vector<double> &elemChunks);
 
 
 		// ------------------------
