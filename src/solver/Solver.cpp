@@ -66,6 +66,9 @@ void Solver::run() {
 	double courant_number = m_sim.cfl;
 	uint32_t maxIterations = m_sim.maxIter;
 
+	
+
+
 	// Setup parallelization variables
 
 	const int numTotalFaces = m_mesh.N_faces;
@@ -82,15 +85,34 @@ void Solver::run() {
 	// Local Fc for faces (temporary residual vector for parallelization)
 	std::shared_ptr<ConvectiveFlux[]> localFc = std::make_unique<ConvectiveFlux[]>(m_mesh.N_faces);
 
+
+	// Look for boundary faces
+	std::shared_ptr<bool[]> BoundaryFaces = std::make_unique<bool[]>(m_mesh.N_faces);
+	#pragma omp parallel for num_threads(numThreads) default(none) shared(BoundaryFaces, faceChunks)
+	for (uint32_t task = 0; task < faceChunks.size() - 1; task++) {
+		for (uint32_t iface = faceChunks[task]; iface < faceChunks[task + 1]; iface++) {
+			uint32_t Elem1ID = m_mesh.FaceToElem(iface, 0);
+			uint32_t Elem2ID = m_mesh.FaceToElem(iface, 1);
+			if (Elem2ID == uint32_t(-1) || Elem2ID == uint32_t(-3)) {
+				BoundaryFaces[iface] = true;
+			}
+			else {
+				BoundaryFaces[iface] = false;
+			}
+
+	}
+	}
+
+
 	while (rms.rho > m_sim.minResidual && iteration < maxIterations) {
 
-		computeResidual(iteration, numThreads, faceChunks, localFc);
+		computeResidual(iteration, numThreads, faceChunks, localFc,BoundaryFaces);
 
 		//Update delta W of conservative Variables (rho, u ,v, E)
 		if (m_sim.timeIntegration == "RK5") {
 			const std::vector<ConservativeVariables> W0 = m_sim.conservativeVariables;
 			for (auto &coeff : RK5_coeffs) {
-				RK5(iteration, coeff, courant_number, W0, numThreads, faceChunks,localFc);
+				RK5(iteration, coeff, courant_number, W0, numThreads, faceChunks,localFc,BoundaryFaces);
 			}
 		} else if (m_sim.timeIntegration == "EXPLICIT_EULER") {
 			eulerExplicit(courant_number);
@@ -115,7 +137,11 @@ void Solver::run() {
 }
 
 // -------------------------------------------------------------
-void Solver::computeResidual(uint32_t &iteration, uint32_t &numThreads, const std::vector<double> &faceChunks,std::shared_ptr<ConvectiveFlux[]> localFc) {
+void Solver::computeResidual(uint32_t &iteration, 
+							uint32_t &numThreads, 
+							const std::vector<double> &faceChunks,
+							std::shared_ptr<ConvectiveFlux[]> localFc,
+							std::shared_ptr<bool[]> BoundaryFaces) {
 
 	// ID of Elements on both sides of each face
 	
@@ -129,7 +155,7 @@ void Solver::computeResidual(uint32_t &iteration, uint32_t &numThreads, const st
 		spec = 0;
 	}
 
-#pragma omp parallel for num_threads(numThreads) default(none) shared(localFc, faceChunks, iteration, std::cerr)
+#pragma omp parallel for num_threads(numThreads) default(none) shared(localFc, BoundaryFaces, faceChunks, iteration, std::cerr)
 	for (uint32_t task = 0; task < faceChunks.size() - 1; task++) {
 
 
@@ -152,8 +178,8 @@ void Solver::computeResidual(uint32_t &iteration, uint32_t &numThreads, const st
 
 
 			// if boundary cells connected to the face
-			if (Elem2ID == uint32_t(-1) || Elem2ID == uint32_t(-3)) {
-
+			if (BoundaryFaces[iface] == true) {
+				
 				Fc = computeBCFlux(Elem1ID, Elem2ID, faceP, iface);
 
 			}
@@ -182,7 +208,7 @@ void Solver::computeResidual(uint32_t &iteration, uint32_t &numThreads, const st
 			localFc[iface] = Fc;
 		}
 	}
-	updateResidual(localFc);
+	updateResidual(localFc,BoundaryFaces);
 }
 
 
@@ -226,13 +252,13 @@ ConvectiveFlux Solver::computeBCFlux(const uint32_t &Elem1ID, const uint32_t &El
 
 //-------------------------------------------
 
-void Solver::updateResidual(std::shared_ptr<ConvectiveFlux[]> localFc) {
+void Solver::updateResidual(std::shared_ptr<ConvectiveFlux[]> localFc,std::shared_ptr<bool[]> BoundaryFaces) {
 	// Calculating Residual if BC
 	for (uint32_t iface = 0; iface < m_mesh.N_faces; iface++) {
 		uint32_t Elem1ID = m_mesh.FaceToElem(iface, 0);
 		uint32_t Elem2ID = m_mesh.FaceToElem(iface, 1);
 
-		if (Elem2ID == uint32_t(-1) || Elem2ID == uint32_t(-3)) {
+		if (BoundaryFaces[iface] == true) {
 
 			m_sim.residuals[Elem1ID] += (localFc[iface] * m_mesh.FaceSurface(iface));
 
@@ -279,7 +305,8 @@ void Solver::RK5(uint32_t &iteration,
  				const std::vector<ConservativeVariables> &W0,
   				uint32_t &numThreads, 
   				const std::vector<double> &faceChunks,
-				std::shared_ptr<ConvectiveFlux[]> localFc) {
+				std::shared_ptr<ConvectiveFlux[]> localFc,
+				std::shared_ptr<bool[]> BoundaryFaces) {
 	// Update time
 	updateLocalTimeSteps(courantNumber);
 
@@ -288,7 +315,7 @@ void Solver::RK5(uint32_t &iteration,
 	Solver::updateVariables();
 
 	if (coeff != 1) {
-		computeResidual(iteration, numThreads, faceChunks,localFc);
+		computeResidual(iteration, numThreads, faceChunks,localFc,BoundaryFaces);
 	}
 }
 //----------------------------------------------------------------
