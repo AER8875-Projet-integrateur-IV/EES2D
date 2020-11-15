@@ -1,7 +1,7 @@
 -------------------------------------------------------------------------------
 %%%%%%%%%%%%%%%%     EES2D Software Input file    %%%%%%%%%%%%%%%%%%%%%
-Author :
-Simulation Title :
+Author : 
+Simulation Title : 
 Date :
 Comments :
 -------------------------------------------------------------------------------
@@ -13,7 +13,8 @@ START
 MESH_FORMAT = SU2
 
 #Path to mesh file (from executable directory)
-MESH_FILE = ../../tests/naca0012_euler_65x65x1_O_1B.su2
+MESH_FILE = ../../tests/testmeshSquare.su2
+
 
 #Type of mesh. Options : STRUCTURED | UNSTRUCTURED
 MESH_TYPE = UNSTRUCTURED
@@ -27,51 +28,64 @@ SPEED_OPTION = MACH
 # Velocity in m/s
 VELOCITY = 0
 
-MACH = 0.6
+MACH = 0.5
 
-A0A = 0.0
+angle of attack in degrees
+AOA = 0
 
 # Airflow pressure in Pa
-AIRFLOW_PRESURE =
+AIRFLOW_PRESSURE = 101325
 
 # Temperature in K
-AIRFLOW_TEMPERATURE =
+AIRFLOW_TEMPERATURE = 288.15
 
 # Viscosity in Ns/m^2
-AIRFLOW_VISCOSITY =
+AIRFLOW_VISCOSITY = 1.853e-5
 
 # Density in kg/m^3
-AIRFLOW_DENSITY =
+AIRFLOW_DENSITY = 1.2886
 
 # Gamma value
 GAMMA = 1.4
 
 # Gas constant in J/kg.K
-GAS_CONSTANT =
+GAS_CONSTANT = 287.058
 
 # Specific heat in J/Kg.k
-SPECIFIC_HEAT =
+SPECIFIC_HEAT = 1004.7
 
 ------------------- SOLVER CONTROL ------------------------
 
 # Discretization of the Convective Fluxes . Options : ROE | AUSM (not implement yet)
 SCHEME = ROE
 
-# Minimum residual to stop solver
-MIN_RESIDUAL = 1e-4
+# Time integration . Options : EXPLICIT_EULER / RK5
+TIME_INTEGRATION = RK5
+
+# Courant_Friedrichs-Lewy Number (CFL)
+CFL = 7
+
+# Minimum residual to stop solver (RMS of density)
+MIN_RESIDUAL = 1e-9
 
 # Number of maximum iterations to stop solver
-MAX_ITER = 200
+MAX_ITER = 99999
 
 # Number of opemmp threads used by the solver
 OPEMMP_THREADS_NUM = 4
 
 -------------------- POST-PROCESSING CONTROL ----------------
+#Path to residual output file, from executable directory (without file extension)
+RESIDUAL_FILE = residual.dat
+
+#Path to pressure output file, from executable directory (without file extension)
+PRESSURE_FILE = pressure.dat
+
 # Post processng file format . Options : TECPLOT | VTK
 OUTPUT_FORMAT = VTK
 
-# Path to file output, from executable directory (without file extension)
-OUTPUT_FILE = ../../tests/io/output_test.vtu
+# Path to file output, from executable directory
+OUTPUT_FILE = bla.vtu
 
 # generate log file . Options : TRUE | FALSE
 GENERATE_LOG = TRUE

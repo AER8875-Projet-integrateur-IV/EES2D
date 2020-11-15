@@ -182,11 +182,28 @@ void VtuWriter::writeCellsData(ofstream &fileStream) {
 	}
 
 	fileStream << "</DataArray>"
+	           << "\n"
+			   << "<DataArray type=\"Float64\" Name=\"Density\" format=\"ascii\" >"
 	           << "\n";
 
+	for(uint32_t i=0; i < m_sim.rho.size();i++){
+		fileStream << (m_sim.rho[i])  << "\n";
+	}
+
+	fileStream << "</DataArray>"
+	           << "\n"
+			   << "<DataArray type=\"Float64\" Name=\"Mach\" format=\"ascii\" >"
+	           << "\n";
+
+	for(uint32_t i=0; i < m_sim.Mach.size();i++){
+		fileStream << (m_sim.Mach[i])  << "\n";
+	}
+
 	 // Ecriture des vitesses
-	fileStream << "<DataArray type=\"Float64\" Name=\"velocity\" format=\"ascii\" NumberOfComponents=\"3\" >"
-             << "\n";
+	fileStream << "</DataArray>"
+	           << "\n"
+			   << "<DataArray type=\"Float64\" Name=\"velocity\" format=\"ascii\" NumberOfComponents=\"3\" >"
+            << "\n";
 	for(uint32_t i=0; i < m_sim.u.size();i++){
 		fileStream << (m_sim.u[i]) << " " << m_sim.v[i] << " " << "0.0" << "\n";
 	}

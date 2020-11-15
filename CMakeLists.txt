@@ -13,13 +13,13 @@ function(add_compile_options_config CONFIG)
     endforeach()
 endfunction()
 
-add_compile_options_config(RELEASE "-W" "-Wall" "-O2" "-pedantic" "-fopenmp" "-I${CMAKE_CURRENT_SOURCE_DIR}/src")
+add_compile_options_config(RELEASE "-W" "-Wall" "-O2" "-g" "-shared-libgcc" "-pedantic" "-fopenmp" "-I${CMAKE_CURRENT_SOURCE_DIR}/src")
 add_compile_options_config(DEBUG "-W" "-Wall" "-O0" "-g3" "-pedantic" "-fopenmp" "-I${CMAKE_CURRENT_SOURCE_DIR}/src")
 
 
 
 add_subdirectory(src)
-option(PACKAGE_TESTS "Build the tests" ON)
+option(PACKAGE_TESTS "Build the tests" OFF)
 if (PACKAGE_TESTS)
     # include(CTest)
     enable_testing()
