@@ -102,7 +102,6 @@ void Solver::run() {
 	#pragma omp parallel for num_threads(numThreads) default(none) shared(BoundaryFaces, faceChunks)
 	for (uint32_t task = 0; task < faceChunks.size() - 1; task++) {
 		for (uint32_t iface = faceChunks[task]; iface < faceChunks[task + 1]; iface++) {
-			uint32_t Elem1ID = m_mesh.FaceToElem(iface, 0);
 			uint32_t Elem2ID = m_mesh.FaceToElem(iface, 1);
 			if (Elem2ID == uint32_t(-1) || Elem2ID == uint32_t(-3)) {
 				BoundaryFaces[iface] = true;

@@ -71,7 +71,7 @@ MIN_RESIDUAL = 1e-9
 # Number of maximum iterations to stop solver
 MAX_ITER = 99999
 
-# Number of opemmp threads used by the solver
+# Number of opemmp threads used by the solver (Maximum of 5 is recommanded)
 OPEMMP_THREADS_NUM = 4
 
 -------------------- POST-PROCESSING CONTROL ----------------

@@ -27,7 +27,7 @@ using namespace ees2d::solver;
 using namespace ees2d::mesh;
 
 PostProcess::PostProcess(Mesh &mesh, solver::Simulation &sim)
-    : m_mesh(mesh), m_sim(sim){};
+    : m_mesh(mesh), m_sim(sim){}
 
 void PostProcess::solveCoefficients() {
 	/*
