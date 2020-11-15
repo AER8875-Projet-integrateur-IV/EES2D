@@ -55,8 +55,6 @@ void MetricsData::computeCvolumesMetrics(const Connectivity &ConnectivityObject)
 	Vector2<double> Centroid_Vec2;
 
 	// FOr quand elements
-	double Area123;
-	double Area134;
 	Vector2<double> Centroid123_Vec2;
 	Vector2<double> Centroid134_Vec2;
 	std::vector<Vector2<double>> elem_nodes_temp = {};
@@ -96,13 +94,6 @@ void MetricsData::computeCvolumesMetrics(const Connectivity &ConnectivityObject)
 			Centroid123_Vec2 = (elem_nodes_temp[0] + elem_nodes_temp[1] + elem_nodes_temp[2]) * (1.0 / 3.0);
 			Centroid134_Vec2 = (elem_nodes_temp[0] + elem_nodes_temp[2] + elem_nodes_temp[3]) * (1.0 / 3.0);
 
-			//Area123 = 0.5 * std::abs((elem_nodes_temp[0].x - elem_nodes_temp[2].x) * (elem_nodes_temp[0].y + elem_nodes_temp[2].y)
-//			                          + (elem_nodes_temp[2].x - elem_nodes_temp[1].x) * (elem_nodes_temp[2].y + elem_nodes_temp[1].y)
-//			                          + (elem_nodes_temp[1].x - elem_nodes_temp[0].x) * (elem_nodes_temp[1].y + elem_nodes_temp[0].y));
-
-			//Area134 = 0.5 * std::abs((elem_nodes_temp[0].x - elem_nodes_temp[3].x) * (elem_nodes_temp[0].y + elem_nodes_temp[3].y)
-//			                          + (elem_nodes_temp[3].x - elem_nodes_temp[2].x) * (elem_nodes_temp[3].y + elem_nodes_temp[2].y)
-//			                          + (elem_nodes_temp[2].x - elem_nodes_temp[0].x) * (elem_nodes_temp[2].y + elem_nodes_temp[0].y));
 
 			Centroid_Vec2 = ((Centroid123_Vec2 ) + (Centroid134_Vec2 ) )/2;
 

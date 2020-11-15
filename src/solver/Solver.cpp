@@ -78,12 +78,7 @@ void Solver::run() {
 	for (uint32_t i = 1; i < numThreads + 1; i++) {
 		faceChunks.push_back(((numTotalFaces - rest) / numThreads) * i);
 	}
-	if (rest != 0) {
-		faceChunks.push_back(faceChunks.back() + rest);
-	}
-	for(auto& chunk : faceChunks){
-		std::cout << chunk << std::endl;
-	}
+	faceChunks.back() += rest;
 
 	while (rms.rho > m_sim.minResidual && iteration < maxIterations) {
 
@@ -121,7 +116,7 @@ void Solver::run() {
 void Solver::computeResidual(uint32_t &iteration, uint32_t &numThreads, const std::vector<double> &faceChunks) {
 
 	// ID of Elements on both sides of each face
-
+	std::shared_ptr<ConvectiveFlux[]> localFc = std::make_unique<ConvectiveFlux[]>(m_mesh.N_faces);
 
 	for (auto &residual : m_sim.residuals) {
 		residual.reset();
@@ -132,8 +127,9 @@ void Solver::computeResidual(uint32_t &iteration, uint32_t &numThreads, const st
 		spec = 0;
 	}
 
-#pragma omp parallel for num_threads(numThreads) schedule(dynamic)
+#pragma omp parallel for num_threads(numThreads) default(none) shared(localFc, faceChunks, iteration, std::cerr)
 	for (uint32_t task = 0; task < faceChunks.size() - 1; task++) {
+
 
 		for (uint32_t iface = faceChunks[task]; iface < faceChunks[task + 1]; iface++) {
 
@@ -181,9 +177,10 @@ void Solver::computeResidual(uint32_t &iteration, uint32_t &numThreads, const st
 			//std::cout << faceP.rho << "/" << faceP.u << "/" << faceP.v << "/" << faceP.p << std::endl;
 
 			// Update residual of elements connected to face
-			updateResidual(Elem1ID, Elem2ID, Fc, iface);
+			localFc[iface] = Fc;
 		}
 	}
+	updateResidual(localFc);
 }
 
 
@@ -215,7 +212,7 @@ ConvectiveFlux Solver::computeBCFlux(const uint32_t &Elem1ID, const uint32_t &El
 		// Treatment of Inflows
 
 		else if (m_sim.Mach[Elem1ID] >= 1 && V <= 0) {
-			Fc = BC::farfieldSupersonicInflow(Elem1ID, iface, faceP, m_sim, m_mesh);
+			Fc = BC::farfieldSupersonicInflow(iface, faceP, m_sim, m_mesh);
 
 		} else if (m_sim.Mach[Elem1ID] < 1 && V <= 0) {
 			Fc = BC::farfieldSubsonicInflow(Elem1ID, iface, faceP, m_sim, m_mesh);
@@ -227,40 +224,21 @@ ConvectiveFlux Solver::computeBCFlux(const uint32_t &Elem1ID, const uint32_t &El
 
 //-------------------------------------------
 
-void Solver::updateResidual(const uint32_t &Elem1ID, const uint32_t &Elem2ID, ConvectiveFlux &Fc, const uint32_t &iface) {
+void Solver::updateResidual(std::shared_ptr<ConvectiveFlux[]> localFc) {
 	// Calculating Residual if BC
+	for (uint32_t iface = 0; iface < m_mesh.N_faces; iface++) {
+		uint32_t Elem1ID = m_mesh.FaceToElem(iface, 0);
+		uint32_t Elem2ID = m_mesh.FaceToElem(iface, 1);
 
-	if (Elem2ID == uint32_t(-1) || Elem2ID == uint32_t(-3)) {
-#pragma omp atomic
-		m_sim.residuals[Elem1ID].m_rhoV_residual += (Fc.m_rhoV * m_mesh.FaceSurface(iface));
-#pragma omp atomic
-    m_sim.residuals[Elem1ID].m_rho_uV_residual += (Fc.m_rho_uV * m_mesh.FaceSurface(iface));
-#pragma omp atomic
-    m_sim.residuals[Elem1ID].m_rho_vV_residual += (Fc.m_rho_vV * m_mesh.FaceSurface(iface));
-#pragma omp atomic
-    m_sim.residuals[Elem1ID].m_rho_HV_residual += (Fc.m_rho_HV * m_mesh.FaceSurface(iface));
-		// Calculating Residual if internal face
-	} else {
+		if (Elem2ID == uint32_t(-1) || Elem2ID == uint32_t(-3)) {
 
-#pragma omp atomic
-    m_sim.residuals[Elem1ID].m_rhoV_residual += (Fc.m_rhoV * m_mesh.FaceSurface(iface));
-#pragma omp atomic
-    m_sim.residuals[Elem1ID].m_rho_uV_residual += (Fc.m_rho_uV * m_mesh.FaceSurface(iface));
-#pragma omp atomic
-    m_sim.residuals[Elem1ID].m_rho_vV_residual += (Fc.m_rho_vV * m_mesh.FaceSurface(iface));
-#pragma omp atomic
-    m_sim.residuals[Elem1ID].m_rho_HV_residual += (Fc.m_rho_HV * m_mesh.FaceSurface(iface));
+			m_sim.residuals[Elem1ID] += (localFc[iface] * m_mesh.FaceSurface(iface));
 
-
-#pragma omp atomic
-    m_sim.residuals[Elem2ID].m_rhoV_residual -= (Fc.m_rhoV * m_mesh.FaceSurface(iface));
-#pragma omp atomic
-    m_sim.residuals[Elem2ID].m_rho_uV_residual -= (Fc.m_rho_uV * m_mesh.FaceSurface(iface));
-#pragma omp atomic
-    m_sim.residuals[Elem2ID].m_rho_vV_residual -= (Fc.m_rho_vV * m_mesh.FaceSurface(iface));
-#pragma omp atomic
-    m_sim.residuals[Elem2ID].m_rho_HV_residual -= (Fc.m_rho_HV * m_mesh.FaceSurface(iface));
-
+			// Calculating Residual if internal face
+		} else {
+			m_sim.residuals[Elem1ID] += (localFc[iface] * m_mesh.FaceSurface(iface));
+			m_sim.residuals[Elem2ID] -= (localFc[iface] * m_mesh.FaceSurface(iface));
+		}
 	}
 }
 

@@ -89,7 +89,7 @@ void PostProcess::solveCoefficients() {
 		}
 	}
 
-	std::cout << "Cl " << CL << " | Cd : " << CD << std::endl;
+	std::cout << "Cl " << CL << " | Cd : " << std::abs(CD) << std::endl;
 	fileStream.close();
 }
 

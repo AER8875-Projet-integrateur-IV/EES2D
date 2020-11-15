@@ -49,7 +49,6 @@ Simulation::Simulation(ees2d::mesh::Mesh &mesh, ees2d::io::InputParser &simParam
 
 
 	tempInf = simParameters.m_Temp;
-  Einf = pressureInf/((gammaInf-1)*rhoInf)+((uInf*uInf + vInf*vInf)/2);
 
   uInf = MachInf*sqrt(gammaInf)*std::cos((3.14159265358979 / 180)* simParameters.m_aoa);
   vInf = MachInf*sqrt(gammaInf)*std::sin((3.14159265358979 / 180)* simParameters.m_aoa);
