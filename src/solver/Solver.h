@@ -49,12 +49,12 @@ public:
 		};
 
 		void run();
-		void computeResidual(uint32_t& iteration, uint32_t& numThreads, const std::vector<double>& faceChunks);
+		void computeResidual(uint32_t& iteration, uint32_t& numThreads, const std::vector<double>& faceChunks,std::shared_ptr<ConvectiveFlux[]> localFc);
 		ConvectiveFlux computeBCFlux(const uint32_t &, const uint32_t &, Solver::faceParams &, const uint32_t &);
 		void updateResidual(std::shared_ptr<ConvectiveFlux[]> localFc);
 		void updateSpectralRadii(const uint32_t &Elem1ID, const uint32_t &Elem2ID, Solver::faceParams &faceP, const uint32_t &iface);
 		void updateLocalTimeSteps(double &courantNumber);
-		void RK5(uint32_t& iteration,const double &coeff, double courantNumber, const std::vector<ConservativeVariables> &W0,uint32_t &numThreads, const std::vector<double> &faceChunks);
+		void RK5(uint32_t& iteration,const double &coeff, double courantNumber, const std::vector<ConservativeVariables> &W0,uint32_t &numThreads, const std::vector<double> &faceChunks,std::shared_ptr<ConvectiveFlux[]> localFc);
 		void eulerExplicit(double courantNumber);
 		void updateVariables();
 

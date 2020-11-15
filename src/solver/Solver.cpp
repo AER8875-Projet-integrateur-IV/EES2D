@@ -63,7 +63,6 @@ void Solver::run() {
 	// Initialize Residual
 
 	ResidualRMS rms(1, 1, 1, 1);
-	//double courant_number = 1 / m_sim.MachInf;
 	double courant_number = m_sim.cfl;
 	uint32_t maxIterations = m_sim.maxIter;
 
@@ -80,15 +79,18 @@ void Solver::run() {
 	}
 	faceChunks.back() += rest;
 
+	// Local Fc for faces (temporary residual vector for parallelization)
+	std::shared_ptr<ConvectiveFlux[]> localFc = std::make_unique<ConvectiveFlux[]>(m_mesh.N_faces);
+
 	while (rms.rho > m_sim.minResidual && iteration < maxIterations) {
 
-		computeResidual(iteration, numThreads, faceChunks);
+		computeResidual(iteration, numThreads, faceChunks, localFc);
 
 		//Update delta W of conservative Variables (rho, u ,v, E)
 		if (m_sim.timeIntegration == "RK5") {
 			const std::vector<ConservativeVariables> W0 = m_sim.conservativeVariables;
 			for (auto &coeff : RK5_coeffs) {
-				RK5(iteration, coeff, courant_number, W0, numThreads, faceChunks);
+				RK5(iteration, coeff, courant_number, W0, numThreads, faceChunks,localFc);
 			}
 		} else if (m_sim.timeIntegration == "EXPLICIT_EULER") {
 			eulerExplicit(courant_number);
@@ -113,10 +115,10 @@ void Solver::run() {
 }
 
 // -------------------------------------------------------------
-void Solver::computeResidual(uint32_t &iteration, uint32_t &numThreads, const std::vector<double> &faceChunks) {
+void Solver::computeResidual(uint32_t &iteration, uint32_t &numThreads, const std::vector<double> &faceChunks,std::shared_ptr<ConvectiveFlux[]> localFc) {
 
 	// ID of Elements on both sides of each face
-	std::shared_ptr<ConvectiveFlux[]> localFc = std::make_unique<ConvectiveFlux[]>(m_mesh.N_faces);
+	
 
 	for (auto &residual : m_sim.residuals) {
 		residual.reset();
@@ -272,7 +274,12 @@ void Solver::eulerExplicit(double courantNumber) {
 	Solver::updateVariables();
 }
 // ----------------------------------------------------------------
-void Solver::RK5(uint32_t &iteration, const double &coeff, double courantNumber, const std::vector<ConservativeVariables> &W0, uint32_t &numThreads, const std::vector<double> &faceChunks) {
+void Solver::RK5(uint32_t &iteration, 
+				const double &coeff, double courantNumber,
+ 				const std::vector<ConservativeVariables> &W0,
+  				uint32_t &numThreads, 
+  				const std::vector<double> &faceChunks,
+				std::shared_ptr<ConvectiveFlux[]> localFc) {
 	// Update time
 	updateLocalTimeSteps(courantNumber);
 
@@ -281,7 +288,7 @@ void Solver::RK5(uint32_t &iteration, const double &coeff, double courantNumber,
 	Solver::updateVariables();
 
 	if (coeff != 1) {
-		computeResidual(iteration, numThreads, faceChunks);
+		computeResidual(iteration, numThreads, faceChunks,localFc);
 	}
 }
 //----------------------------------------------------------------
