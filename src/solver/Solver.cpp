@@ -336,8 +336,7 @@ void Solver::updateLocalTimeSteps(double &courantNumber) {
 	for (uint32_t ielem = 0; ielem < m_sim.dt.size(); ielem++) {
 		m_sim.dt[ielem] = courantNumber * m_mesh.CvolumeArea(ielem) / (m_sim.spectralRadii[ielem]);
 
-		//		m_sim.dt[ielem] =   (courantNumber * m_mesh.CvolumeArea(ielem) /
-		//            ( (m_sim.spectralRadiiX[ielem]) + m_sim.spectralRadiiY[ielem] ) );
+
 	}
 }
 
