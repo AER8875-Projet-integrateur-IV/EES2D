@@ -5,7 +5,9 @@ PROJECT INSTALLATION
 From project root (\), write the following commands
 	
 $ cd build
-$ cmake ..
+$ cmake -DCMAKE_BUILD_TYPE=Release
 $ cmake --build .
 
-executable is found in bin
+executable is found in build/src
+
+To run a case, run the following command : ./EES2D_App <nameofcontrolfile>.ees2d
