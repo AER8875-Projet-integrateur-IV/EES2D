@@ -13,7 +13,7 @@ START
 MESH_FORMAT = SU2
 
 #Path to mesh file (from executable directory)
-MESH_FILE = ../../tests/testmeshSquare.su2
+MESH_FILE = /home/amin/Downloads/naca0012_euler_129x129x1_O_1B.su2
 ../../tests/testmeshSquare.su2
 
 /home/amin/Downloads/naca0012_euler_129x129x1_O_1B.su2

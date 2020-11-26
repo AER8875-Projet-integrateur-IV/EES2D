@@ -28,8 +28,8 @@ void BC::vortexCorrectionVariables(double &uInfStar, double &vInfStar, double &p
 
   double v_norm = std::sqrt(sim.uInf * sim.uInf + sim.vInf * sim.vInf);
 	double circulation = 0.5 * v_norm * 1 * sim.CL;
-	double d = std::sqrt(std::pow(mymesh.FaceMidPoint(faceId).x - 0.25, 2) + std::pow(mymesh.FaceMidPoint(faceId).y , 2));
-	double theta = std::atan((mymesh.FaceMidPoint(faceId).y - 0) / ((mymesh.FaceMidPoint(faceId).x - 0.25)));
+	double d = std::sqrt(std::pow(mymesh.FaceMidPoint(faceId).x, 2) + std::pow(mymesh.FaceMidPoint(faceId).y , 2));
+	double theta = std::atan((mymesh.FaceMidPoint(faceId).y - 0) / ((mymesh.FaceMidPoint(faceId).x )));
 
 	uInfStar = sim.uInf +
 	           ((circulation * std::sqrt(1 - sim.MachInf * sim.MachInf)) / (2 * 3.14159265358979 * d)) *
@@ -104,15 +104,15 @@ ConvectiveFlux BC::farfieldSubsonicInflow(const uint32_t &elemID1,
 	double vInfStar;
 	double rhoInfStar;
 	double pInfStar;
-	vortexCorrectionVariables(uInfStar,vInfStar,pInfStar,rhoInfStar,faceId,sim,mymesh);
+	//vortexCorrectionVariables(uInfStar,vInfStar,pInfStar,rhoInfStar,faceId,sim,mymesh);
 
 
 	double c_inside = std::sqrt(sim.gammaInf * (sim.p[elemID1] / sim.rho[elemID1]));//speed of sound inside domain
-	faceParams.p = (0.5) * (pInfStar + sim.p[elemID1] - sim.rho[elemID1] * c_inside * (mymesh.FaceVector(faceId).x * (uInfStar - sim.u[elemID1]) + mymesh.FaceVector(faceId).y * (vInfStar - sim.v[elemID1])));
-	faceParams.rho = rhoInfStar + (faceParams.p - pInfStar) / (c_inside * c_inside);
+	faceParams.p = (0.5) * (sim.pressureInf + sim.p[elemID1] - sim.rho[elemID1] * c_inside * (mymesh.FaceVector(faceId).x * (sim.uInf - sim.u[elemID1]) + mymesh.FaceVector(faceId).y * (sim.vInf - sim.v[elemID1])));
+	faceParams.rho = sim.rhoInf + (faceParams.p - sim.pressureInf) / (c_inside * c_inside);
 
-	faceParams.u = uInfStar - mymesh.FaceVector(faceId).x * (pInfStar - faceParams.p) / (sim.rho[elemID1] * c_inside);
-	faceParams.v = vInfStar - mymesh.FaceVector(faceId).y * (pInfStar - faceParams.p) / (sim.rho[elemID1] * c_inside);
+	faceParams.u = sim.uInf - mymesh.FaceVector(faceId).x * (sim.pressureInf - faceParams.p) / (sim.rho[elemID1] * c_inside);
+	faceParams.v = sim.vInf - mymesh.FaceVector(faceId).y * (sim.pressureInf - faceParams.p) / (sim.rho[elemID1] * c_inside);
 
 	double E = faceParams.p / ((sim.gammaInf - 1) * faceParams.rho) + ((faceParams.u * faceParams.u + faceParams.v * faceParams.v) / 2);
 	double H = E + faceParams.p / faceParams.rho;
@@ -139,12 +139,12 @@ ConvectiveFlux BC::farfieldSubsonicOutflow(const uint32_t &elemID1,
   double vInfStar;
   double rhoInfStar;
   double pInfStar;
-  vortexCorrectionVariables(uInfStar,vInfStar,pInfStar,rhoInfStar,faceId,sim,mymesh);
+  //vortexCorrectionVariables(uInfStar,vInfStar,pInfStar,rhoInfStar,faceId,sim,mymesh);
 
 
 	double c_inside = std::sqrt(sim.gammaInf * (sim.p[elemID1] / sim.rho[elemID1]));
 
-	faceParams.p = pInfStar;
+	faceParams.p = sim.pressureInf;
 	faceParams.rho = sim.rho[elemID1] + (faceParams.p - sim.p[elemID1]) / (c_inside * c_inside);
 	faceParams.u = sim.u[elemID1] + mymesh.FaceVector(faceId).x * (sim.p[elemID1] - faceParams.p) / (sim.rho[elemID1] * c_inside);
 	faceParams.v = sim.v[elemID1] + mymesh.FaceVector(faceId).y * (sim.p[elemID1] - faceParams.p) / (sim.rho[elemID1] * c_inside);

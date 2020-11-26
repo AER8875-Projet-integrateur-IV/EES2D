@@ -62,9 +62,9 @@ void PostProcess::solveCoefficients() {
 
 
 			// COmpressibility correction (between M 0 and 0.7)
-			if (Mach < 0.7) {
-				Cp = Cp / sqrt(1 - Mach * Mach);
-			}
+//			if (Mach < 0.7) {
+//				Cp = Cp / sqrt(1 - Mach * Mach);
+//			}
 
 			Cps.push_back(Cp);
 

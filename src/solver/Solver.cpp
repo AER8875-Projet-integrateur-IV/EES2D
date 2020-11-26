@@ -137,7 +137,7 @@ void Solver::run() {
 		               << rms.rhoU << std::setw(15)
 		               << rms.rhoV << std::setw(15)
 		               << rms.rhoH << "\n";
-		computeCL();
+		//computeCL();
 	}
 	residualStream.close();
 }
@@ -399,9 +399,9 @@ void Solver::computeCL() {
 
 
 			// COmpressibility correction (between M 0 and 0.7)
-			if (Mach < 0.7) {
-				Cp = Cp / sqrt(1 - Mach * Mach);
-			}
+//			if (Mach < 0.7) {
+//				Cp = Cp / sqrt(1 - Mach * Mach);
+//			}
 
 			Cps.push_back(Cp);
 
