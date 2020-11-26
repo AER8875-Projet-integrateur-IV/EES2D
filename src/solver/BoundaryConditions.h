@@ -56,5 +56,13 @@ namespace ees2d::solver::BC {
 	                                   const solver::Simulation &sim,
 	                                   ees2d::mesh::Mesh &);
 
+  void vortexCorrectionVariables(double& uInfStar,
+	                                   double& vInfStar,
+	                                   double& pIinfStar,
+	                                   double& rhoInfStar,
+	                                   const uint32_t &faceId,
+	                                   const Simulation &sim,
+	                                   mesh::Mesh &mymesh);
+
 
 }// namespace ees2d::solver::BC

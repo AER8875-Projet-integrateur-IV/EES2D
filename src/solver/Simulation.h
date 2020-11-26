@@ -63,6 +63,8 @@ namespace ees2d::solver {
 		double minResidual;
 		double Einf;
 		double aoa;
+		double aoaRad;
+		double CL;
 		uint32_t maxIter;
 		uint32_t threadNum;
 

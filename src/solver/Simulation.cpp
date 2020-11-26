@@ -49,9 +49,9 @@ Simulation::Simulation(ees2d::mesh::Mesh &mesh, ees2d::io::InputParser &simParam
 
 
 	tempInf = simParameters.m_Temp;
-
-  uInf = MachInf*sqrt(gammaInf)*std::cos((3.14159265358979 / 180)* simParameters.m_aoa);
-  vInf = MachInf*sqrt(gammaInf)*std::sin((3.14159265358979 / 180)* simParameters.m_aoa);
+  aoaRad = (3.14159265358979 / 180)* simParameters.m_aoa;
+  uInf = MachInf*sqrt(gammaInf)*std::cos(aoaRad);
+  vInf = MachInf*sqrt(gammaInf)*std::sin(aoaRad);
   rhoInf = 1.0;
   pressureInf = 1.0;
 	Einf =pressureInf/((gammaInf-1)*rhoInf)+((uInf*uInf + vInf*vInf)/2);
@@ -75,6 +75,7 @@ Simulation::Simulation(ees2d::mesh::Mesh &mesh, ees2d::io::InputParser &simParam
 	conservativeVariables.resize(mesh.N_elems);
 
   // fill solution vectors with Initial Conditions
+	CL = 0;
 	std::fill(u.begin(), u.end(), uInf);
 	std::fill(v.begin(), v.end(), vInf);
 	std::fill(Mach.begin(),Mach.end(),MachInf);

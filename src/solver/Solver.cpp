@@ -66,8 +66,6 @@ void Solver::run() {
 	double courant_number = m_sim.cfl;
 	uint32_t maxIterations = m_sim.maxIter;
 
-	
-
 
 	// Setup parallelization variables
 
@@ -92,40 +90,37 @@ void Solver::run() {
 	elemChunks.back() += restElems;
 
 
-
 	// Local Fc for faces (temporary residual vector for parallelization)
 	std::shared_ptr<ConvectiveFlux[]> localFc = std::make_unique<ConvectiveFlux[]>(m_mesh.N_faces);
 
 
 	// Look for boundary faces
 	std::shared_ptr<bool[]> BoundaryFaces = std::make_unique<bool[]>(m_mesh.N_faces);
-	#pragma omp parallel for num_threads(numThreads) default(none) shared(BoundaryFaces, faceChunks)
+#pragma omp parallel for num_threads(numThreads) default(none) shared(BoundaryFaces, faceChunks)
 	for (uint32_t task = 0; task < faceChunks.size() - 1; task++) {
 		for (uint32_t iface = faceChunks[task]; iface < faceChunks[task + 1]; iface++) {
 			uint32_t Elem2ID = m_mesh.FaceToElem(iface, 1);
 			if (Elem2ID == uint32_t(-1) || Elem2ID == uint32_t(-3)) {
 				BoundaryFaces[iface] = true;
-			}
-			else {
+			} else {
 				BoundaryFaces[iface] = false;
 			}
-
-	}
+		}
 	}
 
 
 	while (rms.rho > m_sim.minResidual && iteration < maxIterations) {
 
-		computeResidual(iteration, numThreads, faceChunks, localFc,BoundaryFaces);
+		computeResidual(iteration, numThreads, faceChunks, localFc, BoundaryFaces);
 
 		//Update delta W of conservative Variables (rho, u ,v, E)
 		if (m_sim.timeIntegration == "RK5") {
 			const std::vector<ConservativeVariables> W0 = m_sim.conservativeVariables;
 			for (auto &coeff : RK5_coeffs) {
-				RK5(iteration, coeff, courant_number, W0, numThreads, faceChunks,elemChunks,localFc,BoundaryFaces);
+				RK5(iteration, coeff, courant_number, W0, numThreads, faceChunks, elemChunks, localFc, BoundaryFaces);
 			}
 		} else if (m_sim.timeIntegration == "EXPLICIT_EULER") {
-			eulerExplicit(courant_number,numThreads,elemChunks);
+			eulerExplicit(courant_number, numThreads, elemChunks);
 		}
 
 		iteration += 1;
@@ -142,19 +137,20 @@ void Solver::run() {
 		               << rms.rhoU << std::setw(15)
 		               << rms.rhoV << std::setw(15)
 		               << rms.rhoH << "\n";
+		computeCL();
 	}
 	residualStream.close();
 }
 
 // -------------------------------------------------------------
-void Solver::computeResidual(uint32_t &iteration, 
-							uint32_t &numThreads, 
-							const std::vector<double> &faceChunks,
-							std::shared_ptr<ConvectiveFlux[]> localFc,
-							std::shared_ptr<bool[]> BoundaryFaces) {
+void Solver::computeResidual(uint32_t &iteration,
+                             uint32_t &numThreads,
+                             const std::vector<double> &faceChunks,
+                             std::shared_ptr<ConvectiveFlux[]> localFc,
+                             std::shared_ptr<bool[]> BoundaryFaces) {
 
 	// ID of Elements on both sides of each face
-	
+
 
 	for (auto &residual : m_sim.residuals) {
 		residual.reset();
@@ -189,7 +185,7 @@ void Solver::computeResidual(uint32_t &iteration,
 
 			// if boundary cells connected to the face
 			if (BoundaryFaces[iface] == true) {
-				
+
 				Fc = computeBCFlux(Elem1ID, Elem2ID, faceP, iface);
 
 			}
@@ -218,7 +214,7 @@ void Solver::computeResidual(uint32_t &iteration,
 			localFc[iface] = Fc;
 		}
 	}
-	updateResidual(localFc,BoundaryFaces);
+	updateResidual(localFc, BoundaryFaces);
 }
 
 
@@ -262,7 +258,7 @@ ConvectiveFlux Solver::computeBCFlux(const uint32_t &Elem1ID, const uint32_t &El
 
 //-------------------------------------------
 
-void Solver::updateResidual(std::shared_ptr<ConvectiveFlux[]> localFc,std::shared_ptr<bool[]> BoundaryFaces) {
+void Solver::updateResidual(std::shared_ptr<ConvectiveFlux[]> localFc, std::shared_ptr<bool[]> BoundaryFaces) {
 	// Calculating Residual if BC
 	for (uint32_t iface = 0; iface < m_mesh.N_faces; iface++) {
 		uint32_t Elem1ID = m_mesh.FaceToElem(iface, 0);
@@ -302,7 +298,7 @@ void Solver::updateSpectralRadii(const uint32_t &Elem1ID, const uint32_t &Elem2I
 }
 
 //----------------------------------------------------------------
-void Solver::eulerExplicit(double courantNumber, uint32_t &numThreads,const std::vector<double> &elemChunks ) {
+void Solver::eulerExplicit(double courantNumber, uint32_t &numThreads, const std::vector<double> &elemChunks) {
 	// Update time
 	updateLocalTimeSteps(courantNumber);
 
@@ -310,23 +306,23 @@ void Solver::eulerExplicit(double courantNumber, uint32_t &numThreads,const std:
 	Solver::updateVariables(numThreads, elemChunks);
 }
 // ----------------------------------------------------------------
-void Solver::RK5(uint32_t &iteration, 
-				const double &coeff, double courantNumber,
- 				const std::vector<ConservativeVariables> &W0,
-  				uint32_t &numThreads, 
-  				const std::vector<double> &faceChunks,
-				const std::vector<double> &elemChunks,
-				std::shared_ptr<ConvectiveFlux[]> localFc,
-				std::shared_ptr<bool[]> BoundaryFaces) {
+void Solver::RK5(uint32_t &iteration,
+                 const double &coeff, double courantNumber,
+                 const std::vector<ConservativeVariables> &W0,
+                 uint32_t &numThreads,
+                 const std::vector<double> &faceChunks,
+                 const std::vector<double> &elemChunks,
+                 std::shared_ptr<ConvectiveFlux[]> localFc,
+                 std::shared_ptr<bool[]> BoundaryFaces) {
 	// Update time
 	updateLocalTimeSteps(courantNumber);
 
 	TimeIntegration::RK5(m_sim, m_mesh, coeff, W0);
 
-	Solver::updateVariables(numThreads,elemChunks);
+	Solver::updateVariables(numThreads, elemChunks);
 
 	if (coeff != 1) {
-		computeResidual(iteration, numThreads, faceChunks,localFc,BoundaryFaces);
+		computeResidual(iteration, numThreads, faceChunks, localFc, BoundaryFaces);
 	}
 }
 //----------------------------------------------------------------
@@ -334,33 +330,31 @@ void Solver::RK5(uint32_t &iteration,
 void Solver::updateLocalTimeSteps(double &courantNumber) {
 	for (uint32_t ielem = 0; ielem < m_sim.dt.size(); ielem++) {
 		m_sim.dt[ielem] = courantNumber * m_mesh.CvolumeArea(ielem) / (m_sim.spectralRadii[ielem]);
-
-
 	}
 }
 
 // ----------------------------------------------------
 
 
-void Solver::updateVariables(uint32_t &numThreads, 
-							const std::vector<double> &elemChunks) {
-#pragma omp parallel for num_threads(numThreads) default(none) shared(elemChunks,std::cerr)
+void Solver::updateVariables(uint32_t &numThreads,
+                             const std::vector<double> &elemChunks) {
+#pragma omp parallel for num_threads(numThreads) default(none) shared(elemChunks, std::cerr)
 	for (uint32_t task = 0; task < elemChunks.size() - 1; task++) {
 
 
 		for (uint32_t elem = elemChunks[task]; elem < elemChunks[task + 1]; elem++) {
-		m_sim.rho[elem] = m_sim.conservativeVariables[elem].m_rho;
-		if (std::isnan(m_sim.rho[elem])) {
-			std::cerr << "Error : nan rho variable found at elem : " << elem << std::endl;
-			std::exit(EXIT_FAILURE);
-		}
-		m_sim.u[elem] = m_sim.conservativeVariables[elem].m_rho_u / m_sim.rho[elem];
-		m_sim.v[elem] = m_sim.conservativeVariables[elem].m_rho_v / m_sim.rho[elem];
-		m_sim.E[elem] = m_sim.conservativeVariables[elem].m_rho_E / m_sim.rho[elem];
-		m_sim.p[elem] = (m_sim.gammaInf - 1) * m_sim.rho[elem] * (m_sim.E[elem] - ((m_sim.u[elem] * m_sim.u[elem] + m_sim.v[elem] * m_sim.v[elem]) / 2));
+			m_sim.rho[elem] = m_sim.conservativeVariables[elem].m_rho;
+			if (std::isnan(m_sim.rho[elem])) {
+				std::cerr << "Error : nan rho variable found at elem : " << elem << std::endl;
+				std::exit(EXIT_FAILURE);
+			}
+			m_sim.u[elem] = m_sim.conservativeVariables[elem].m_rho_u / m_sim.rho[elem];
+			m_sim.v[elem] = m_sim.conservativeVariables[elem].m_rho_v / m_sim.rho[elem];
+			m_sim.E[elem] = m_sim.conservativeVariables[elem].m_rho_E / m_sim.rho[elem];
+			m_sim.p[elem] = (m_sim.gammaInf - 1) * m_sim.rho[elem] * (m_sim.E[elem] - ((m_sim.u[elem] * m_sim.u[elem] + m_sim.v[elem] * m_sim.v[elem]) / 2));
 
-		m_sim.H[elem] = m_sim.E[elem] + (m_sim.p[elem] / m_sim.rho[elem]);
-		m_sim.Mach[elem] = std::sqrt(m_sim.u[elem] * m_sim.u[elem] + m_sim.v[elem] * m_sim.v[elem]) / std::sqrt(m_sim.gammaInf * (m_sim.p[elem] / m_sim.rho[elem]));
+			m_sim.H[elem] = m_sim.E[elem] + (m_sim.p[elem] / m_sim.rho[elem]);
+			m_sim.Mach[elem] = std::sqrt(m_sim.u[elem] * m_sim.u[elem] + m_sim.v[elem] * m_sim.v[elem]) / std::sqrt(m_sim.gammaInf * (m_sim.p[elem] / m_sim.rho[elem]));
 		}
 	}
 }
@@ -385,8 +379,56 @@ void Solver::findRms(Solver::ResidualRMS &RMS) {
 	RMS.rhoV = sqrt((1.0 / m_mesh.N_elems) * sumRhoVResidual);
 	RMS.rhoH = sqrt((1.0 / m_mesh.N_elems) * sumRhoHResidual);
 }
-
 // ----------------------------------------------------
+void Solver::computeCL() {
+
+	std::vector<double>  Cps;
+  double u_sqrd = m_sim.uInf * m_sim.uInf + m_sim.vInf * m_sim.vInf;
+  double CL=0;
+	for (uint32_t iface = 0; iface < m_mesh.N_faces; iface++) {
+		uint32_t Elem1ID = m_mesh.FaceToElem(iface, 0);
+		uint32_t Elem2ID = m_mesh.FaceToElem(iface, 1);
+		if (Elem2ID == uint32_t(-1)) {
+
+			double pinf = 1.0;
+			double p = m_sim.p[Elem1ID];
+
+			double Mach = m_sim.Mach[Elem1ID];
+
+			double Cp = (p - pinf) / (0.5 * 1 * u_sqrd);
+
+
+			// COmpressibility correction (between M 0 and 0.7)
+			if (Mach < 0.7) {
+				Cp = Cp / sqrt(1 - Mach * Mach);
+			}
+
+			Cps.push_back(Cp);
+
+			// Computations for lift and drag forces
+			outwardNormal(Elem1ID, iface);
+
+			CL += Cp * m_mesh.FaceSurface(iface) * (m_mesh.FaceVector(iface).y);
+		}
+	}
+  m_sim.CL = CL;
+}
+// ----------------------------------------------------
+void Solver::outwardNormal(const uint32_t &Elem1ID, const uint32_t &iface) {
+  /*
+   * Orient the normal outward of the airfoil surface
+   */
+  std::vector<double> midFaceToElem1{m_mesh.CvolumeCentroid(Elem1ID).x - m_mesh.FaceMidPoint(iface).x,
+                                     m_mesh.CvolumeCentroid(Elem1ID).y - m_mesh.FaceMidPoint(iface).y};
+  double midFaceToElemNorm = std::sqrt(midFaceToElem1[0] * midFaceToElem1[0] + midFaceToElem1[1] * midFaceToElem1[1]);
+  double DotProduct = midFaceToElem1[0] * m_mesh.FaceVector(iface).x + midFaceToElem1[1] * m_mesh.FaceVector(iface).y;
+  double angle = std::acos(DotProduct / (midFaceToElemNorm * 1)) * (180 / M_PI);
+  if (angle <  80) {
+    m_mesh.FaceVector(iface).x *= -1;
+    m_mesh.FaceVector(iface).y *= -1;
+  }
+}
+//
 
 //double Solver::findMaxResidual() {
 //	double maxResidual = 0;

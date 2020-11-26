@@ -21,6 +21,7 @@
 #pragma once
 #include "mesh/Mesh.h"
 #include "solver/Simulation.h"
+#include "solver/Solver.h"
 namespace ees2d::post {
 
 	class PostProcess {

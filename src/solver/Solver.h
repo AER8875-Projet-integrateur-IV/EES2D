@@ -65,6 +65,9 @@ public:
 				std::shared_ptr<ConvectiveFlux[]> localFc,
 				std::shared_ptr<bool[]> BoundaryFaces);
 
+		void outwardNormal(const uint32_t &Elem1ID, const uint32_t &iface);
+		void computeCL();
+
 		void eulerExplicit(double courantNumber,uint32_t &numThreads,const std::vector<double> &elemChunks);
 		void updateVariables(uint32_t &numThreads, 
 							const std::vector<double> &elemChunks);

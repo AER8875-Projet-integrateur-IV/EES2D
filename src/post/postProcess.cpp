@@ -38,8 +38,6 @@ void PostProcess::solveCoefficients() {
 	double CL =0;
 	double CD =0;
   double u_sqrd = m_sim.uInf * m_sim.uInf + m_sim.vInf * m_sim.vInf;
-	double minimumYcoord = 0;
-	double maximumYcoord = 0;
 
 	// Initialize file
 	std::ofstream fileStream(m_sim.pressurePath);
@@ -72,12 +70,6 @@ void PostProcess::solveCoefficients() {
 
 			// Computations for lift and drag forces
 			outwardNormal(Elem1ID, iface);
-
-			if(m_mesh.FaceMidPoint(iface).y > maximumYcoord){
-				maximumYcoord = m_mesh.FaceMidPoint(iface).y;
-			} else if(m_mesh.FaceMidPoint(iface).y < minimumYcoord){
-        minimumYcoord = m_mesh.FaceMidPoint(iface).y;
-			}
 
       CL += Cp*m_mesh.FaceSurface(iface)*(m_mesh.FaceVector(iface).y);
 			CD += Cp*m_mesh.FaceSurface(iface)*std::abs(m_mesh.FaceVector(iface).x);
