@@ -1,9 +1,11 @@
 
 PROJECT INSTALLATION
 
+On linux :
 
 From project root (\), write the following commands
-	
+
+$ mkdir build
 $ cd build
 $ cmake -DCMAKE_BUILD_TYPE=Release
 $ cmake --build .
